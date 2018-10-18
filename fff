@@ -41,7 +41,14 @@ open() {
         get_dir
         f_print
     elif [[ -f "$1" ]]; then
-        nohup xdg-open "$1" >/dev/null 2>&1 &
+        case "${1##*.}" in
+            # TODO: Expand on this properly.
+            pdf|gif|jpg|jpeg|svg|png|mkv|mp4|zip|gz|7z|bin|flv)
+               nohup xdg-open "$1" >/dev/null 2>&1 &
+            ;;
+
+            *) "${EDITOR:-vi}" "$1"; printf '\e[?25l' ;;
+        esac
     fi
 }
 
