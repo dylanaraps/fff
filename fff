@@ -26,7 +26,7 @@ f_print() {
     for((i=${k:=0};i<(j=j>${#f[@]}?${#f[@]}:j);i++));{
         path="${f[$i]##*/}"
         [[ -d "${f[$i]}" ]] && path="\\e[1m\\e[31m${path}/\\e[m"
-        [[ "${f[$i]}" == "${f[$((k+LINES/2-1))]}" ]] && path="\\e[7m${path}\\e[m"
+        [[ "${f[$i]}" == "${f[$((k))]}" ]] && path="\\e[7m${path}\\e[m"
         printf '\e[K%b\n' "$path"
     }
 
@@ -48,9 +48,7 @@ key() {
     case "${1: -1}" in
         j) ((j==${#f[@]}))||((k=k>=j?k:++k,j=j<${#f[@]}?++j:j)) ;;
         k) ((k==0))||((k=k<=j?k>0?--k:0:j,j=j>0?--j:j)) ;;
-        g) k=0 ;;
-        G) ;;
-        l) open "${f[$((k+LINES/2-1))]}"; k=0 ;;
+        l) open "${f[$((k))]}"; k=0 ;;
         h) open "${PWD%/*}"; k=0 ;;
     esac
 }
