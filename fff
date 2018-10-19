@@ -74,7 +74,7 @@ main() {
     shopt -s nullglob extglob
 
     trap $'printf \'\e[?25h\e[?7h\e[999B\';shopt -u nullglob extglob' EXIT
-    trap  'refresh; k=0' SIGWINCH
+    trap  'refresh; k=0; f_print' SIGWINCH
 
     for ((;;)); { f_print; read -rs -n 1; key "$REPLY"; }
 }
