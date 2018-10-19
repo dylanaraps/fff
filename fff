@@ -31,10 +31,10 @@ f_print() {
 }
 
 open() {
-    if [[ -d "$1" ]]; then
+    if [[ -d "${1:-/}" ]]; then
         ((k=0,l=0))
         refresh
-        PWD="$1"
+        PWD="${1:-/}"
         get_dir
         f_print
     elif [[ -f "$1" ]]; then
@@ -62,7 +62,7 @@ key() {
         ;;
 
         l) open "${f[l]}" ;;
-        h) [[ -z "${PWD%/*}" ]] && open "/" || open "${PWD%/*}" ;;
+        h) open "${PWD%/*}" ;;
         g) ((l=0,k=0)); refresh ;;
         G) ((k=${#f[@]}-j,j=${#f[@]},l=${#f[@]}-1)); f_print ;;
     esac
