@@ -6,7 +6,7 @@ refresh() {
     printf '\e[?7l\e[?25l\e[2J\e[H'
     shopt -s checkwinsize; (:;:)
     [[ -z "${LINES:-$COLUMNS}" ]] && read -r LINES COLUMNS < <(stty size)
-    ((j=LINES-3,m=j))
+    ((j=LINES-3,m=j,l=0,k=0))
 }
 
 get_dir() {
@@ -33,10 +33,10 @@ f_print() {
 
 open() {
     if [[ -d "${1:-/}" ]]; then
-        ((k=0,l=0))
         refresh
         PWD="${1:-/}"
         get_dir
+
     elif [[ -f "$1" ]]; then
         case "${1##*.}" in
             7z|a|apk|ar|bz2|cab|cpio|dmg|egg|gz|iso|jar|lha|mar|pea|rar|\
@@ -62,7 +62,7 @@ key() {
         A|k) ((l==0))||((l--));((k==0))||((k=k<=j?k>0?--k:0:j,j=j>0?--j:j)) ;;
         C|l) open "${f[l]}" ;;
         D|h) open "${PWD%/*}" ;;
-        g) ((l=0,k=0)); refresh ;;
+        g) refresh ;;
         G) ((j==c))||((k=c-m,j=c,l=c-1)); f_print ;;
         .) a=(u s); shopt -"${a[((h=h>0?0:++h))]}" dotglob; get_dir; refresh ;;
     esac
@@ -73,7 +73,7 @@ main() {
     get_dir
 
     trap $'printf \'\e[2J\e[?7h\e[?25h\'; cd $PWD; exec $SHELL' EXIT
-    trap  'refresh; k=0; l=0; f_print' SIGWINCH
+    trap  'refresh; f_print' SIGWINCH
 
     for ((;;)); { f_print; read -rs -n 1; key "$REPLY"; }
 }

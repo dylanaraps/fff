@@ -33,6 +33,8 @@ down:  scroll down
 up:    scroll up
 left:  go to parent dir
 right: go to child dir
+
+enter: go to child dir
 ```
 
 ## Why?
