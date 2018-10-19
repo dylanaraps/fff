@@ -11,7 +11,7 @@ A simple file manager written in `bash`.
 ## Dependencies
 
 - `bash`
-- opening non-text files: `xdg-open`
+- program handling (non-text): `xdg-open`
 
 ## Running
 
