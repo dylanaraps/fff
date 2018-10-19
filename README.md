@@ -17,6 +17,24 @@ A simple file manager written in `bash`.
 
 1. `fff`
 
+## Usage
+
+```sh
+j: scroll down
+k: scroll up
+h: go to parent dir
+l: go to child dir
+
+g: go to top
+G: go to bottom
+.: toggle hidden files.
+
+down:  scroll down
+up:    scroll down
+left:  go to parent dir
+right: go to child dir
+```
+
 ## Why?
 
 ¯\\_(ツ)_/¯
