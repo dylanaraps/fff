@@ -69,10 +69,10 @@ key() {
 
 main() {
     refresh
-    get_dir; f_print
-    shopt -s nullglob extglob
+    get_dir
+    f_print
 
-    trap $'printf \'\e[?25h\e[?7h\e[999B\';shopt -u nullglob extglob' EXIT
+    trap $'printf \'\e[2J\e[?7h\e[?25h\'; cd $PWD; exec $SHELL' EXIT
     trap  'refresh; k=0; l=0; f_print' SIGWINCH
 
     for ((;;)); { f_print; read -rs -n 1; key "$REPLY"; }
