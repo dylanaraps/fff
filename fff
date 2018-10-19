@@ -47,7 +47,7 @@ open() {
             svg|dwg|dxf|gpx|kml|kmz|ods|xls|xlsx|ics|vcf|ppt|odp|3g2|3gp|aaf|\
             asf|avchd|avi|drc|flv|m2v|m4p|m4v|mkv|mng|mov|mp2|mp4|mpe|mpeg|\
             mpg|mpv|mxf|nsv|ogg|ogv|ogm|qt|rm|rmvb|roq|srt|svi|vob|webm|wmv|\
-            doc|docx|ebook|log|md|msg|odt|org|pages|pdf|rtf|tex|txt|wpd|wps)
+            doc|docx|ebook|msg|odt|pages|pdf|rtf|wpd|wps)
                nohup xdg-open "$1" >/dev/null 2>&1 &
             ;;
 
