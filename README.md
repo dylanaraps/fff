@@ -30,7 +30,7 @@ G: go to bottom
 .: toggle hidden files.
 
 down:  scroll down
-up:    scroll down
+up:    scroll up
 left:  go to parent dir
 right: go to child dir
 ```
