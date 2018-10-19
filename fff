@@ -32,7 +32,7 @@ f_print() {
 
 open() {
     if [[ -d "$1" ]]; then
-        k=0; l=0
+        ((k=0,l=0))
         refresh
         PWD="$1"
         get_dir
@@ -61,8 +61,8 @@ key() {
             ((l==0))||((l--))
         ;;
 
-        l) open "${f[l]}" ;;
-        h) open "${PWD%/*}"; l=0 ;;
+        l) ((j2=j,k2=k,l2=l)); open "${f[l]}" ;;
+        h) open "${PWD%/*}"; ((j=j2,k=k2,l=l2)) ;;
         g) ((l=0,k=0)); refresh ;;
         G) ((j=${#f[@]}-j,k=${#f[@]},l=${#f[@]})) ;;
     esac
