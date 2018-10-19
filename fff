@@ -39,8 +39,15 @@ open() {
         f_print
     elif [[ -f "$1" ]]; then
         case "${1##*.}" in
-            # TODO: Expand on this properly.
-            pdf|gif|jpg|jpeg|svg|png|mkv|mp4|zip|gz|7z|bin|flv)
+            7z|a|apk|ar|bz2|cab|cpio|dmg|egg|gz|iso|jar|lha|mar|pea|rar|\
+            rpm|s7z|shar|tar|tbz2|tgz|tlz|war|whl|xpi|zip|zipx|deb|xz|pak|\
+            crx|exe|msi|bin|aac|aiff|ape|au|flac|gsm|it|m3u|m4a|mid|mod|mp3|\
+            mpa|pls|ra|s3m|sid|wav|wma|xm|eot|otf|ttf|woff|woff2|3dm|3ds|max|\
+            bmp|dds|gif|jpg|jpeg|png|psd|xcf|tga|thm|tif|tiff|yuv|ai|eps|ps|\
+            svg|dwg|dxf|gpx|kml|kmz|ods|xls|xlsx|ics|vcf|ppt|odp|3g2|3gp|aaf|\
+            asf|avchd|avi|drc|flv|m2v|m4p|m4v|mkv|mng|mov|mp2|mp4|mpe|mpeg|\
+            mpg|mpv|mxf|nsv|ogg|ogv|ogm|qt|rm|rmvb|roq|srt|svi|vob|webm|wmv|\
+            doc|docx|ebook|log|md|msg|odt|org|pages|pdf|rtf|tex|txt|wpd|wps)
                nohup xdg-open "$1" >/dev/null 2>&1 &
             ;;
 
@@ -51,12 +58,12 @@ open() {
 
 key() {
     case "${1: -1}" in
-        j) ((l==c-1))||((l++));((j==c))||((k=k>=j?k:++k,j=j<c?++j:j)) ;;
-        k) ((l==0))||((l--));((k==0))||((k=k<=j?k>0?--k:0:j,j=j>0?--j:j)) ;;
-        l) open "${f[l]}" ;;
-        h) open "${PWD%/*}" ;;
-        g) ((l=0,k=0)); refresh ;;
-        G) ((k=c-j,j=c,l=c-1)); f_print ;;
+        B|j) ((l==c-1))||((l++));((j==c))||((k=k>=j?k:++k,j=j<c?++j:j)) ;;
+        A|k) ((l==0))||((l--));((k==0))||((k=k<=j?k>0?--k:0:j,j=j>0?--j:j)) ;;
+        C|l) open "${f[l]}" ;;
+        D|h) open "${PWD%/*}" ;;
+        g)   ((l=0,k=0)); refresh ;;
+        G)   ((k=c-j,j=c,l=c-1)); f_print ;;
     esac
 }
 
