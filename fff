@@ -21,7 +21,7 @@ get_dir() {
 f_print() {
     for((i=${k:=0};i<(j=j>c?c:j);i++));{
         path="${f[$i]##*/}"
-        [[ -d "${f[$i]}" ]] && path="\\e[1m\\e[31m${path}/\\e[m"
+        [[ -d "${f[$i]}" ]]           && path="\\e[1m\\e[31m${path}/\\e[m"
         [[ "${f[$i]}" == "${f[l]}" ]] && path="\\e[7m${path}\\e[m"
         printf '\e[K%b\n' "$path"
     }
