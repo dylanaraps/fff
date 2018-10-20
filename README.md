@@ -8,6 +8,7 @@ A simple file manager written in `bash`.
 - Minimal (*<100 lines of bash*)
 - Smooth Scrolling (*Using vim keybindings.*)
 - Basic Search
+- CD on Exit
 
 
 ## Dependencies
