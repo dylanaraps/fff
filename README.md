@@ -14,11 +14,11 @@ A simple file manager written in `bash`.
 ## TODO
 
 - [ ] Operations
-    - `copy`
-    - `paste`
-    - `cut`
-    - `rename`
-    - `delete (trash)`.
+    - [x] `copy`
+    - [x] `paste`
+    - [ ] `cut`
+    - [x] `rename`
+    - [ ] `delete (trash)`.
 
 
 ## Dependencies
