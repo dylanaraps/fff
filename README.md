@@ -11,14 +11,26 @@ A simple file manager written in `bash`.
 - CD on Exit
 
 
+## TODO
+
+- [ ] Operations
+    - `copy`
+    - `paste`
+    - `cut`
+    - `rename`
+    - `delete (trash)`.
+
+
 ## Dependencies
 
 - `bash`
 - program handling (non-text): `xdg-open`
 
+
 ## Running
 
 1. `fff`
+
 
 ## Usage
 
