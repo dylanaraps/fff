@@ -84,6 +84,8 @@ key() {
         p) [[ $co ]] && "${pr[@]}" "$co" "$PWD" && { refresh; get_dir; co=; } ;;
         r) printf '\e[999B\e[?25h'; read -rp "rename ${f[l]##*/}: "
            [[ "$REPLY" ]] && mv "${f[l]}" "${PWD}/${REPLY}"; refresh; get_dir ;;
+        d) printf '\e[999B\e[?25h'; read -n 1 -rp "trash ${f[l]##*/}? [y/n]: " y
+           [[ "$y" =~ y ]] && mv "${f[l]}" ~/.cache/fff/bin/; refresh; get_dir ;;
 
         B|j) ((l=l==c-1?l:++l,j!=c&&l==j-m/2))&&((k=k>=j?k:++k,j=j<c?++j:j)) ;;
         A|k) ((l=l<1?l:--l,k>0&&l==k+m/2-2))&&((k=k<=j?k>0?--k:0:j,j=j>0?--j:j))
@@ -92,6 +94,7 @@ key() {
 
 main() {
     shopt -s nocaseglob nullglob
+    mkdir -p ~/.cache/fff/bin/
     refresh; get_dir
 
     trap $'printf \'\e[2J\e[?7h\e[?25h\'; cd $PWD; exec $SHELL' EXIT
