@@ -12,8 +12,7 @@ refresh() {
 get_dir() {
     d=(); f=()
     for p in "$PWD"/*; do
-        [[ -d "$p" ]] && d+=("$p")
-        [[ -f "$p" ]] && f+=("$p")
+        [[ -d "$p" ]] && d+=("$p") || f+=("$p")
     done
     f=("${d[@]}" "${f[@]}"); f_print
 }
@@ -21,21 +20,20 @@ get_dir() {
 f_print() {
     c="${#f[@]}"
     for((i=${k:=0};i<(j=j>c?c:j);i++));{
-        path="${f[i]##*/}"
-        [[ -d "${f[i]}" ]]           && path="\\e[1m\\e[31m${path}/\\e[m"
+        [[ -z "${f[i]}" ]] && { get_dir; return; } || path="${f[i]##*/}"
+        [[ -d "${f[i]}" ]] && path="\\e[1m\\e[31m${path}/\\e[m"
         [[ "${f[i]}" == "${f[l]}" ]] && path="\\e[7m${path}\\e[m"
         [[ "$co" == "${f[i]}" ]]     && path="\\e[7m\\e[40m${path}\\e[m"
         printf '\e[K%b\n' "$path"
     }
     printf '\e[2m\e[%s;H\e[K\n\e[K%b\e[m\e[H' "$((LINES-2))" \
-           "${PWD/\/\//\/} (${l:-1}/$((c-1))) ${co:+$co-->${PWD} [p]}"
+           "${PWD/\/\//\/} (${l:-1}/$((c-1))) ${co:+$co* [p]}"
 }
 
 open() {
     if [[ -d "${1:-/}" ]]; then
         l=0; refresh
-        PWD="${1:-/}"
-        get_dir
+        PWD="${1:-/}"; get_dir
 
     elif [[ -f "$1" ]]; then
         case "${1##*.}" in
@@ -56,28 +54,34 @@ open() {
     fi
 }
 
+prompt() {
+    printf '\e[999B\e[?25h'
+    case "${1: -1}" in
+        r) read -rp "rename ${f[l]##*/}: "; [[ "$REPLY" ]] && \
+           mv "${f[l]}" "$PWD/$REPLY" ;;
+        d) read -n 1 -rp "trash ${f[l]##*/}? [y/n]: " y; [[ "$y" =~ y ]] && \
+           mv "${f[l]}" ~/.cache/fff/bin/; ((l=l==0?l:--l)) ;;
+        /) read -rp /; l=0; f=("$PWD"/*"$REPLY"*); refresh; f_print;
+           PWD="${PWD/\/\.}/."; return ;;
+    esac
+    refresh; get_dir
+}
+
 key() {
     case "${1: -1}" in
         C|l|"") l2[((n=n<0?0:++n))]="$l:$k"; open "${f[l]}" ;;
-        D|h)    open "${PWD%/*}"; ((l=${l2[n]/:*},k=${l2[n--]/*:})); refresh ;;
+        D|h) open "${PWD%/*}"; ((l=${l2[n]/:*},k=${l2[n--]/*:})); refresh ;;
 
         g) l=0; refresh ;;
-        G) ((j==c))||((k=c-m,j=c,l=c-1)); f_print ;;
+        G) ((l=c-1)); refresh; ((k=k<0?0:k)) ;;
         .) a=(u s); shopt -"${a[((h=h>0?0:++h))]}" dotglob; refresh; get_dir;;
-
-        '/') printf '\e[999B\e[?25h'; read -rp "/";
-             [[ "$REPLY" ]] && { f=("$PWD"/"$REPLY"*); PWD="${PWD/\/\.}/."; }
-             l=0; refresh; f_print ;;
 
         y) [[ "$co" != "${f[l]}" ]] && { co="${f[l]}"; pr=(cp -r); } || co= ;;
         m) [[ "$co" != "${f[l]}" ]] && { co="${f[l]}"; pr=(mv); } || co= ;;
         p) [[ $co ]] && "${pr[@]}" "$co" "$PWD" && { refresh; get_dir; co=; } ;;
 
-        r) printf '\e[999B\e[?25h'; read -rp "rename ${f[l]##*/}: "
-           [[ "$REPLY" ]]  && mv "${f[l]}" "${PWD}/${REPLY}"; refresh; get_dir ;;
-        d) printf '\e[999B\e[?25h'; read -n 1 -rp "trash ${f[l]##*/}? [y/n]: " y
-           [[ "$y" =~ y ]] && mv "${f[l]}" ~/.cache/fff/bin/; ((l--)); refresh
-           get_dir ;;
+        r|d|/) prompt "$1" ;;
+        t) open ~/.cache/fff/bin ;;
 
         B|j) ((l=l==c-1?l:++l,j!=c&&l==j-m/2))&&((k=k>=j?k:++k,j=j<c?++j:j)) ;;
         A|k) ((l=l<1?l:--l,k>0&&l==k+m/2-2))&&((k=k<=j?k>0?--k:0:j,j=j>0?--j:j))
