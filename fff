@@ -59,8 +59,8 @@ open() {
 
 key() {
     case "${1: -1}" in
-        C|l|"") l2[((n=n<0?0:++n))]="$l"; open "${f[l]}" ;;
-        D|h)    open "${PWD%/*}"; ((l=l2[n--])); refresh ;;
+        C|l|"") l2[((n=n<0?0:++n))]="$l:$k"; open "${f[l]}" ;;
+        D|h)    open "${PWD%/*}"; ((l=${l2[n]/:*},k=${l2[n--]/*:})); refresh ;;
         g) refresh; ((l=0,k=0,j=m)) ;;
         G) ((j==c))||((k=c-m,j=c,l=c-1)); f_print ;;
         .) a=(u s); shopt -"${a[((h=h>0?0:++h))]}" dotglob; get_dir; refresh ;;
