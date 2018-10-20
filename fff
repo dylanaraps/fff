@@ -76,7 +76,7 @@ main() {
     shopt -s nocaseglob nullglob
     refresh; get_dir
 
-    trap $'printf \'\e[2J\e[?7h\e[?25h\'' EXIT
+    trap $'printf \'\e[2J\e[?7h\e[?25h\'; cd $PWD; exec $SHELL' EXIT
     trap  'refresh; f_print' SIGWINCH
 
     for ((;;)); { f_print; read -rs -n 1; key "$REPLY"; }
