@@ -17,7 +17,7 @@ A simple file manager written in `bash`.
 - `bash`
 - program handling (non-text): `xdg-open`
 - copying: `cp`
-- moving/renaming/trash: `mv`
+- moving, renaming, trash: `mv`
 
 ## Running
 
