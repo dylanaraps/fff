@@ -56,6 +56,17 @@ open() {
     fi
 }
 
+sel() {
+    case "${f[l]}" in
+        "$co") co= ;;
+        *) co="${f[l]}" ;;
+    esac
+    case "$1" in
+        y) pr=(cp -r) ;;
+        m) pr=(mv) ;;
+    esac
+}
+
 key() {
     case "${1: -1}" in
         C|l|"") l2[((n=n<0?0:++n))]="$l:$k"; open "${f[l]}" ;;
@@ -69,8 +80,8 @@ key() {
              [[ "$REPLY" ]] && { f=("$PWD"/"$REPLY"*); PWD="${PWD/\/\.}/."; }
              l=0; refresh; f_print ;;
 
-        y) if [[ "${f[l]}" == "$co" ]]; then co=; else co="${f[l]}"; fi ;;
-        p) [[ "$co" ]] && cp -r "$co" "$PWD" && { refresh; get_dir; co=; } ;;
+        y|m) sel "${1: -1}" ;;
+        p) [[ $co ]] && "${pr[@]}" "$co" "$PWD" && { refresh; get_dir; co=; } ;;
         r) printf '\e[999B\e[?25h'; read -rp "rename ${f[l]##*/}: "
            [[ "$REPLY" ]] && mv "${f[l]}" "${PWD}/${REPLY}"; refresh; get_dir ;;
 
