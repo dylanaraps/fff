@@ -6,7 +6,7 @@ refresh() {
     printf '\e[?7l\e[?25l\e[2J\e[H'
     shopt -s checkwinsize; (:;:)
     [[ -z "${LINES:-$COLUMNS}" ]] && read -r LINES COLUMNS < <(stty size)
-    ((j=LINES-3,m=j,l=0,k=0))
+    ((m=LINES-3,j=m,k=0,l=0))
 }
 
 get_dir() {
@@ -28,7 +28,7 @@ f_print() {
     }
 
     printf '\e[2m\e[%s;H\e[K\n\e[K%b\e[m\e[H' \
-           "$((LINES-2))" "${PWD/\/\//\/} (${l:-1}/$((c-1)))"
+           "$((LINES-2))" "${PWD/\/\//\/} (${l:-1}/$((c-1))) $j $k $l"
 }
 
 open() {
@@ -58,11 +58,11 @@ open() {
 
 key() {
     case "${1: -1}" in
-        B|j) ((l==c-1))||((l++));((j==c))||((k=k>=j?k:++k,j=j<c?++j:j)) ;;
-        A|k) ((l==0))||((l--));((k==0))||((k=k<=j?k>0?--k:0:j,j=j>0?--j:j)) ;;
+        B|j) ((l==c-1))||((l++));((j!=c&&l==j-m/2))&&((k=k>=j?k:++k,j=j<c?++j:j)) ;;
+        A|k) ((l==0))||((l--));((k!=0&&l==k+m/2-2))&&((k=k<=j?k>0?--k:0:j,j=j>0?--j:j)) ;;
         C|l|"") open "${f[l]}" ;;
         D|h)    open "${PWD%/*}" ;;
-        g) refresh ;;
+        g) refresh; ((l=0,k=0,j=m)) ;;
         G) ((j==c))||((k=c-m,j=c,l=c-1)); f_print ;;
         .) a=(u s); shopt -"${a[((h=h>0?0:++h))]}" dotglob; get_dir; refresh ;;
     esac
