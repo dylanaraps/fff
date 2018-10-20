@@ -28,7 +28,7 @@ f_print() {
     }
 
     printf '\e[2m\e[%s;H\e[K\n\e[K%b\e[m\e[H' \
-           "$((LINES-2))" "${PWD/\/\//\/} (${l:-1}/$((c-1))) $j $k $l"
+           "$((LINES-2))" "${PWD/\/\//\/} (${l:-1}/$((c-1)))"
 }
 
 open() {
@@ -58,12 +58,17 @@ open() {
 
 key() {
     case "${1: -1}" in
-        B|j) ((l=l==c-1?l:++l));((j!=c&&l==j-m/2))&&((k=k>=j?k:++k,j=j<c?++j:j)) ;;
-        A|k) ((l=l==0?l:--l));((k!=0&&l==k+m/2-2))&&((k=k<=j?k>0?--k:0:j,j=j>0?--j:j)) ;;
+        B|j) ((l=l==c-1?l:++l))
+             ((j!=c&&l==j-m/2))&&((k=k>=j?k:++k,j=j<c?++j:j)) ;;
+        A|k) ((l=l==0?l:--l))
+             ((k!=0&&l==k+m/2-2))&&((k=k<=j?k>0?--k:0:j,j=j>0?--j:j)) ;;
+
         C|l|"") open "${f[l]}" ;;
         D|h)    open "${PWD%/*}" ;;
+
         g) refresh; ((l=0,k=0,j=m)) ;;
         G) ((j==c))||((k=c-m,j=c,l=c-1)); f_print ;;
+
         .) a=(u s); shopt -"${a[((h=h>0?0:++h))]}" dotglob; get_dir; refresh ;;
     esac
 }
