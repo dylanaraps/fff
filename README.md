@@ -4,7 +4,7 @@
 
 A simple file manager written in `bash`.
 
-- Fucking Fast
+- It's Fucking Fast 🚀
 - Minimal (*<100 lines of bash*)
 - Smooth Scrolling (*Using vim keybindings.*)
 - Basic Search
