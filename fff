@@ -15,20 +15,17 @@ get_dir() {
         [[ -d "$p" ]] && d+=("$p")
         [[ -f "$p" ]] && f+=("$p")
     done
-    f=("${d[@]}" "${f[@]}")
-    f_print
+    f=("${d[@]}" "${f[@]}"); f_print
 }
 
 f_print() {
     c="${#f[@]}"
-
     for((i=${k:=0};i<(j=j>c?c:j);i++));{
         path="${f[i]##*/}"
         [[ -d "${f[i]}" ]]           && path="\\e[1m\\e[31m${path}/\\e[m"
         [[ "${f[i]}" == "${f[l]}" ]] && path="\\e[7m${path}\\e[m"
         printf '\e[K%b\n' "$path"
     }
-
     printf '\e[2m\e[%s;H\e[K\n\e[K%b\e[m\e[H' "$((LINES-2))" \
            "${PWD/\/\//\/} (${l:-1}/$((c-1)))"
 }
@@ -49,7 +46,7 @@ open() {
             svg|dwg|dxf|gpx|kml|kmz|ods|xls|xlsx|ics|vcf|ppt|odp|3g2|3gp|aaf|\
             asf|avchd|avi|drc|flv|m2v|m4p|m4v|mkv|mng|mov|mp2|mp4|mpe|mpeg|\
             mpg|mpv|mxf|nsv|ogg|ogv|ogm|qt|rm|rmvb|roq|srt|svi|vob|webm|wmv|\
-            doc|docx|ebook|msg|odt|pages|pdf|rtf|wpd|wps)
+            doc|docx|ebook|msg|odt|pages|pdf|rtf|wpd|wps|part)
                nohup xdg-open "$1" >/dev/null 2>&1 &
             ;;
 
@@ -77,8 +74,7 @@ key() {
 
 main() {
     shopt -s nocaseglob nullglob
-    refresh
-    get_dir
+    refresh; get_dir
 
     trap $'printf \'\e[2J\e[?7h\e[?25h\'' EXIT
     trap  'refresh; f_print' SIGWINCH
