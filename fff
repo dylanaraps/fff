@@ -6,7 +6,7 @@ refresh() {
     printf '\e[?7l\e[?25l\e[2J\e[H'
     shopt -s checkwinsize; (:;:)
     [[ -z "${LINES:-$COLUMNS}" ]] && read -r LINES COLUMNS < <(stty size)
-    ((m=LINES-3,j=m,k=0,l=0))
+    ((m=LINES-3,j=l+m,k=j-m))
 }
 
 get_dir() {
