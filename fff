@@ -56,17 +56,6 @@ open() {
     fi
 }
 
-sel() {
-    case "${f[l]}" in
-        "$co") co= ;;
-        *) co="${f[l]}" ;;
-    esac
-    case "$1" in
-        y) pr=(cp -r) ;;
-        m) pr=(mv) ;;
-    esac
-}
-
 key() {
     case "${1: -1}" in
         C|l|"") l2[((n=n<0?0:++n))]="$l:$k"; open "${f[l]}" ;;
@@ -74,18 +63,21 @@ key() {
 
         g) l=0; refresh ;;
         G) ((j==c))||((k=c-m,j=c,l=c-1)); f_print ;;
+        .) a=(u s); shopt -"${a[((h=h>0?0:++h))]}" dotglob; refresh; get_dir;;
 
-        .) a=(u s); shopt -"${a[((h=h>0?0:++h))]}" dotglob; get_dir; refresh ;;
         '/') printf '\e[999B\e[?25h'; read -rp "/";
              [[ "$REPLY" ]] && { f=("$PWD"/"$REPLY"*); PWD="${PWD/\/\.}/."; }
              l=0; refresh; f_print ;;
 
-        y|m) sel "${1: -1}" ;;
+        y) [[ "$co" != "${f[l]}" ]] && { co="${f[l]}"; pr=(cp -r); } || co= ;;
+        m) [[ "$co" != "${f[l]}" ]] && { co="${f[l]}"; pr=(mv); } || co= ;;
         p) [[ $co ]] && "${pr[@]}" "$co" "$PWD" && { refresh; get_dir; co=; } ;;
+
         r) printf '\e[999B\e[?25h'; read -rp "rename ${f[l]##*/}: "
-           [[ "$REPLY" ]] && mv "${f[l]}" "${PWD}/${REPLY}"; refresh; get_dir ;;
+           [[ "$REPLY" ]]  && mv "${f[l]}" "${PWD}/${REPLY}"; refresh; get_dir ;;
         d) printf '\e[999B\e[?25h'; read -n 1 -rp "trash ${f[l]##*/}? [y/n]: " y
-           [[ "$y" =~ y ]] && mv "${f[l]}" ~/.cache/fff/bin/; refresh; get_dir ;;
+           [[ "$y" =~ y ]] && mv "${f[l]}" ~/.cache/fff/bin/; ((l--)); refresh
+           get_dir ;;
 
         B|j) ((l=l==c-1?l:++l,j!=c&&l==j-m/2))&&((k=k>=j?k:++k,j=j<c?++j:j)) ;;
         A|k) ((l=l<1?l:--l,k>0&&l==k+m/2-2))&&((k=k<=j?k>0?--k:0:j,j=j>0?--j:j))
@@ -97,7 +89,7 @@ main() {
     mkdir -p ~/.cache/fff/bin/
     refresh; get_dir
 
-    trap $'printf \'\e[2J\e[?7h\e[?25h\'; cd $PWD; exec $SHELL' EXIT
+    trap $'printf \'\e[2J\e[?7h\e[?25h\'; cd "$PWD"; exec "$SHELL"' EXIT
     trap  'refresh; f_print' SIGWINCH
 
     for ((;;)); { f_print; read -rs -n 1; key "$REPLY"; }
