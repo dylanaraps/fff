@@ -15,11 +15,13 @@ get_dir() {
         [[ -d "$p" ]] && d+=("$p")
         [[ -f "$p" ]] && f+=("$p")
     done
-    f=("${d[@]}" "${f[@]}"); c="${#f[@]}"
+    f=("${d[@]}" "${f[@]}")
     f_print
 }
 
 f_print() {
+    c="${#f[@]}"
+
     for((i=${k:=0};i<(j=j>c?c:j);i++));{
         path="${f[i]##*/}"
         [[ -d "${f[i]}" ]]           && path="\\e[1m\\e[31m${path}/\\e[m"
@@ -27,14 +29,13 @@ f_print() {
         printf '\e[K%b\n' "$path"
     }
 
-    printf '\e[2m\e[%s;H\e[K\n\e[K%b\e[m\e[H' \
-           "$((LINES-2))" "${PWD/\/\//\/} (${l:-1}/$((c-1)))"
+    printf '\e[2m\e[%s;H\e[K\n\e[K%b\e[m\e[H' "$((LINES-2))" \
+           "${PWD/\/\//\/} (${l:-1}/$((c-1)))"
 }
 
 open() {
     if [[ -d "${1:-/}" ]]; then
-        ((l=0,k=0,j=m))
-        refresh
+        l=0; refresh
         PWD="${1:-/}"
         get_dir
 
@@ -61,15 +62,21 @@ key() {
     case "${1: -1}" in
         C|l|"") l2[((n=n<0?0:++n))]="$l:$k"; open "${f[l]}" ;;
         D|h)    open "${PWD%/*}"; ((l=${l2[n]/:*},k=${l2[n--]/*:})); refresh ;;
-        g) refresh; ((l=0,k=0,j=m)) ;;
+
+        g) l=0; refresh ;;
         G) ((j==c))||((k=c-m,j=c,l=c-1)); f_print ;;
+
         .) a=(u s); shopt -"${a[((h=h>0?0:++h))]}" dotglob; get_dir; refresh ;;
+        '/') printf '\e[999B\e[?25h'; read -rp "/"; f=("$PWD"/"$REPLY"*);
+             l=0; refresh; f_print; PWD="${PWD/\/\.}/." ;;
+
         B|j) ((l=l==c-1?l:++l,j!=c&&l==j-m/2))&&((k=k>=j?k:++k,j=j<c?++j:j)) ;;
         A|k) ((l=l<1?l:--l,k>0&&l==k+m/2-2))&&((k=k<=j?k>0?--k:0:j,j=j>0?--j:j))
     esac
 }
 
 main() {
+    shopt -s nocaseglob nullglob
     refresh
     get_dir
 
