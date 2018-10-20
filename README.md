@@ -27,7 +27,9 @@ l: go to child dir
 
 g: go to top
 G: go to bottom
-.: toggle hidden files.
+
+.: toggle hidden files
+/: search
 
 down:  scroll down
 up:    scroll up
