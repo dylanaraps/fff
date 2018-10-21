@@ -39,10 +39,8 @@ hist() {
 }
 
 open() {
-    if [[ -d ${1:-/} ]]; then
-        l=0; refresh; PWD="${1:-/}"; get_dir; f_print
-
-    elif [[ -f $1 ]]; then
+    [[ -d $1/ ]] && { l=0; refresh; PWD="${1:-/}"; get_dir; f_print; }
+    [[ -f $1  ]] && {
         case "${1##*.}" in
             7z|a|apk|ar|bz2|cab|cpio|dmg|egg|gz|iso|jar|lha|mar|pea|rar|\
             rpm|s7z|shar|tar|tbz2|tgz|tlz|war|whl|xpi|zip|zipx|deb|xz|pak|\
@@ -58,7 +56,7 @@ open() {
 
             *) "${EDITOR:-vi}" "$1"; printf '\e[?25l' ;;
         esac
-    fi
+    }
 }
 
 prompt() {
