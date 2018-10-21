@@ -2,11 +2,11 @@
 
 <a href="https://asciinema.org/a/YoM4m6f7m63IK5Athb2F9AAXV" target="_blank"><img src="https://asciinema.org/a/B2LRFD6q26E7DhftTkeHLAUMT.png" alt="img" height="300px" align="right"/></a>
 
-A simple file manager written in `bash`.
+A [WIP] simple file manager written in `bash`.
 
 - It's Fucking Fast 🚀
 - Minimal (*~100 lines of bash*)
-- Smooth Scrolling (*Using vim keybindings.*)
+- Smooth Scrolling (*using vim keybindings.*)
 - File Operations (*copy, paste, rename, cut, delete*)
 - Basic Search
 - CD on Exit
