@@ -47,7 +47,9 @@ up:    scroll up
 left:  go to parent dir
 right: go to child dir
 
+f: new file
 n: new dir
+
 y: mark copy
 m: mark move
 p: paste/move
