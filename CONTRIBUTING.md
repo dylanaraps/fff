@@ -1,7 +1,20 @@
 # CONTRIBUTING
 
+<!-- vim-markdown-toc GFM -->
 
-# Variables
+* [Index](#index)
+    * [Variables](#variables)
+    * [Functions](#functions)
+    * [Escape Sequences](#escape-sequences)
+    * [Traps](#traps)
+* [Components](#components)
+    * [Scroll](#scroll)
+
+<!-- vim-markdown-toc -->
+
+# Index
+
+## Variables
 
 | var     | meaning |
 | ------- | ------- |
@@ -17,7 +30,7 @@
 | `l2[@]` | history of parent dir nest level. |
 
 
-# Functions
+## Functions
 
 | func        | meaning |
 | ----------- | ------- |
@@ -32,7 +45,7 @@
 | `main()`    | set traps and start loop. |
 
 
-# Escape Sequences
+## Escape Sequences
 
 | sequence    | meaning |
 | ----------- | ------- |
@@ -50,10 +63,14 @@
 | `\e[K`      | clear from cursor position to end of line. |
 | `\e[999B`   | move cursor `999` lines down (go-to-bottom). |
 
-# TRAPS
+## Traps
 
 | trap        | meaning |
 | ----------- | ------- |
 | `SIGWINCH`  | on terminal resize. |
 | `EXIT`      | on terminal exit. |
 
+
+# Components
+
+## Scroll
