@@ -23,11 +23,11 @@ f_print() {
         ((c<=0)) && { get_dir; f_print; return; } || path="${f[i]##*/}"
         [[ -d "${f[i]}" ]] && path="\\e[1m\\e[3${FFF_COLOR:-1}m${path}/\\e[m"
         [[ "${f[i]}" == "${f[l]}" ]] && path="\\e[7m${path}\\e[m"
-        [[ "$co" == "${f[i]}" ]] && path="\\e[7m\\e[40m${path}\\e[m"
+        [[ "${co[*]}" == *"${f[i]}"* ]] && path="\\e[7m\\e[40m${path}\\e[m"
         printf '\e[K%b\n' "$path"
     }
     printf '\e[2m\e[%s;H\e[K\n\e[K%b\e[m\e[H' "$((LINES-2))" \
-           "${PWD/\/\//\/} (${l:-1}/$((c-1))) ${co:+$co* [p]}"
+           "${PWD/\/\//\/} (${l:-1}/$((c-1)))"
 }
 
 hi() {
@@ -81,9 +81,12 @@ key() {
         G) ((l=c-1)); refresh; ((k=k<0?0:k)) ;;
         .) a=(u s); shopt -"${a[((h=h>0?0:++h))]}" dotglob; refresh; get_dir ;;
 
-        y) [[ "$co" != "${f[l]}" ]] && { co="${f[l]}"; pr=(cp -r); } || co= ;;
-        m) [[ "$co" != "${f[l]}" ]] && { co="${f[l]}"; pr=(mv); } || co= ;;
-        p) [[ $co ]] && "${pr[@]}" "$co" "$PWD" && { refresh; get_dir; co=; } ;;
+        y) [[ ${co[*]} != *"${f[l]}"* ]] && \
+           { co+=("${f[l]}"); pr=(cp -rt); } || co=("${co[@]//${f[l]}}") ;;
+        m) [[ ${co[*]} != *"${f[l]}"* ]] && \
+           { co+=("${f[l]}"); pr=(mv -t); }  || co=("${co[@]//${f[l]}}") ;;
+        p) [[ ${co[*]} ]] && { "${pr[@]}" "$PWD" "${co[@]}" 2>/dev/null
+           refresh; get_dir; co=(); } ;;
 
         r|d|/) prompt "$1" ;;
         \~) g="$PWD"; hi; open ~/ ;;
