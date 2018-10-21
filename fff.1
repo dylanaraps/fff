@@ -1,0 +1,92 @@
+.TH FFF "1" "October 2018" "fff-dev" "User Commands"
+.SH NAME
+fff \- :rocket: fucking fast file-manager
+.SH SYNOPSIS
+.B fff
+.SH DESCRIPTION
+A [WIP] simple file manager written in bash. It's Fucking Fast, Minimal (~100 lines of bash), Smooth Scrolling (using vim keybindings.), File Operations (copy, paste, rename, cut, delete), Basic Search, CD on Exit
+.PP
+.SH KEYBINDINGS
+.TP
+
+\fBj\fR
+scroll down
+.TP
+\fBk\fR
+scroll up
+.TP
+\fBh\fR
+go to parent dir
+.TP
+\fBl\fR
+go to child dir
+.TP
+
+\fBenter\fR
+go to child dir
+.TP
+
+\fBg\fR
+go to top
+.TP
+\fBG\fR
+go to bottom
+.TP
+
+\fB.\fR
+toggle hidden files
+.TP
+\fB/\fR
+search
+.TP
+\fBt\fR
+go to trash
+.TP
+\fB~\fR
+go to home
+.TP
+
+\fBdown\fR
+scroll down
+.TP
+\fBup\fR
+scroll up
+.TP
+\fBleft\fR
+go to parent dir
+.TP
+\fBright\fR
+go to child dir
+.TP
+
+\fBy\fR
+mark copy
+.TP
+\fBm\fR
+mark move
+.TP
+\fBp\fR
+paste/move
+.TP
+\fBr\fR
+rename
+.TP
+\fBd\fR
+trash (~/.cache/fff/bin/)
+
+.PP
+.SH CUSTOMIZATION
+.TP
+
+\fBDirectory color [0-9]\fR
+export FFF_COL1=2
+.TP
+\fBStatus color [0-9]\fR
+export FFF_COL2=7
+.TP
+\fBSelection color [0-9] (copied/moved files)\fR
+export FFF_COL3=6
+.TP
+\fBText Editor\fR
+export EDITOR="cmd"
+.TP
