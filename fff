@@ -42,16 +42,24 @@ open() {
     [[ -d $1/ ]] && { l=0; refresh; PWD="${1:-/}"; get_dir; f_print; }
     [[ -f $1  ]] && {
         case "${1##*.}" in
-            7z|a|apk|ar|bz2|cab|cpio|dmg|egg|gz|iso|jar|lha|mar|pea|rar|\
-            rpm|s7z|shar|tar|tbz2|tgz|tlz|war|whl|xpi|zip|zipx|deb|xz|pak|\
-            crx|exe|msi|bin|aac|aiff|ape|au|flac|gsm|it|m3u|m4a|mid|mod|mp3|\
-            mpa|pls|ra|s3m|sid|wav|wma|xm|eot|otf|ttf|woff|woff2|3dm|3ds|max|\
-            bmp|dds|gif|jpg|jpeg|png|ico|psd|xcf|tga|thm|tif|tiff|yuv|ai|eps|ps|\
-            svg|dwg|dxf|gpx|kml|kmz|ods|xls|xlsx|ics|vcf|ppt|odp|3g2|3gp|aaf|\
-            asf|avchd|avi|drc|flv|m2v|m4p|m4v|mkv|mng|mov|mp2|mp4|mpe|mpeg|\
-            mpg|mpv|mxf|nsv|ogg|ogv|ogm|qt|rm|rmvb|roq|srt|svi|vob|webm|wmv|\
-            doc|docx|ebook|msg|odt|pages|pdf|rtf|wpd|wps|part)
-               nohup xdg-open "$1" >/dev/null 2>&1 &
+            3dm|3ds|3g2|3gp|7z|a|aac|adp|ai|aif|aiff|alz|ape|apk|ar|arj|asf|au|\
+            avi|bak|baml|bh|bin|bk|bmp|btif|bz2|bzip2|cab|caf|cgm|class|cmx|\
+            cpio|cr2|csv|cur|dat|dcm|deb|dex|djvu|dll|dmg|dng|doc|docm|docx|dot|\
+            dotm|dra|DS_Store|dsk|dts|dtshd|dvb|dwg|dxf|ecelp4800|ecelp7470|\
+            ecelp9600|egg|eol|eot|epub|exe|f4v|fbs|fh|fla|flac|fli|flv|fpx|fst|\
+            fvt|g3|gh|gif|graffle|gz|gzip|h261|h263|h264|icns|ico|ief|img|ipa|\
+            iso|jar|jpeg|jpg|jpgv|jpm|jxr|key|ktx|lha|lib|lvp|lz|lzh|lzma|lzo|\
+            m3u|m4a|m4v|mar|mdi|mht|mid|midi|mj2|mka|mkv|mmr|mng|mobi|mov|movie|\
+            mp3|mp4|mp4a|mpeg|mpg|mpga|mxu|nef|npx|numbers|o|oga|ogg|ogv|otf|\
+            part|pages|pbm|pcx|pdb|pdf|pea|pgm|pic|png|pnm|pot|potm|potx|ppa|\
+            ppam|ppm|pps|ppsm|ppsx|ppt|pptm|pptx|psd|pya|pyc|pyo|pyv|qt|rar|ras|\
+            raw|resources|rgb|rip|rlc|rmf|rmvb|rtf|rz|s3m|s7z|scpt|sgi|shar|sil|\
+            sketch|slk|smv|so|stl|sub|swf|tar|tbz|tbz2|tga|tgz|thmx|tif|tiff|\
+            tlz|ttc|ttf|txz|udf|uvh|uvi|uvm|uvp|uvs|uvu|viv|vob|war|wav|wax|\
+            wbmp|wdp|weba|webm|webp|whl|wim|wm|wma|wmv|wmx|woff|woff2|wrm|wvx|\
+            xbm|xif|xla|xlam|xls|xlsb|xlsm|xlsx|xlt|xltm|xltx|xm|xmind|xpi|xpm|\
+            xwd|xz|z|zip|zipx)
+                nohup xdg-open "$1" >/dev/null 2>&1 &
             ;;
 
             *) "${EDITOR:-vi}" "$1"; printf '\e[?25l' ;;
