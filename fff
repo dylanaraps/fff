@@ -113,10 +113,10 @@ main() {
     mkdir -p ~/.cache/fff/bin/
     [[ -d "$1" ]] && path "$1"; refresh; get_dir; f_print
 
-    trap "refresh; printf '\\e[?25h\\e[?7h'" EXIT
+    trap "refresh; printf '\\e[m\\e[?25h\\e[?7h'" EXIT
     trap 'refresh; f_print' SIGWINCH
 
-    for ((;;)); { read -rs -n 1; key "$REPLY"; }
+    for ((;;)); { read -rsn 1; key "$REPLY"; }
 }
 
 main "$@"
