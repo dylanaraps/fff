@@ -11,9 +11,7 @@ refresh() {
 
 get_dir() {
     d=(); f=()
-    for p in "$PWD"/*; do
-        [[ -d $p ]] && d+=("$p") || f+=("$p")
-    done
+    for p in "$PWD"/*; do [[ -d $p ]] && d+=("$p") || f+=("$p"); done
     f=("${d[@]}" "${f[@]}")
 }
 
