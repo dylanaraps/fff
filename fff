@@ -12,7 +12,7 @@ refresh() {
 get_dir() {
     d=(); f=()
     for p in "$PWD"/*; do
-        [[ -d "$p" ]] && d+=("$p") || f+=("$p")
+        [[ -d $p ]] && d+=("$p") || f+=("$p")
     done
     f=("${d[@]}" "${f[@]}")
 }
@@ -35,10 +35,10 @@ hi() {
 }
 
 open() {
-    if [[ -d "${1:-/}" ]]; then
+    if [[ -d ${1:-/} ]]; then
         l=0; refresh; PWD="${1:-/}"; get_dir; f_print
 
-    elif [[ -f "$1" ]]; then
+    elif [[ -f $1 ]]; then
         case "${1##*.}" in
             7z|a|apk|ar|bz2|cab|cpio|dmg|egg|gz|iso|jar|lha|mar|pea|rar|\
             rpm|s7z|shar|tar|tbz2|tgz|tlz|war|whl|xpi|zip|zipx|deb|xz|pak|\
@@ -60,11 +60,11 @@ open() {
 prompt() {
     printf '\e[999B\e[?25h'
     case "${1: -1}" in
-        r) read -rp "rename ${f[l]##*/}: "; [[ "$REPLY" ]] && \
+        r) read -rp "rename ${f[l]##*/}: "; [[ $REPLY ]] && \
            mv "${f[l]}" "$PWD/$REPLY" ;;
-        d) read -n 1 -rp "trash ${f[l]##*/}? [y/n]: " y; [[ "$y" =~ y ]] && \
+        d) read -n 1 -rp "trash ${f[l]##*/}? [y/n]: " y; [[ $y =~ y ]] && \
            mv "${f[l]}" ~/.cache/fff/bin/; ((l=l==0?l:--l)) ;;
-        /) g="$PWD"; read -rp /; [[ "$REPLY" ]] && \
+        /) g="$PWD"; read -rp /; [[ $REPLY ]] && \
            f=("$PWD"/*"$REPLY"*); l=0; refresh; f_print; return
     esac
     refresh; get_dir
@@ -74,22 +74,22 @@ key() {
     case "${1: -1}" in
         C|l|"") hi; open "${f[l]}"; g= ;;
         D|h) open "${g:-${PWD%/*}}";
-             [[ "$g" ]] || ((l=${l2[n]/:*},k=${l2[n--]/*:}))
-             [[ "$PWD" == / ]] && l=0; g=; refresh ;;
+             [[ $g ]] || ((l=${l2[n]/:*},k=${l2[n--]/*:}))
+             [[ $PWD == / ]] && l=0; g=; refresh ;;
 
         g) l=0; refresh ;;
         G) ((l=c-1)); refresh; ((k=k<0?0:k)) ;;
         .) a=(u s); shopt -"${a[((h=h>0?0:++h))]}" dotglob; refresh; get_dir ;;
 
-        y) [[ "$co" != "${f[l]}" ]] && { co="${f[l]}"; pr=(cp -r); } || co= ;;
-        m) [[ "$co" != "${f[l]}" ]] && { co="${f[l]}"; pr=(mv); } || co= ;;
+        y) [[ $co != "${f[l]}" ]] && { co="${f[l]}"; pr=(cp -r); } || co= ;;
+        m) [[ $co != "${f[l]}" ]] && { co="${f[l]}"; pr=(mv); } || co= ;;
         p) [[ $co ]] && "${pr[@]}" "$co" "$PWD" && { refresh; get_dir; co=; } ;;
 
         r|d|/) prompt "$1" ;;
         \~) g="$PWD"; hi; open ~/ ;;
         t)  g="$PWD"; hi; open ~/.cache/fff/bin ;;
 
-        B|j) ((l=l==c-1?l:++l,j!=c&&l==j-m/2))&&((k=k>=j?k:++k,j=j<c?++j:j)) ;;
+        B|j) ((l=l==c-1?l:++l,j!=c&&l==j-m/2+1))&&((k=k>=j?k:++k,j=j<c?++j:j)) ;;
         A|k) ((l=l<1?l:--l,k>0&&l==k+m/2-2))&&((k=k<=j?k>0?--k:0:j,j=j>0?--j:j))
     esac
 }
