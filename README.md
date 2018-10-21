@@ -63,6 +63,9 @@ export FFF_COL1=2
 
 # Status color [0-9]
 export FFF_COL2=7
+
+# Text Editor
+export EDITOR="cmd"
 ```
 
 ## Why?
