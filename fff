@@ -11,17 +11,17 @@ refresh() {
 
 get_dir() {
     d=(); f=()
-    for p in "$PWD"/*; do [[ -d $p ]] && d+=("$p") || f+=("$p"); done
+    for p in "$PWD"/*; do [[ -d $p ]] && d+=("$p"/) || f+=("$p"); done
     f=("${d[@]}" "${f[@]}")
 }
 
 f_print() {
     for((i=${k:=0};i<(c=${#f[@]},j=j>c?c:j);i++));{
-        ((c<=0)) && { get_dir; f_print; return; } || path="${f[i]##*/}"
-        [[ -d ${f[i]} ]] && { fo+='\e[1m\e[3'"${FFF_COL1:-2}m"; path+=/; }
+        ((c<=0)) && { get_dir; f_print; return; } || path="${f[i]%/}"
+        [[ -d ${f[i]} ]] && fo+='\e[1m\e[3'"${FFF_COL1:-2}m"
         [[ ${f[i]} == "${f[l]}" ]] && fo+='\e[7m'
         [[ $co == "${f[i]}" ]] && { fo+='\e[1m\e[3'"${FFF_COL:-6}m"'\e[7m'; }
-        printf '\e[K%b%s\e[m\n' "$fo" "$path"; fo=
+        printf '\e[K%b%s\e[m\n' "$fo" "${path##*/}"; fo=
     }
     printf '\e[3%sm\e[%s;H\e[K\n\e[K%s\e[m\e[H' "${FFF_COL2:-7}" "$((LINES-2))" \
            "${PWD/\/\//\/} (${l:-1}/$((c-1))) ${co:+${pr[*]}: ${co##*/} [p]}"
@@ -39,7 +39,7 @@ hist() {
 }
 
 open() {
-    [[ -d $1/ ]] && { l=0; refresh; PWD="${1:-/}"; get_dir; f_print; }
+    [[ -d $1/ ]] && { l=0; refresh; path "${1:-/}"; get_dir; f_print; }
     [[ -f $1  ]] && {
         case "${1##*.}" in
             3dm|3ds|3g2|3gp|7z|a|aac|adp|ai|aif|aiff|alz|ape|apk|ar|arj|asf|au|\
@@ -76,8 +76,12 @@ prompt() {
            mv "${f[l]}" ~/.cache/fff/bin/; ((l>0?l--:l)) ;;
         n) read -rp "mkdir: ";   [[ $REPLY ]] && mkdir -p "$PWD/$REPLY" ;;
         f) read -rp "mkfile: ";  [[ $REPLY ]] && : > "$PWD/$REPLY" ;;
-        /) g="$PWD"; read -rp /; [[ $REPLY ]] && \
-           f=("$PWD"/*"$REPLY"*); l=0; refresh; f_print; return
+        /) type -p fzf &>/dev/null && {
+           IFS=$'\n' mat="$(fzf +m --inline-info --header="" --prompt=/ \
+           --height=1 <<< "$PWD"$'\n'"${f[*]//'//'/'/'}")";
+           open "${mat:-$PWD}"; fuzzy; refresh; f_print; return; }
+           g="$PWD"; read -rp /; [[ $REPLY ]] && \
+           f=("$PWD"/*"$REPLY"*); l=0; refresh; f_print; return ;;
     esac
     refresh; get_dir
 }
