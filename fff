@@ -62,7 +62,9 @@ prompt() {
            mv "${f[l]}" "$PWD/$REPLY" ;;
         d) read -n 1 -rp "trash ${f[l]##*/}? [y/n]: " y; [[ $y =~ y ]] && \
            mv "${f[l]}" ~/.cache/fff/bin/; ((l=l==0?l:--l)) ;;
-        /) g="$PWD"; read -rp /; [[ $REPLY ]] && \
+        n) read -rp "mkdir: "; [[ "$REPLY" ]]  && mkdir -p "$PWD/$REPLY" ;;
+        f) read -rp "mkfile: "; [[ "$REPLY" ]] && : > "$PWD/$REPLY" ;;
+        /) g="$PWD"; read -rp /; [[ $REPLY ]]  && \
            f=("$PWD"/*"$REPLY"*); l=0; refresh; f_print; return
     esac
     refresh; get_dir
@@ -83,9 +85,10 @@ key() {
         m) [[ $co != "${f[l]}" ]] && { co="${f[l]}"; pr=(mv); } || co= ;;
         p) [[ $co ]] && "${pr[@]}" "$co" "$PWD" && { refresh; get_dir; co=; } ;;
 
-        r|d|/) prompt "$1" ;;
+        r|d|n|/) prompt "$1" ;;
         \~) g="$PWD"; hist; open ~/ ;;
         t)  g="$PWD"; hist; open ~/.cache/fff/bin ;;
+        q) exit ;;
 
         B|j) ((l=l==c-1?l:++l,j!=c&&l==j-m/2+1))&&((k=k>=j?k:++k,j=j<c?++j:j)) ;;
         A|k) ((l=l<1?l:--l,k>0&&l==k+m/2-2))&&((k=k<=j?k>0?--k:0:j,j=j>0?--j:j))
@@ -97,7 +100,7 @@ main() {
     mkdir -p ~/.cache/fff/bin/
     refresh; get_dir
 
-    trap $'printf \'\e[2J\e[?7h\e[?25h\'; cd "$PWD"; exec "$SHELL"' EXIT
+    trap $'printf \'\e[2J\e[?7h\e[?25h\'' EXIT
     trap  'refresh; f_print' SIGWINCH
 
     for ((;;)); { f_print; read -rs -n 1; key "$REPLY"; }

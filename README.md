@@ -7,9 +7,8 @@ A [WIP] simple file manager written in `bash`.
 - It's Fucking Fast 🚀
 - Minimal (*~100 lines of bash*)
 - Smooth Scrolling (*using vim keybindings.*)
-- File Operations (*copy, paste, rename, cut, delete*)
+- File Operations (*copy, paste, rename, cut, etc*)
 - Basic Search
-- CD on Exit
 
 
 ## Dependencies
@@ -48,11 +47,14 @@ up:    scroll up
 left:  go to parent dir
 right: go to child dir
 
+n: new dir
 y: mark copy
 m: mark move
 p: paste/move
 r: rename
 d: trash (~/.cache/fff/bin/)
+
+q: exit
 ```
 
 ## Customization
