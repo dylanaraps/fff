@@ -14,13 +14,13 @@ get_dir() {
     for p in "$PWD"/*; do
         [[ -d "$p" ]] && d+=("$p") || f+=("$p")
     done
-    f=("${d[@]}" "${f[@]}"); f_print
+    f=("${d[@]}" "${f[@]}")
 }
 
 f_print() {
     c="${#f[@]}"
     for((i=${k:=0};i<(j=j>c?c:j);i++));{
-        ((c<=0)) && { get_dir; return; } || path="${f[i]##*/}"
+        ((c<=0)) && { get_dir; f_print; return; } || path="${f[i]##*/}"
         [[ -d "${f[i]}" ]] && path="\\e[1m\\e[3${FFF_COLOR:-1}m${path}/\\e[m"
         [[ "${f[i]}" == "${f[l]}" ]] && path="\\e[7m${path}\\e[m"
         [[ "$co" == "${f[i]}" ]] && path="\\e[7m\\e[40m${path}\\e[m"
@@ -36,8 +36,7 @@ hi() {
 
 open() {
     if [[ -d "${1:-/}" ]]; then
-        l=0; refresh
-        PWD="${1:-/}"; get_dir
+        l=0; refresh; PWD="${1:-/}"; get_dir; f_print
 
     elif [[ -f "$1" ]]; then
         case "${1##*.}" in
@@ -80,7 +79,7 @@ key() {
 
         g) l=0; refresh ;;
         G) ((l=c-1)); refresh; ((k=k<0?0:k)) ;;
-        .) a=(u s); shopt -"${a[((h=h>0?0:++h))]}" dotglob; refresh; get_dir;;
+        .) a=(u s); shopt -"${a[((h=h>0?0:++h))]}" dotglob; refresh; get_dir ;;
 
         y) [[ "$co" != "${f[l]}" ]] && { co="${f[l]}"; pr=(cp -r); } || co= ;;
         m) [[ "$co" != "${f[l]}" ]] && { co="${f[l]}"; pr=(mv); } || co= ;;
