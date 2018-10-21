@@ -22,6 +22,7 @@ A simple file manager written in `bash`.
 ## Running
 
 1. `fff`
+2. optional: `alias f="fff"`
 
 
 ## Usage
@@ -39,6 +40,8 @@ G: go to bottom
 
 .: toggle hidden files
 /: search
+t: go to trash
+~: go to home
 
 down:  scroll down
 up:    scroll up
@@ -50,6 +53,8 @@ m: mark move
 p: paste/move
 r: rename
 d: trash (~/.cache/fff/bin/)
+
+q: exit
 ```
 
 ## Why?
