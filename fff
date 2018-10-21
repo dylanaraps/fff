@@ -5,7 +5,7 @@
 refresh() {
     printf '\e[?7l\e[?25l\e[2J\e[H'
     shopt -s checkwinsize; (:;:)
-    ((LINES==0)) && read -r LINES COLUMNS < <(stty size)
+    ((LINES==0)) && read -r LINES _ < <(stty size)
     ((m=LINES-3,j=l>m/2?l>=c-m/2?c+1:l+m/2+1:m,k=k>=0?j-m:k,l=l>c?k:l))
 }
 
