@@ -51,3 +51,11 @@
 | `\e[m`      | reset text formatting. |
 | `\e[K`      | clear from cursor position to end of line. |
 | `\e[999B`   | move cursor 999 lines down (go-to-bottom). |
+
+# TRAPS
+
+| trap        | meaning |
+| ----------- | ------- |
+| `SIGWINCH`  | on terminal resize. |
+| `EXIT`      | on terminal exit. |
+
