@@ -22,11 +22,12 @@
 | `PWD`   | current dir.
 | `REPLY` | user input.
 | `f[@]`  | every dir item. |
-| `c`     | total number of dir items. |
 | `g`     | previous dir when navigating to a bookmark. |
+| `c`     | total number of dir items. |
 | `j`     | last dir item that fits on the screen. |
 | `k`     | first dir item that fits on the screen. |
-| `l`     | cursor position. |
+| `l`     | cursor position (and index to current dir item). |
+| `m`     | max number of dir items that fit on the screen. |
 | `l2[@]` | history of parent dir nest level. |
 
 
@@ -74,3 +75,12 @@
 # Components
 
 ## Scroll
+
+The scroll uses these variables for the math.
+
+| var     | meaning |
+| `c`     | total number of dir items. |
+| `j`     | last dir item that fits on the screen. |
+| `k`     | first dir item that fits on the screen. |
+| `l`     | cursor position (and index to current dir item). |
+| `m`     | max number of dir items that fit on the screen. |
