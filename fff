@@ -21,10 +21,10 @@ f_print() {
     c="${#f[@]}"
     for((i=${k:=0};i<(j=j>c?c:j);i++));{
         ((c<=0)) && { get_dir; f_print; return; } || path="${f[i]##*/}"
-        [[ -d "${f[i]}" ]] && path="\\e[1m\\e[3${FFF_COL1:-2}m${path}/\\e[m"
-        [[ "${f[i]}" == "${f[l]}" ]] && path="\\e[7m${path}\\e[m"
-        [[ "$co" == "${f[i]}" ]] && path="\\e[1m\\e[38m\\e[7m${f[i]}\\e[m"
-        printf '\e[K%b\n' "$path"
+        [[ -d ${f[i]} ]] && path="\\e[1m\\e[3${FFF_COL1:-2}m${path}/"
+        [[ ${f[i]} == "${f[l]}" ]] && path="\\e[7m${path}"
+        [[ $co == "${f[i]}" ]] && path="\\e[1m\\e[3${FFF_COL3:-6}m\\e[7m${f[i]}"
+        printf '\e[K%b\e[m\n' "$path"
     }
     printf '\e[3%sm\e[%s;H\e[K\n\e[K%b\e[m\e[H' "${FFF_COL2:-7}" "$((LINES-2))" \
            "${PWD/\/\//\/} (${l:-1}/$((c-1))) ${co:+${pr[*]}: ${co##*/} [p]}"
