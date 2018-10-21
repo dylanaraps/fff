@@ -6,7 +6,7 @@
 | var     | meaning |
 | ------- | ------- |
 | `LINES` | total lines in terminal. |
-| `PWD`   | current directory.
+| `PWD`   | current dir.
 | `REPLY` | user input.
 | `f[@]`  | every dir item. |
 | `c`     | total number of dir items. |
@@ -14,9 +14,7 @@
 | `j`     | last dir item that fits on the screen. |
 | `k`     | first dir item that fits on the screen. |
 | `l`     | cursor position. |
-| `l2[@]` | history of parent dirs (used to remember previous location). |
-| `m`     | number of lines that fit on the screen. |
-| `n`     | directory nest level. |
+| `l2[@]` | history of parent dir nest level. |
 
 
 # Functions
@@ -50,7 +48,7 @@
 | `\e[7m`     | invert text colors (`fg->bg`,`bg->fg`). |
 | `\e[m`      | reset text formatting. |
 | `\e[K`      | clear from cursor position to end of line. |
-| `\e[999B`   | move cursor 999 lines down (go-to-bottom). |
+| `\e[999B`   | move cursor `999` lines down (go-to-bottom). |
 
 # TRAPS
 
