@@ -30,7 +30,7 @@ f_print() {
            "${PWD/\/\//\/} (${l:-1}/$((c-1))) ${co:+${pr[*]}: ${co##*/} [p]}"
 }
 
-hi() {
+hist() {
     l2[((n=n<0?0:++n))]="$l:$k"
 }
 
@@ -72,7 +72,7 @@ prompt() {
 
 key() {
     case "${1: -1}" in
-        C|l|"") hi; open "${f[l]}"; g= ;;
+        C|l|"") hist; open "${f[l]}"; g= ;;
         D|h) open "${g:-${PWD%/*}}";
              [[ $g ]] || ((l=${l2[n]/:*},k=${l2[n--]/*:}))
              [[ $PWD == / ]] && l=0; g=; refresh ;;
@@ -86,8 +86,8 @@ key() {
         p) [[ $co ]] && "${pr[@]}" "$co" "$PWD" && { refresh; get_dir; co=; } ;;
 
         r|d|/) prompt "$1" ;;
-        \~) g="$PWD"; hi; open ~/ ;;
-        t)  g="$PWD"; hi; open ~/.cache/fff/bin ;;
+        \~) g="$PWD"; hist; open ~/ ;;
+        t)  g="$PWD"; hist; open ~/.cache/fff/bin ;;
 
         B|j) ((l=l==c-1?l:++l,j!=c&&l==j-m/2+1))&&((k=k>=j?k:++k,j=j<c?++j:j)) ;;
         A|k) ((l=l<1?l:--l,k>0&&l==k+m/2-2))&&((k=k<=j?k>0?--k:0:j,j=j>0?--j:j))
