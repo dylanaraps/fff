@@ -59,7 +59,7 @@ open() {
             wbmp|wdp|weba|webm|webp|whl|wim|wm|wma|wmv|wmx|woff|woff2|wrm|wvx|\
             xbm|xif|xla|xlam|xls|xlsb|xlsm|xlsx|xlt|xltm|xltx|xm|xmind|xpi|xpm|\
             xwd|xz|z|zip|zipx)
-                nohup xdg-open "$1" >/dev/null 2>&1 &
+                nohup xdg-open "$1" &>/dev/null & disown
             ;;
 
             *) "${EDITOR:-vi}" "$1"; printf '\e[?25l' ;;
@@ -83,7 +83,7 @@ prompt() {
 }
 
 key() {
-    case "${1: -1}" in
+    case "$1" in
         C|l|"") hist; open "${f[l]}"; g= ;;
         D|h) open "${g:-${PWD%/*}}";
              [[ $g ]] || ((l=${l2[n]/:*},k=${l2[n--]/*:}))
@@ -101,6 +101,9 @@ key() {
         \~) g="$PWD"; hist; open ~/ ;;
         t)  g="$PWD"; hist; open ~/.cache/fff/bin ;;
         q)  exit ;;
+
+        [1-9]) z="FFF_HOT${1}"; type "${!z%% *}" &>/dev/null && \
+               nohup ${!z} "${f[l]}" &>/dev/null & disown ;;
 
         B|j) ((l=l==c-1?l:++l,j!=c&&l==j-m/2+1))&&((k=k>=j?k:++k,j=j<c?++j:j)) ;;
         A|k) ((l=l<1?l:--l,k>0&&l==k+m/2-2))&&((k=k<=j?k>0?--k:0:j,j=j>0?--j:j))
