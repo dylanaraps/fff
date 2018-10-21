@@ -21,7 +21,7 @@ A [WIP] simple file manager written in `bash`.
 
 ## Running
 
-1. `fff`
+1. `fff` or `fff path/to/dir`, `fff ../../`, `fff /usr/share/`
 2. optional: `alias f="fff"`
 
 
