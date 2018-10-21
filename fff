@@ -23,7 +23,7 @@ f_print() {
         [[ $co == "${f[i]}" ]] && path="\\e[1m\\e[3${FFF_COL3:-6}m\\e[7m${f[i]}"
         printf '\e[K%b\e[m\n' "$path"
     }
-    printf '\e[3%sm\e[%s;H\e[K\n\e[K%b\e[m\e[H' "${FFF_COL2:-7}" "$((LINES-2))" \
+    printf '\e[3%sm\e[%s;H\e[K\n\e[K%s\e[m\e[H' "${FFF_COL2:-7}" "$((LINES-2))" \
            "${PWD/\/\//\/} (${l:-1}/$((c-1))) ${co:+${pr[*]}: ${co##*/} [p]}"
 }
 
