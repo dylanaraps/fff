@@ -53,8 +53,6 @@ m: mark move
 p: paste/move
 r: rename
 d: trash (~/.cache/fff/bin/)
-
-q: exit
 ```
 
 ## Customization
