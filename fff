@@ -92,7 +92,7 @@ key() {
         r|d|n|f|/) prompt "$1" ;;
         \~) g="$PWD"; hist; open ~/ ;;
         t)  g="$PWD"; hist; open ~/.cache/fff/bin ;;
-        q) exit ;;
+        q)  exit ;;
 
         B|j) ((l=l==c-1?l:++l,j!=c&&l==j-m/2+1))&&((k=k>=j?k:++k,j=j<c?++j:j)) ;;
         A|k) ((l=l<1?l:--l,k>0&&l==k+m/2-2))&&((k=k<=j?k>0?--k:0:j,j=j>0?--j:j))
