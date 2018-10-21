@@ -1,5 +1,6 @@
 # CONTRIBUTING
 
+
 # Variables
 
 | var     | meaning |
@@ -17,6 +18,7 @@
 | `m`     | number of lines that fit on the screen. |
 | `n`     | directory nest level. |
 
+
 # Functions
 
 | func        | meaning |
@@ -30,3 +32,22 @@
 | `prompt()`  | handle user input. |
 | `key()`     | handle key-presses. |
 | `main()`    | set traps and start loop. |
+
+
+# Escape Sequences
+
+| sequence    | meaning |
+| ----------- | ------- |
+| `\e[?7l`    | disable line wrapping. |
+| `\e[?7h`    | enable line wrapping. |
+| `\e[?25l`   | hide the cursor. |
+| `\e[?25h`   | show the cursor. |
+| `\e[2J`     | clear the terminal. |
+| `\e[H`      | move cursor to `0,0`. |
+| `\e[X;H`    | move cursor to line `X`.
+| `\e[1m`     | bold text. |
+| `\e[3Xm`    | change text color to `X`. |
+| `\e[7m`     | invert text colors (`fg->bg`,`bg->fg`). |
+| `\e[m`      | reset text formatting. |
+| `\e[K`      | clear from cursor position to end of line. |
+| `\e[999B`   | move cursor 999 lines down (go-to-bottom). |
