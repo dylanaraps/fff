@@ -85,7 +85,7 @@ key() {
         m) [[ $co != "${f[l]}" ]] && { co="${f[l]}"; pr=(mv); } || co= ;;
         p) [[ $co ]] && "${pr[@]}" "$co" "$PWD" && { refresh; get_dir; co=; } ;;
 
-        r|d|n|/) prompt "$1" ;;
+        r|d|n|f|/) prompt "$1" ;;
         \~) g="$PWD"; hist; open ~/ ;;
         t)  g="$PWD"; hist; open ~/.cache/fff/bin ;;
         q) exit ;;
@@ -100,8 +100,8 @@ main() {
     mkdir -p ~/.cache/fff/bin/
     refresh; get_dir
 
-    trap $'printf \'\e[2J\e[?7h\e[?25h\'' EXIT
-    trap  'refresh; f_print' SIGWINCH
+    trap "refresh; printf '\\e[?25h\\e[?7h'" EXIT
+    trap 'refresh; f_print' SIGWINCH
 
     for ((;;)); { f_print; read -rs -n 1; key "$REPLY"; }
 }
