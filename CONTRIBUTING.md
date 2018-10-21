@@ -9,6 +9,7 @@
     * [Traps](#traps)
 * [Components](#components)
     * [Scroll](#scroll)
+    * [Search](#search)
 
 <!-- vim-markdown-toc -->
 
@@ -85,3 +86,10 @@ The scroll uses these variables for the math.
 | `k`     | first dir item that fits on the screen. |
 | `l`     | cursor position (and index to current dir item). |
 | `m`     | max number of dir items that fit on the screen. |
+
+
+## Search
+
+The search feature works by creating an array of matches using a `glob`. The `f_print` function is used next to create a "fake" directory with the search results.
+
+The current directory is saved in variable `g`. The saved directory is then used the next time the user navigates to a parent directory. This mimics a `cd` while also clearing the search results.
