@@ -57,6 +57,13 @@ d: trash (~/.cache/fff/bin/)
 q: exit
 ```
 
+## Customization
+
+```sh
+# Directory color [0-9]
+export FFF_COLOR=1
+```
+
 ## Why?
 
 ¯\\_(ツ)_/¯

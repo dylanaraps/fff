@@ -21,7 +21,7 @@ f_print() {
     c="${#f[@]}"
     for((i=${k:=0};i<(j=j>c?c:j);i++));{
         ((c<=0)) && { get_dir; return; } || path="${f[i]##*/}"
-        [[ -d "${f[i]}" ]] && path="\\e[1m\\e[31m${path}/\\e[m"
+        [[ -d "${f[i]}" ]] && path="\\e[1m\\e[3${FFF_COLOR:-1}m${path}/\\e[m"
         [[ "${f[i]}" == "${f[l]}" ]] && path="\\e[7m${path}\\e[m"
         [[ "$co" == "${f[i]}" ]] && path="\\e[7m\\e[40m${path}\\e[m"
         printf '\e[K%b\n' "$path"
