@@ -79,6 +79,7 @@
 The scroll uses these variables for the math.
 
 | var     | meaning |
+| ------- | ------- |
 | `c`     | total number of dir items. |
 | `j`     | last dir item that fits on the screen. |
 | `k`     | first dir item that fits on the screen. |
