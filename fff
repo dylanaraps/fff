@@ -76,8 +76,8 @@ prompt() {
            mv "${f[l]}" ~/.cache/fff/bin/; ((l>0?l--:l)) ;;
         n) read -rp "mkdir: ";   [[ $REPLY ]] && mkdir -p "$PWD/$REPLY" ;;
         f) read -rp "mkfile: ";  [[ $REPLY ]] && : > "$PWD/$REPLY" ;;
-        /) g="$PWD"; read -rp /; [[ $REPLY ]] && \
-           f=("$PWD"/*"$REPLY"*); l=0; refresh; f_print; return
+        /) g="$PWD"; read -rp /; [[ $REPLY ]] && f=("$PWD"/*"$REPLY"*)
+           l=0; refresh; f_print; return
     esac
     refresh; get_dir
 }
