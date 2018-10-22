@@ -57,7 +57,7 @@ p: paste/move
 r: rename
 d: trash (~/.cache/fff/bin/)
 
-\[1-9\]: favourites (see customization)
+[1-9]: favourites (see customization)
 
 q: exit
 ```
