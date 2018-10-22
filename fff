@@ -100,6 +100,10 @@ key() {
         r|d|n|f|/) prompt "$1" ;;
         \~) g="$PWD"; hist; open ~ ;;
         t)  g="$PWD"; hist; open ~/.cache/fff/bin ;;
+
+        [1-9]) fa="FFF_FAV${1}"; fa="${!fa%/}"
+               [[ ${fa:-/} ]] && { g="$PWD"; hist; open "$fa"; } ;;
+
         q)  exit ;;
 
         B|j) ((l=l==c-1?l:++l,j!=c&&l==j-m/2+1))&&((k=k>=j?k:++k,j=j<c?++j:j)) ;;

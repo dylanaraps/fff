@@ -57,6 +57,8 @@ p: paste/move
 r: rename
 d: trash (~/.cache/fff/bin/)
 
+\[1-9\]: favourites (see customization)
+
 q: exit
 ```
 
@@ -74,6 +76,17 @@ export FFF_COL3=6
 
 # Text Editor
 export EDITOR="cmd"
+
+# Favourites (keys 1-9) (dir or file)
+export FFF_FAV1=~/projects
+export FFF_FAV2=~/.bashrc
+export FFF_FAV3=~/Pictures/Wallpapers/
+export FFF_FAV4=/usr/share
+export FFF_FAV5=/
+export FFF_FAV6=
+export FFF_FAV7=
+export FFF_FAV8=
+export FFF_FAV9=
 ```
 
 ## Why?
