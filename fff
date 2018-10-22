@@ -91,7 +91,8 @@ key() {
 
         g) l=0; refresh ;;
         G) ((l=c-1)); refresh; ((k=k<0?0:k)) ;;
-        .) a=(u s); shopt -"${a[((h=h>0?0:++h))]}" dotglob; refresh; get_dir ;;
+        .) a=(u s); shopt -"${a[((h=h>0?0:++h))]}" dotglob
+           l=0; refresh; get_dir ;;
 
         y) [[ $co != "${f[l]}" ]] && { co="${f[l]}"; pr=(cp -r); } || co= ;;
         m) [[ $co != "${f[l]}" ]] && { co="${f[l]}"; pr=(mv); } || co= ;;
