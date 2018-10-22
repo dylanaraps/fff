@@ -72,8 +72,8 @@ prompt() {
     case "${1: -1}" in
         r) read -rp "rename ${f[l]##*/}: "; [[ $REPLY ]] && \
            mv "${f[l]}" "$PWD/$REPLY" ;;
-        d) read -n 1 -rp "trash ${f[l]##*/}? [y/n]: " y; [[ $y =~ y ]] && \
-           mv "${f[l]}" ~/.cache/fff/bin/; ((l>0?l--:l)) ;;
+        d) read -n 1 -rp "trash ${f[l]##*/}? [y/n]: " y; [[ $y == y ]] && {
+           mv "${f[l]}" ~/.cache/fff/bin/; ((l>0?l--:l)); } ;;
         n) read -rp "mkdir: ";   [[ $REPLY ]] && mkdir -p "$PWD/$REPLY" ;;
         f) read -rp "mkfile: ";  [[ $REPLY ]] && : > "$PWD/$REPLY" ;;
         /) g="$PWD"; read -rp /; [[ $REPLY ]] && f=("$PWD"/*"$REPLY"*)
