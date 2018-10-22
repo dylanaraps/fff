@@ -98,7 +98,7 @@ key() {
         p) [[ $co ]] && "${pr[@]}" "$co" "$PWD" && { refresh; get_dir; co=; } ;;
 
         r|d|n|f|/) prompt "$1" ;;
-        \~) g="$PWD"; hist; open ~/ ;;
+        \~) g="$PWD"; hist; open ~ ;;
         t)  g="$PWD"; hist; open ~/.cache/fff/bin ;;
         q)  exit ;;
 
