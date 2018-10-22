@@ -43,6 +43,8 @@ G: go to bottom
 t: go to trash
 ~: go to home
 
+[1-9]: favourites (see customization)
+
 down:  scroll down
 up:    scroll up
 left:  go to parent dir
@@ -56,8 +58,6 @@ m: mark move
 p: paste/move
 r: rename
 d: trash (~/.cache/fff/bin/)
-
-[1-9]: favourites (see customization)
 
 q: exit
 ```
