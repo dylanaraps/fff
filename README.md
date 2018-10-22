@@ -13,7 +13,7 @@ A [WIP] simple file manager written in `bash`.
 
 ## Dependencies
 
-- `bash`
+- `bash 3.2+`
 - program handling (non-text): `xdg-open`
 - copying: `cp`
 - moving, renaming, trash: `mv`
