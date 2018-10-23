@@ -28,13 +28,6 @@ f_print() {
            "${PWD/\/\//\/} (${l:-1}/$((c-1))) ${co:+${pr[*]}: ${co##*/} [p]}"
 }
 
-path() {
-    cd "${1%/*}" || return
-    : "${PWD}/${1##*/}"; : "${_%/}"
-    [[ $1 == / ]] && : /
-    [[ -d $_ ]] && PWD="$_"
-}
-
 hist() {
     l2[((n=n<0?0:++n))]="$l:$k"
 }
@@ -118,7 +111,7 @@ key() {
 main() {
     shopt -s nocaseglob nullglob checkwinsize
     mkdir -p ~/.cache/fff/bin/
-    [[ -d $1 ]] && path "$1"; refresh; get_dir; f_print
+    pushd "$1" &>/dev/null ||:; refresh; get_dir; f_print
 
     trap "refresh; printf '\\e[m\\e[?25h\\e[?7h'" EXIT
     trap 'refresh; f_print' SIGWINCH
