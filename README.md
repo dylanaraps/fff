@@ -75,7 +75,10 @@ export FFF_COL2=7
 export FFF_COL3=6
 
 # Text Editor
-export EDITOR="cmd"
+export FFF_EDITOR="vim" # alternative: export EDITOR="vim"
+
+# File Opener
+export FFF_OPENER="xdg-open"
 
 # Favourites (keys 1-9) (dir or file)
 export FFF_FAV1=~/projects

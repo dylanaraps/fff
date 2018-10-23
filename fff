@@ -61,10 +61,10 @@ open() {
             xbm|xif|xla|xlam|xls|xlsb|xlsm|xlsx|xlt|xltm|xltx|xm|xmind|xpi|xpm|\
             xwd|xz|z|zip|zipx)
                 [[ "$OSTYPE" == darwin* ]] && oc="open"
-                nohup "${oc:-xdg-open}" "$1" &>/dev/null & disown
+                nohup "${FFF_OPENER:-${oc:-xdg-open}}" "$1" &>/dev/null & disown
             ;;
 
-            *) "${EDITOR:-vi}" "$1"; printf '\e[?25l' ;;
+            *) "${FFF_EDITOR:-${EDITOR:-vi}}" "$1"; printf '\e[?25l' ;;
         esac
     }
 }
