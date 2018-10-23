@@ -68,7 +68,7 @@ prompt() {
         r) read -rp "rename ${f[l]##*/}: "; [[ $REPLY ]] && \
            mv "${f[l]}" "$PWD/$REPLY" ;;
         d) read -n 1 -rp "trash ${f[l]##*/}? [y/n]: " y; [[ $y == y ]] && {
-           mv "${f[l]}" ~/.cache/fff/bin/; ((l>0?l--:l)); } ;;
+           mv "${f[l]}" ~/.cache/fff/trash/; ((l>0?l--:l)); } ;;
         n) read -rp "mkdir: ";   [[ $REPLY ]] && mkdir -p "$PWD/$REPLY" ;;
         f) read -rp "mkfile: ";  [[ $REPLY ]] && : > "$PWD/$REPLY" ;;
         /) g="$PWD"; read -rp /; [[ $REPLY ]] && f=("$PWD"/*"$REPLY"*)
@@ -95,7 +95,7 @@ key() {
 
         r|d|n|f|/) prompt "$1" ;;
         \~) g="$PWD"; hist; open ~ ;;
-        t)  g="$PWD"; hist; open ~/.cache/fff/bin ;;
+        t)  g="$PWD"; hist; open ~/.cache/fff/trash ;;
 
         [1-9]) fa="FFF_FAV${1}"; fa="${!fa}"
                [[ $fa ]] && { g="$PWD"; hist; open "${fa%/}"; } ;;
@@ -109,7 +109,7 @@ key() {
 
 main() {
     shopt -s nocaseglob nullglob checkwinsize
-    mkdir -p ~/.cache/fff/bin/
+    mkdir -p ~/.cache/fff/trash/
     pushd "$1" &>/dev/null ||:; refresh; get_dir; f_print
 
     trap "refresh; printf '\\e[m\\e[?25h\\e[?7h'" EXIT
