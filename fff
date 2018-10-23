@@ -118,7 +118,7 @@ key() {
 main() {
     shopt -s nocaseglob nullglob checkwinsize
     mkdir -p ~/.cache/fff/bin/
-    [[ -d "$1" ]] && path "$1"; refresh; get_dir; f_print
+    [[ -d $1 ]] && path "$1"; refresh; get_dir; f_print
 
     trap "refresh; printf '\\e[m\\e[?25h\\e[?7h'" EXIT
     trap 'refresh; f_print' SIGWINCH
