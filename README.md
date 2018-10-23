@@ -57,7 +57,7 @@ y: mark copy
 m: mark move
 p: paste/move
 r: rename
-d: trash (~/.cache/fff/bin/)
+d: trash (~/.cache/fff/trash/)
 
 q: exit
 ```
