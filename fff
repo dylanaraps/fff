@@ -89,10 +89,10 @@ key() {
         .) a=(u s); shopt -"${a[((h=h>0?0:++h))]}" dotglob
            l=0; refresh; get_dir ;;
 
-        y) [[ ${co[l]} == *"${f[l]}"* ]] && { unset 'co[l]'; return; }
+        y) [[ ${co[l]} == "${f[l]}" ]] && unset 'co[l]' ||\
            co[l]="${f[l]}"; pr=(cp -rt) ;;
-        m) [[ ${co[l]} == *"${f[l]}"* ]] && { unset 'co[l]'; return; }
-           co[l]="${f[l]}"; pr=(mv -t) ;;
+        m) [[ ${co[l]} == "${f[l]}" ]] && unset 'co[l]' ||\
+           co[l]="${f[l]}"; pr=(mv -t)  ;;
         p) [[ ${co[*]} ]] && "${pr[@]}" "$PWD" "${co[@]}" && {
            refresh; get_dir; co=(); } ;;
         c) co=() ;;
