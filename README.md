@@ -56,6 +56,7 @@ n: new dir
 y: mark copy
 m: mark move
 p: paste/move
+c: clear file selections
 r: rename
 d: trash (~/.cache/fff/trash/)
 
