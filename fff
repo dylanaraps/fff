@@ -16,7 +16,9 @@ get_dir() {
 }
 
 f_print() {
-    for((i=${k:=0};i<(c=${#f[@]},j=j>c?c:j);i++)); {
+    ((c=${#f[@]},j=j>c?c:j))
+
+    for((i=${k:=0};i<j;i++)); {
         ((c<=0)) && { get_dir; f_print; return; } || path="${f[i]##*/}"
         [[ -d ${f[i]} ]] && { fo+='\e[1m\e[3'"${FFF_COL1:-2}m"; path+=/; }
         [[ ${f[i]} == "${f[l]}" ]] && fo+='\e[7m'
