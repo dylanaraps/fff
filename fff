@@ -105,7 +105,6 @@ key() {
         B|j) ((l=l==c-1?l:++l,j!=c&&l==j-m/2+1))&&((k=k>=j?k:++k,j=j<c?++j:j)) ;;
         A|k) ((l=l<1?l:--l,k>0&&l==k+m/2-2))&&((k=k<=j?k>0?--k:0:j,j=j>0?--j:j))
     esac
-    f_print
 }
 
 main() {
@@ -116,7 +115,7 @@ main() {
     trap "refresh; printf '\\e[m\\e[?25h\\e[?7h'" EXIT
     trap 'refresh; f_print' SIGWINCH
 
-    for ((;;)); { read -rsn 1; key "$REPLY"; }
+    for ((;;)); { read -rsn 1; key "$REPLY"; f_print; }
 }
 
 main "$@"
