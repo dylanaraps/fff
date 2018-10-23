@@ -105,8 +105,8 @@ key() {
         \~) g="$PWD"; hist; open ~ ;;
         t)  g="$PWD"; hist; open ~/.cache/fff/bin ;;
 
-        [1-9]) fa="FFF_FAV${1}"; fa="${!fa%/}"
-               [[ ${fa:-/} ]] && { g="$PWD"; hist; open "$fa"; } ;;
+        [1-9]) fa="FFF_FAV${1}"; fa="${!fa}"
+               [[ $fa ]] && { g="$PWD"; hist; open "${fa%/}"; } ;;
 
         q) exit ;;
 
