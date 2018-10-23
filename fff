@@ -59,7 +59,14 @@ open() {
             wbmp|wdp|weba|webm|webp|whl|wim|wm|wma|wmv|wmx|woff|woff2|wrm|wvx|\
             xbm|xif|xla|xlam|xls|xlsb|xlsm|xlsx|xlt|xltm|xltx|xm|xmind|xpi|xpm|\
             xwd|xz|z|zip|zipx)
-                nohup xdg-open "$1" &>/dev/null & disown
+                case "$(uname)" in
+                    "Darwin" )
+                        nohup open "$1" &>/dev/null & disown
+                        ;;
+                    *)
+                        nohup xdg-open "$1" &>/dev/null & disown
+                        ;;
+                esac
             ;;
 
             *) "${EDITOR:-vi}" "$1"; printf '\e[?25l' ;;
