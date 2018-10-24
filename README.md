@@ -19,10 +19,16 @@ A [WIP] simple file manager written in `bash`.
 - moving, renaming, trash: `mv`
 - creating dirs: `mkdir`
 
+
 ## Running
 
 1. `fff` or `fff path/to/dir`, `fff ../../`, `fff /usr/share/`
 2. optional: `alias f="fff"`
+
+
+## Packages
+
+- [arch (aur)](https://aur.archlinux.org/packages/fff-git/)
 
 
 ## Usage
