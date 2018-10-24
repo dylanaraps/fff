@@ -98,6 +98,6 @@ export FFF_FAV8=
 export FFF_FAV9=
 ```
 
-## Why?
+## WTF?
 
 ¯\\_(ツ)_/¯
