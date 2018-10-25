@@ -24,8 +24,10 @@ f_print() {
         [[ $co == "${f[i]}" ]] && { fo+='\e[1m\e[3'"${FFF_COL:-6}m"'\e[7m'; }
         printf '\e[K%b%s\e[m\n' "$fo" "$path"; fo=
     }
+    term=$(tput cols); t="${PWD/\/\//\/} (${l:-1}/$((c-1)))";
+    ((term < ${#t})) && t=...${t:${#t}-term+4}
     printf '\e[3%sm\e[%s;H\e[K\n\e[K%s\e[m\e[H' "${FFF_COL2:-7}" "$((LINES-2))" \
-           "${PWD/\/\//\/} (${l:-1}/$((c-1))) ${co:+${pr[*]}: ${co##*/} [p]}"
+           "$t ${co:+${pr[*]}: ${co##*/} [p]}"
 }
 
 hist() {
