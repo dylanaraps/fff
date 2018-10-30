@@ -63,7 +63,7 @@ y: mark copy
 m: mark move
 p: paste/move
 r: rename
-d: trash (~/.cache/fff/trash/)
+d: trash (default: ~/.cache/fff/trash/)
 
 q: exit
 ```
@@ -85,6 +85,9 @@ export FFF_EDITOR="vim" # alternative: export EDITOR="vim"
 
 # File Opener
 export FFF_OPENER="xdg-open"
+
+# Trash folder
+export FFF_TRASH="~/.cache/fff/trash/"
 
 # Favourites (keys 1-9) (dir or file)
 export FFF_FAV1=~/projects
