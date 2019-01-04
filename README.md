@@ -67,7 +67,6 @@ r: rename
 d: trash (~/.cache/fff/trash/)
 
 q: exit
-escape: exit
 ```
 
 ## Customization
