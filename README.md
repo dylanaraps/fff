@@ -48,6 +48,7 @@ G: go to bottom
 /: search
 t: go to trash
 ~: go to home
+s: open shell in current dir
 
 [1-9]: favourites (see customization)
 
