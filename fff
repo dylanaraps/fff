@@ -91,7 +91,7 @@ key() {
 
 main() {
     shopt -s nocaseglob nullglob checkwinsize
-    mkdir -p "${FFF_TRASH:=~/.cache/fff/trash/}"
+    mkdir -p "${FFF_TRASH:=$HOME/.cache/fff/trash/}"
     pushd "$1" &>/dev/null ||:; refresh; get_dir; f_print
 
     trap "refresh; printf '\\e[m\\e[?25h\\e[?7h'" EXIT
