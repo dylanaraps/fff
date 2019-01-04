@@ -25,7 +25,7 @@ f_print() {
         printf '\e[K%b%s\e[m\n' "$fo" "$path"; fo=
     }
     printf '\e[3%sm\e[%s;H\e[K\n\e[K%s\e[m\e[H' "${FFF_COL2:-7}" "$((LINES-2))" \
-           "${PWD/\/\//\/} (${l:-1}/$((c-1))) ${co:+${pr[*]}: ${co##*/} [p]}"
+           "${PWD/\/\///} (${l:-1}/$((c-1))) ${co:+${pr[*]}: ${co##*/} [p]}"
 }
 
 hist() {
@@ -60,10 +60,9 @@ prompt() {
 
 key() {
     case "${1: -1}" in
-        C|l|"") [[ -d "${f[l]}" ]] && hist; open "${f[l]/#\/\//\/}"; g= ;;
+        C|l|"") [[ -d "${f[l]}" ]] && hist; open "${f[l]}"; g= ;;
         D|h) open "${g:-${PWD%/*}}";
-             [[ -z $g ]] && ((BASH_VERSINFO[0]>3)) && \
-                 ((l=${l2[n]/:*},k=${l2[--n]/*:}))
+             [[ -z $g ]] && ((n=n<0?0:n,l=${l2[n]/:*},k=${l2[n-1]/*:},n--))
              [[ $PWD == / ]] && l=0; g=; refresh ;;
 
         g) l=0; refresh ;;
