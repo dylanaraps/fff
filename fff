@@ -75,8 +75,7 @@ key() {
         .) a=(u s); shopt -"${a[((h=h>0?0:++h))]}" dotglob
            l=0; refresh; get_dir ;;
 
-        y) mark; pr=(cp -rt) ;;
-        m) mark; pr=(mv -t) ;;
+        y|m) mark; [[ $1 == y ]] && pr=(cp -rt) || pr=(mv -t) ;;
         p) [[ ${co[*]} ]] && "${pr[@]}" "$PWD" "${co[@]}" && {
            refresh; get_dir; co=(); copwd=; } ;;
         c) co=() ;;
