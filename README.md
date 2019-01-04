@@ -89,7 +89,7 @@ export FFF_EDITOR="vim" # alternative: export EDITOR="vim"
 export FFF_OPENER="xdg-open"
 
 # Trash Directory
-export FFF_TRASH="xdg-open"
+export FFF_TRASH="~/.cache/fff/trash"
 
 # Favourites (keys 1-9) (dir or file)
 export FFF_FAV1=~/projects
