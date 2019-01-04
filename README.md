@@ -15,6 +15,7 @@ A [WIP] simple file manager written in `bash`.
 
 - `bash 3.2+`
 - program handling (non-text): `xdg-open` (*not needed on macos*)
+- mimetypes: `file`
 - copying: `cp`
 - moving, renaming, trash: `mv`
 - creating dirs: `mkdir`
