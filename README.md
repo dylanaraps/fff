@@ -62,6 +62,7 @@ n: new dir
 y: mark copy
 m: mark move
 p: paste/move
+c: clear file selections
 r: rename
 d: trash (~/.cache/fff/trash/)
 
@@ -79,6 +80,9 @@ export FFF_COL2=7
 
 # Selection color [0-9] (copied/moved files)
 export FFF_COL3=6
+
+# Cursor color [0-9]
+export FFF_COL4=1
 
 # Text Editor
 export FFF_EDITOR="vim" # alternative: export EDITOR="vim"
