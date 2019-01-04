@@ -62,7 +62,8 @@ key() {
     case "${1: -1}" in
         C|l|"") [[ -d "${f[l]}" ]] && hist; open "${f[l]/#\/\//\/}"; g= ;;
         D|h) open "${g:-${PWD%/*}}";
-             [[ $g ]] || ((l=${l2[n]/:*},k=${l2[n--]/*:}))
+             [[ -z $g ]] && ((BASH_VERSINFO[0]>3)) && \
+                 ((l=${l2[n]/:*},k=${l2[--n]/*:}))
              [[ $PWD == / ]] && l=0; g=; refresh ;;
 
         g) l=0; refresh ;;
