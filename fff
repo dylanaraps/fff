@@ -42,7 +42,7 @@ open() {
     [[ -f $1  ]] && {
         [[ "$OSTYPE" == darwin* ]] && { oc=open; fa="bIL"; }
         case "$(file "-${fa:-biL}" "$1")" in
-            text/*|inode/x-empty*) "${EDITOR:-vi}" "$1"; printf '\e[?25l' ;;
+            text/*|*x-empty*|*json*) "${EDITOR:-vi}" "$1"; printf '\e[?25l' ;;
             *) nohup "${FFF_OPENER:-${oc:-xdg-open}}" "$1" &>/dev/null & disown
         esac
     }
@@ -87,8 +87,8 @@ key() {
         \~) g="$PWD"; hist; open ~ ;;
         t)  g="$PWD"; hist; open "$FFF_TRASH" ;;
 
-        [1-9]) fa="FFF_FAV${1}"; fa="${!fa}"
-               [[ $fa ]] && { g="$PWD"; hist; open "${fa%/}"; } ;;
+        [1-9]) fav="FFF_FAV${1}"; fav="${!fav}"
+               [[ $fav ]] && { g="$PWD"; hist; open "$fav"; } ;;
 
         s) printf '\e[?7h\e[?25h\e[2J\e[H'; cd "$PWD" && "$SHELL"; refresh ;;
         q) exit ;;
