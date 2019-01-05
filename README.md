@@ -37,7 +37,6 @@ export FFF_CD_FILE=~/.fff_d
 
 # Alternatives
 
-
 # Example setup (posix)
 alias f='fff; cd "$(cat ~/.fff_d)"'
 
