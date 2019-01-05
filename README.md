@@ -29,10 +29,10 @@ A [WIP] simple file manager written in `bash`.
 
 ```sh
 # Example setup (bash)
-alias f="fff; cd \$(< ~/.fff_d)"
+alias f="fff; cd \"\$(< ~/.fff_d)\""
 
 # Example setup (posix)
-alias f="fff; cd \$(cat ~/.fff_d)"
+alias f="fff; cd \"\$(cat ~/.fff_d)\""
 
 # Customization (temporary file to use)
 export FFF_CD_FILE=~/.fff_d
@@ -101,8 +101,8 @@ export EDITOR="vim"
 export FFF_OPENER="xdg-open"
 
 # CD on exit helper file
-# Example usage (bash):  alias f="fff; cd \$(< ~/.fff_d)"
-#               (posix): alias f="fff; cd \$(cat ~/.fff_d)"
+# Example usage (bash):  alias f="fff; cd \"\$(< ~/.fff_d)\""
+#               (posix): alias f="fff; cd \"\$(cat ~/.fff_d)\""
 export FFF_CD_FILE=~/.fff_d
 
 # Trash Directory
