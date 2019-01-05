@@ -57,7 +57,7 @@ prompt() {
            mv "${f[l]}" "$FFF_TRASH"; ((l>0?l--:l)); } ;;
         n) read -rp "mkdir: ";   [[ $REPLY ]] && mkdir -p "$PWD/$REPLY" ;;
         f) read -rp "mkfile: ";  [[ $REPLY ]] && : > "$PWD/$REPLY" ;;
-        /) g="$PWD"; read -n 1 -rsp $'\e[2K\r'"/$s2" s1
+        /) g="$PWD"; IFS= read -n 1 -rsp $'\e[2K\r'"/$s2" s1
            [[ $s1 == $'\177' ]] && s2="${s2%?}" || s2+="$s1"
            [[ $s1 == $'\e' || -z $s2 ]] && { refresh; get_dir; return; }
            [[ -z $s2 ]] && get_dir || f=("$PWD"/*"$s2"*); l=0; refresh; f_print
