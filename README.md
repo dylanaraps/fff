@@ -9,7 +9,7 @@ A [WIP] simple file manager written in `bash`.
 - Smooth Scrolling (*using vim keybindings*)
 - File Operations (*copy, paste, rename, cut, etc*)
 - Instant as you type search
-- Automatic CD on exit (see [setup](#cd-on-exit))
+- Automatic CD on exit (*see [setup](#cd-on-exit)*)
 
 
 ## Dependencies
