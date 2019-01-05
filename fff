@@ -20,16 +20,21 @@ f_print() {
     for((i=${k:=0};i<j;i++)); {
         ((c<=0)) && { get_dir; f_print; return; } || path="${f[i]##*/}"
         [[ -d ${f[i]} ]] && { fo+='\e[1m\e[3'"${FFF_COL1:-2}m"; path+=/; }
-        [[ ${f[i]} == "${f[l]}" ]] && fo+='\e[7m'
-        [[ $co == "${f[i]}" ]] && { fo+='\e[1m\e[3'"${FFF_COL:-6}m"'\e[7m'; }
+        [[ ${f[i]} == "${f[l]}" ]]  && fo+='\e[7m\e[1m\e[3'"${FFF_COL4:-6}m"
+        [[ ${co[i]} == "${f[i]}" ]] && fo+='\e[3'"${FFF_COL3:-1}m "
         printf '\e[K%b%s\e[m\n' "$fo" "$path"; fo=
     }
     printf '\e[3%sm\e[%s;H\e[K\n\e[K%s\e[m\e[H' "${FFF_COL2:-7}" "$((LINES-2))" \
-           "${PWD/\/\///} (${l:-1}/$((c-1))) ${co:+${pr[*]}: ${co##*/} [p]}"
+           "${PWD/\/\///} ($l/$((c-1))) ${co[*]:+${pr[*]}: ${#co[@]}^ [p]}"
 }
 
 hist() {
     l2[((n=n<0?0:++n))]="$l:$k"
+}
+
+mark() {
+   [[ "$PWD" != "$copwd" ]] && co=()
+   [[ ${co[l]} == "${f[l]}" ]] && unset 'co[l]' || co[l]="${f[l]}"; copwd="$PWD"
 }
 
 open() {
@@ -70,9 +75,10 @@ key() {
         .) a=(u s); shopt -"${a[((h=h>0?0:++h))]}" dotglob
            l=0; refresh; get_dir ;;
 
-        y) [[ $co != "${f[l]}" ]] && { co="${f[l]}"; pr=(cp -r); } || co= ;;
-        m) [[ $co != "${f[l]}" ]] && { co="${f[l]}"; pr=(mv); } || co= ;;
-        p) [[ $co ]] && "${pr[@]}" "$co" "$PWD" && { refresh; get_dir; co=; } ;;
+        y|m) mark; [[ $1 == y ]] && pr=(cp -rt) || pr=(mv -t) ;;
+        p) [[ ${co[*]} ]] && "${pr[@]}" "$PWD" "${co[@]}" && {
+           refresh; get_dir; co=(); copwd=; } ;;
+        c) co=() ;;
 
         r|d|n|f|/) prompt "$1" ;;
         \~) g="$PWD"; hist; open ~ ;;
