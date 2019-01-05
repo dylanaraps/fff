@@ -9,6 +9,7 @@ A [WIP] simple file manager written in `bash`.
 - Smooth Scrolling (*using vim keybindings*)
 - File Operations (*copy, paste, rename, cut, etc*)
 - Instant as you type search
+- Automatic CD on exit (see [setup(#cd-on-exit))
 
 
 ## Dependencies
@@ -23,11 +24,6 @@ A [WIP] simple file manager written in `bash`.
 
 1. `fff` or `fff path/to/dir`, `fff ../../`, `fff /usr/share/`
 2. optional: `alias f="fff"`
-
-
-## Packages
-
-- [arch (aur)](https://aur.archlinux.org/packages/fff-git/)
 
 
 ## Usage
@@ -91,8 +87,13 @@ export EDITOR="vim"
 # File Opener
 export FFF_OPENER="xdg-open"
 
+# CD on exit helper file
+# Example usage (bash):  alias f="fff; cd \$(< ~/.fff_d)"
+#               (posix): alias f="fff; cd \$(cat ~/.fff_d)"
+export FFF_CD_FILE=~/.fff_d
+
 # Trash Directory
-export FFF_TRASH="~/.cache/fff/trash"
+export FFF_TRASH=~/.cache/fff/trash
 
 # Favourites (keys 1-9) (dir or file)
 export FFF_FAV1=~/projects
@@ -104,6 +105,19 @@ export FFF_FAV6=
 export FFF_FAV7=
 export FFF_FAV8=
 export FFF_FAV9=
+```
+
+## CD on Exit
+
+```sh
+# Example setup (bash)
+alias f="fff; cd \$(< ~/.fff_d)"
+
+# Example setup (posix)
+alias f="fff; cd \$(cat ~/.fff_d)"
+
+# Customization (temporary file to use)
+export FFF_CD_FILE=~/.fff_d
 ```
 
 ## Why?

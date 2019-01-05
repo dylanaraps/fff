@@ -119,6 +119,13 @@ export EDITOR="vim"
 \fBFile Opener\fR
 export FFF_OPENER="xdg-open"
 .TP
+\fBCD on exit helper file\fR
+# Example usage (bash):  alias f="fff; cd \$(< ~/.fff_d)"
+
+#               (posix): alias f="fff; cd \$(cat ~/.fff_d)"
+
+export FFF_CD_FILE=~/.fff_d
+.TP
 \fBTrash Directory\fR
 export FFF_TRASH=~/.cache/fff/trash
 .TP

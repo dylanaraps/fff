@@ -92,7 +92,7 @@ key() {
 
         s) printf '\e[?7h\e[?25h\e[2J\e[H'; cd "$PWD" && "$SHELL"; refresh ;;
         x) read -rn1 -p $'\e[999B\e[2A\e[1J\e[H'"$(stat "${f[l]}")"; refresh ;;
-        q) exit ;;
+        q) printf '%s' "${PWD/\/\///}" > "${FFF_CD_FILE:-$HOME/.fff_d}"; exit ;;
 
         B|j) ((l=l==c-1?l:++l,j!=c&&l==j-m/2+1))&&((k=k>=j?k:++k,j=j<c?++j:j)) ;;
         A|k) ((l=l<1?l:--l,k>0&&l==k+m/2-2))&&((k=k<=j?k>0?--k:0:j,j=j>0?--j:j))
@@ -104,7 +104,7 @@ main() {
     mkdir -p "${FFF_TRASH:=$HOME/.cache/fff/trash/}"
     pushd "$1" &>/dev/null ||:; refresh; get_dir; f_print
 
-    trap 'refresh; printf "\e[?25h\e[?7h"; exit' INT EXIT
+    trap 'refresh; printf "\e[?25h\e[?7h"; key q' INT EXIT
     trap 'refresh; f_print' WINCH
 
     for ((;;)); { read -rsn 1; key "$REPLY"; f_print; }
