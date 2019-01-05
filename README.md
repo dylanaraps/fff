@@ -105,10 +105,6 @@ export FFF_OPENER="xdg-open"
 # CD on exit helper file
 export FFF_CD_FILE=~/.fff_d
 
-# Example setup (posix) (in .shellrc)
-f() { fff "$@"; cd "$(cat ~/.fff_d)"; }
-export FFF_CD_FILE=~/.fff_d
-
 # Trash Directory
 export FFF_TRASH=~/.cache/fff/trash
 
