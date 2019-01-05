@@ -25,6 +25,19 @@ A [WIP] simple file manager written in `bash`.
 1. `fff` or `fff path/to/dir`, `fff ../../`, `fff /usr/share/`
 2. optional: `alias f="fff"`
 
+#### CD on Exit
+
+```sh
+# Example setup (bash)
+alias f="fff; cd \$(< ~/.fff_d)"
+
+# Example setup (posix)
+alias f="fff; cd \$(cat ~/.fff_d)"
+
+# Customization (temporary file to use)
+export FFF_CD_FILE=~/.fff_d
+```
+
 
 ## Usage
 
@@ -105,19 +118,6 @@ export FFF_FAV6=
 export FFF_FAV7=
 export FFF_FAV8=
 export FFF_FAV9=
-```
-
-## CD on Exit
-
-```sh
-# Example setup (bash)
-alias f="fff; cd \$(< ~/.fff_d)"
-
-# Example setup (posix)
-alias f="fff; cd \$(cat ~/.fff_d)"
-
-# Customization (temporary file to use)
-export FFF_CD_FILE=~/.fff_d
 ```
 
 ## Why?
