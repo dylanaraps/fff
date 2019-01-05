@@ -20,12 +20,12 @@ f_print() {
     for((i=${k:=0};i<j;i++)); {
         ((c<=0)) && { get_dir; f_print; return; } || path="${f[i]##*/}"
         [[ -d ${f[i]} ]] && { fo+='\e[1m\e[3'"${FFF_COL1:-2}m"; path+=/; }
-        [[ ${co[i]} == "${f[i]}" ]] && fo+='\e[7m\e[1m\e[3'"${FFF_COL4:-1}m"
         [[ ${f[i]} == "${f[l]}" ]]  && fo+='\e[7m\e[1m\e[3'"${FFF_COL3:-6}m"
+        [[ ${co[i]} == "${f[i]}" ]] && fo+='\e[3'"${FFF_COL4:-1}m "
         printf '\e[K%b%s\e[m\n' "$fo" "$path"; fo=
     }
     printf '\e[3%sm\e[%s;H\e[K\n\e[K%s\e[m\e[H' "${FFF_COL2:-7}" "$((LINES-2))" \
-           "${PWD/\/\///} (${l:-1}/$((c-1))) ${co[*]:+${pr[*]}: ${#co[@]}^ [p]}"
+           "${PWD/\/\///} ($l/$((c-1))) ${co[*]:+${pr[*]}: ${#co[@]}^ [p]}"
 }
 
 hist() {
