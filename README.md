@@ -85,7 +85,7 @@ export FFF_COL3=6
 export FFF_COL4=1
 
 # Text Editor
-export FFF_EDITOR="vim" # alternative: export EDITOR="vim"
+export EDITOR="vim"
 
 # File Opener
 export FFF_OPENER="xdg-open"
