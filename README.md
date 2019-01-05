@@ -48,6 +48,7 @@ G: go to bottom
 t: go to trash
 ~: go to home
 s: open shell in current dir
+x: view file/dir attributes
 
 [1-9]: favourites (see customization)
 

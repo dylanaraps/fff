@@ -91,6 +91,7 @@ key() {
                [[ $fav ]] && { g="$PWD"; hist; open "$fav"; } ;;
 
         s) printf '\e[?7h\e[?25h\e[2J\e[H'; cd "$PWD" && "$SHELL"; refresh ;;
+        x) read -rn1 -p $'\e[999B\e[2A\e[1J\e[H'"$(stat "${f[l]}")"; refresh ;;
         q) exit ;;
 
         B|j) ((l=l==c-1?l:++l,j!=c&&l==j-m/2+1))&&((k=k>=j?k:++k,j=j<c?++j:j)) ;;
