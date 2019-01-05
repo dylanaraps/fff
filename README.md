@@ -8,7 +8,7 @@ A [WIP] simple file manager written in `bash`.
 - Minimal (*~100 lines of bash*)
 - Smooth Scrolling (*using vim keybindings*)
 - File Operations (*copy, paste, rename, cut, etc*)
-- Basic Search
+- Instant as you type search
 
 
 ## Dependencies
