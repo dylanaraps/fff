@@ -31,14 +31,19 @@ A [WIP] simple file manager written in `bash`.
 # Example setup (bash)
 alias f='fff; cd "$(< ~/.fff_d)"'
 
+# Customization (temporary file to use)
+export FFF_CD_FILE=~/.fff_d
+
+
+# Alternatives
+
+
 # Example setup (posix)
 alias f='fff; cd "$(cat ~/.fff_d)"'
 
 # Alternative (as a shell function)
 function f() { fff "$@"; cd "$(< ~/.fff_d)"; }
 
-# Customization (temporary file to use)
-export FFF_CD_FILE=~/.fff_d
 ```
 
 
