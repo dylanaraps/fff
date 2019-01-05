@@ -105,7 +105,7 @@ main() {
     pushd "$1" &>/dev/null ||:; refresh; get_dir; f_print
 
     trap 'refresh; printf "\e[?25h\e[?7h"; exit' INT EXIT
-    trap 'refresh; f_print' SIGWINCH
+    trap 'refresh; f_print' WINCH
 
     for ((;;)); { read -rsn 1; key "$REPLY"; f_print; }
 }
