@@ -57,14 +57,12 @@ prompt() {
            mv "${f[l]}" "$FFF_TRASH"; ((l>0?l--:l)); } ;;
         n) read -rp "mkdir: ";   [[ $REPLY ]] && mkdir -p "$PWD/$REPLY" ;;
         f) read -rp "mkfile: ";  [[ $REPLY ]] && : > "$PWD/$REPLY" ;;
-        /)
-            g="$PWD"; read -n 1 -rp $'\e[2K\r'"/$sr2" sr
-            [[ $sr != $'\e' ]] && {
-                [[ $sr == $'\177' ]] && sr2="${sr2::-1}" || sr2+="$sr"
-                [[ -z $sr2 ]] && get_dir || f=("$PWD"/*"$sr2"*)
-                l=0; refresh; f_print; [[ $sr ]] && prompt /
-                sr2=; return
-            }
+        /) g="$PWD"; read -n 1 -rsp $'\e[2K\r'"/$s2" s1
+           [[ $s1 != $'\e' ]] && {
+               [[ $s1 == $'\177' ]] && s2="${s2%?}" || s2+="$s1"
+               [[ -z $s2 ]] && get_dir || f=("$PWD"/*"$s2"*)
+               l=0; refresh; f_print; [[ $s1 ]] && prompt /; s2=; return
+           }
     esac
     refresh; get_dir
 }
