@@ -59,9 +59,9 @@ prompt() {
         f) read -rp "mkfile: ";  [[ $REPLY ]] && : > "$PWD/$REPLY" ;;
         /) g="$PWD"; IFS= read -n 1 -rsp $'\e[2K\r'"/$s2" s1
            [[ $s1 == $'\177' ]] && s2="${s2%?}" || s2+="$s1"
-           [[ $s1 == $'\e' || -z $s2 ]] && { refresh; get_dir; return; }
-           [[ -z $s2 ]] && get_dir || f=("$PWD"/*"$s2"*); l=0; refresh; f_print
-           [[ $s1 ]] && prompt /; s2=; return
+           [[ $s1 == $'\e' ]] && { refresh; get_dir; return; }
+           f=("$PWD"/*"$s2"*); l=0; refresh; f_print; [[ $s1 ]] && prompt /
+           s2=; [[ "${f[*]}" ]] && return
     esac
     refresh; get_dir
 }
