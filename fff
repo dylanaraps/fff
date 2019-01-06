@@ -84,9 +84,6 @@ key() {
         r|d|n|f|/) prompt "$1" ;;
         \~|t) g="$PWD"; hist; [[ $1 == t ]] || open ~ && open "$FFF_TRASH" ;;
 
-        [1-9]) fav="FFF_FAV${1}"; fav="${!fav}"
-               [[ $fav ]] && { g="$PWD"; hist; open "$fav"; } ;;
-
         s) printf '\e[?7h\e[?25h\e[2J\e[H'; cd "$PWD" && "$SHELL"; clr ;;
         x) read -rn1 -p $'\e[999B\e[2A\e[1J\e[H'"$(stat "${f[l]}")"; clr ;;
         q) printf '%s' "${PWD/\/\///}" > "${FFF_CD_FILE:-$HOME/.fff_d}"; exit ;;

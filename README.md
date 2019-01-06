@@ -61,8 +61,6 @@ t: go to trash
 s: open shell in current dir
 x: view file/dir attributes
 
-[1-9]: favourites (see customization)
-
 down:  scroll down
 up:    scroll up
 left:  go to parent dir
@@ -107,17 +105,6 @@ export FFF_CD_FILE=~/.fff_d
 
 # Trash Directory
 export FFF_TRASH=~/.cache/fff/trash
-
-# Favourites (keys 1-9) (dir or file)
-export FFF_FAV1=~/projects
-export FFF_FAV2=~/.bashrc
-export FFF_FAV3=~/Pictures/Wallpapers/
-export FFF_FAV4=/usr/share
-export FFF_FAV5=/
-export FFF_FAV6=
-export FFF_FAV7=
-export FFF_FAV8=
-export FFF_FAV9=
 ```
 
 ## Why?
