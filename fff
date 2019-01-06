@@ -23,8 +23,8 @@ draw() {
         [[ ${co[i]} == "${f[i]}" ]] && fo+='\e[3'"${FFF_COL3:-1}m "
         printf '\e[K%b%s\e[m\n' "$fo" "${f[i]##*/}${fp}"; fo=; fp=
     }
-    printf '\e[3%sm\e[%s;H\e[J\n%s\e[m\e[H' "${FFF_COL2:-7}" "$((LINES-2))" \
-           "${PWD/$HOME/\~} ($((l+1))/$c) ${co[*]:+${pr[*]}: ${#co[@]}^ [p]}"
+    printf '\e[3%sm\e[%s;H\e[J\n%s\e[m\e[H' "${FFF_COL2:-4}" "$((LINES-2))" \
+           "($((l+1))/$c) ${co[*]:+[${pr[0]} ${#co[@]}^] [p] -> }${PWD/$HOME/\~}"
 }
 
 hist() {
