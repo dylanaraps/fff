@@ -101,7 +101,7 @@ main() {
     trap 'clr; printf "\e[?25h\e[?7h"; key q' INT EXIT
     trap 'clr; draw' WINCH
 
-    for ((;;)); { read -rsn 1; key "$REPLY"; draw; }
+    for ((;;)); { wait; read -rsn 1; key "$REPLY"; draw & }
 }
 
 main "$@"
