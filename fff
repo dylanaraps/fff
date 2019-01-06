@@ -74,8 +74,7 @@ key() {
 
         g) l=0; clr ;;
         G) ((l=c-1)); clr; ((k=k<0?0:k)) ;;
-        .) a=(u s); shopt -"${a[((h=h>0?0:++h))]}" dotglob
-           l=0; clr; get_dir ;;
+        .) a=(u s); shopt -"${a[((h=h>0?0:++h))]}" dotglob l=0; clr; get_dir ;;
 
         y|m) mark; [[ $1 == y ]] && pr=(cp -R) || pr=(mv) ;;
         p) [[ ${co[*]} ]] && { cd "$PWD" && "${pr[@]}" "${co[@]}" .; } && {
