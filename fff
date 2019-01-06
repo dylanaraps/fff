@@ -84,8 +84,7 @@ key() {
         c) co=() ;;
 
         r|d|n|f|/) prompt "$1" ;;
-        \~) g="$PWD"; hist; open ~ ;;
-        t)  g="$PWD"; hist; open "$FFF_TRASH" ;;
+        \~|t) g="$PWD"; hist; [[ $1 == t ]] || open ~ && open "$FFF_TRASH" ;;
 
         [1-9]) fav="FFF_FAV${1}"; fav="${!fav}"
                [[ $fav ]] && { g="$PWD"; hist; open "$fav"; } ;;
