@@ -24,7 +24,7 @@ draw() {
         printf '\e[K%b%s\e[m\n' "$fo" "${f[i]##*/}${fp}"; fo=; fp=
     }
     printf '\e[3%sm\e[%s;H\e[J\n%s\e[m\e[H' "${FFF_COL2:-4}" "$((LINES-2))" \
-           "($((l+1))/$c) ${co[*]:+[${pr[0]} ${#co[@]}^] [p] -> }${PWD/$HOME/\~}"
+           "($((l+1))/$c) ${co[*]:+[${pr[0]} ${#co[@]}^] [p] -> }$PWD"
 }
 
 hist() {
