@@ -24,7 +24,7 @@ f_print() {
         [[ ${co[i]} == "${f[i]}" ]] && fo+='\e[3'"${FFF_COL3:-1}m "
         printf '\e[K%b%s\e[m\n' "$fo" "$path"; fo=
     }
-    printf '\e[3%sm\e[%s;H\e[K\n\e[K%s\e[m\e[H' "${FFF_COL2:-7}" "$((LINES-2))" \
+    printf '\e[3%sm\e[%s;H\e[J\n%s\e[m\e[H' "${FFF_COL2:-7}" "$((LINES-2))" \
            "${PWD/\/\///} ($l/$((c-1))) ${co[*]:+${pr[*]}: ${#co[@]}^ [p]}"
 }
 
