@@ -55,8 +55,8 @@ prompt() {
            mv "${f[l]}" "$PWD/$REPLY" ;;
         d) read -n 1 -rp "trash ${f[l]##*/}? [y/n]: " y; [[ $y == y ]] && {
            mv "${f[l]}" "$FFF_TRASH"; ((l>0?l--:l)); } ;;
-        n) read -erp "mkdir: ";   [[ $REPLY ]] && mkdir -p "$PWD/$REPLY" ;;
-        f) read -erp "mkfile: ";  [[ $REPLY ]] && : > "$PWD/$REPLY" ;;
+        n) read -erp "mkdir: ";  [[ $REPLY ]] && mkdir -p "$PWD/$REPLY" ;;
+        f) read -erp "mkfile: "; [[ $REPLY ]] && : > "$PWD/$REPLY" ;;
         /) g="$PWD"; IFS= read -n 1 -rsp $'\e[2K\r'"/$s2" s1
            [[ $s1 == $'\177' ]] && s2="${s2%?}" || s2+="$s1"
            [[ $s1 == $'\e' ]] && { clr; get_dir; return; }
@@ -96,7 +96,7 @@ key() {
 
 main() {
     shopt -s nocaseglob nullglob checkwinsize
-    [[ "$OSTYPE" == haiku ]] &&
+    [[ $OSTYPE == haiku ]] &&
         : "${FFF_TRASH:=$(finddir B_USER_CACHE_DIRECTORY)/fff/trash/}"
     mkdir -p "${FFF_TRASH:=$HOME/.cache/fff/trash/}"
     pushd "$1" &>/dev/null ||:; clr; get_dir; draw
