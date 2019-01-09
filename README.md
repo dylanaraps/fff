@@ -110,3 +110,5 @@ export FFF_TRASH=~/.cache/fff/trash
 ## Why?
 
 ¯\\_(ツ)_/¯
+
+<sup><sub>dont touch my shrug</sub></sup>
