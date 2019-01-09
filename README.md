@@ -109,4 +109,4 @@ export FFF_TRASH=~/.cache/fff/trash
 
 ## Why?
 
-¯\\\_(ツ)_/¯
+¯\\_(ツ)_/¯
