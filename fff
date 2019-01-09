@@ -39,10 +39,8 @@ mark() {
 open() {
     [[ -d $1/ ]] && { l=0; clr; : "${1:-/}"; PWD="${_/\/\///}"; get_dir; draw; }
     [[ -f $1  ]] && {
-        case "$OSTYPE" in
-            darwin*) oc=open; fa="bIL" ;;
-            haiku) oc=open ;;
-        esac
+        [[ "$OSTYPE" == darwin* ]] && { oc=open; fa="bIL"; }
+        [[ "$OSTYPE" == haiku ]] && oc=open
         case "$(file "-${fa:-biL}" "$1")" in
             text/*|*x-empty*|*json*) "${EDITOR:-vi}" "$1"; printf '\e[?25l' ;;
             *) nohup "${FFF_OPENER:-${oc:-xdg-open}}" "$1" &>/dev/null & disown
