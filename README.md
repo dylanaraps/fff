@@ -15,7 +15,7 @@ A [WIP] simple file manager written in `bash`.
 ## Dependencies
 
 - `bash 3.2+`
-- program handling (non-text): `xdg-utils` (*not needed on macos*)
+- program handling (non-text): `xdg-utils` (*not needed on macos and Haiku*)
 - file operations: `coreutils`
 - mime types: `file`
 
@@ -109,4 +109,4 @@ export FFF_TRASH=~/.cache/fff/trash
 
 ## Why?
 
-¯\\_(ツ)_/¯
+¯\\\_(ツ)_/¯

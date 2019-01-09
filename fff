@@ -39,7 +39,10 @@ mark() {
 open() {
     [[ -d $1/ ]] && { l=0; clr; : "${1:-/}"; PWD="${_/\/\///}"; get_dir; draw; }
     [[ -f $1  ]] && {
-        [[ "$OSTYPE" == darwin* ]] && { oc=open; fa="bIL"; }
+        case "$OSTYPE" in
+            darwin*) oc=open; fa="bIL" ;;
+            haiku) oc=open ;;
+        esac
         case "$(file "-${fa:-biL}" "$1")" in
             text/*|*x-empty*|*json*) "${EDITOR:-vi}" "$1"; printf '\e[?25l' ;;
             *) nohup "${FFF_OPENER:-${oc:-xdg-open}}" "$1" &>/dev/null & disown
@@ -95,6 +98,8 @@ key() {
 
 main() {
     shopt -s nocaseglob nullglob checkwinsize
+    [[ "$OSTYPE" == haiku ]] &&
+        : "${FFF_TRASH:=$(finddir B_USER_CACHE_DIRECTORY)/fff/trash/}"
     mkdir -p "${FFF_TRASH:=$HOME/.cache/fff/trash/}"
     pushd "$1" &>/dev/null ||:; clr; get_dir; draw
 
