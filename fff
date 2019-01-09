@@ -32,14 +32,14 @@ hist() {
 }
 
 mark() {
-   [[ "$PWD" != "$copwd" ]] && co=()
+   [[ $PWD != "$copwd" ]] && co=()
    [[ ${co[l]} == "${f[l]}" ]] && unset 'co[l]' || co[l]="${f[l]}"; copwd="$PWD"
 }
 
 open() {
     [[ -d $1/ ]] && { l=0; clr; : "${1:-/}"; PWD="${_/\/\///}"; get_dir; draw; }
     [[ -f $1  ]] && {
-        [[ "$OSTYPE" == darwin* ]] && { oc=open; fa="bIL"; }
+        [[ $OSTYPE == darwin* ]] && { oc=open; fa="bIL"; }
         case "$(file "-${fa:-biL}" "$1")" in
             text/*|*x-empty*|*json*) "${EDITOR:-vi}" "$1"; printf '\e[?25l' ;;
             *) nohup "${FFF_OPENER:-${oc:-xdg-open}}" "$1" &>/dev/null & disown
@@ -60,14 +60,14 @@ prompt() {
            [[ $s1 == $'\177' ]] && s2="${s2%?}" || s2+="$s1"
            [[ $s1 == $'\e' ]] && { clr; get_dir; return; }
            f=("$PWD"/*"$s2"*); l=0; clr; draw; [[ $s1 ]] && prompt /
-           s2=; [[ "${f[*]}" ]] && return
+           s2=; [[ ${f[*]} ]] && return
     esac
     clr; get_dir
 }
 
 key() {
     case "${1: -1}" in
-        C|l|"") [[ -d "${f[l]}" ]] && hist; open "${f[l]}"; g= ;;
+        C|l|"") [[ -d ${f[l]} ]] && hist; open "${f[l]}"; g= ;;
         D|h) open "${g:-${PWD%/*}}";
              [[ -z $g ]] && ((n=n<0?0:n,l=${l2[n]/:*},k=${l2[n-1]/*:},n--))
              [[ $PWD == / ]] && l=0; g=; clr ;;
