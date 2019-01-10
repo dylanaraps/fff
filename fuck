@@ -103,7 +103,6 @@ print_dir() {
     # If the cursor is near the bottom of the list, display the entire bottom.
     elif ((list_total - scroll < max_items)); then
         ((scroll=list_total-max_items))
-
     fi
 
     # 'i=scroll':         Print list items from scroll position.
