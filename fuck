@@ -83,7 +83,11 @@ print_dir() {
 
 key() {
     case "$1" in
-        j)
+        # Scroll down.
+        # 'B' is what BASH sees when the down arrow is pressed ('\e[B').
+        B|j)
+            # '\eD': Move cursor down. If cursor hits the bottom margin of
+            #        the scroll area, scroll the window down.
             ((scroll < ${#list[@]}-1)) && {
                 ((scroll++))
                 format_dir "$((scroll-1))"
@@ -92,7 +96,11 @@ key() {
             }
         ;;
 
-        k)
+        # Scroll up.
+        # 'A' is what BASH sees when the down arrow is pressed ('\e[A').
+        A|k)
+            # '\eM': Move cursor up. If cursor hits the top margin of
+            #        the scroll area, scroll the window down.
             ((scroll > 0)) && {
                 ((scroll--))
                 format_dir "$((scroll+1))"
@@ -104,12 +112,24 @@ key() {
 }
 
 main() {
+    # Handle a directory as the first argument.
+    # 'pushd' is a cheap way of finding the full path to a directory.
+    # It handles relative paths as well as '../../../'.
+    #
+    # '||:': Do nothing if 'pushd' fails. We don't care.
     pushd "$1" &>/dev/null ||:
 
     get_term_size
     clear_screen
 
-    trap 'printf "\e[?61l\e[;r\e[?4l\e[?7h\e[?25h\e[2J\e[H"' EXIT
+    # Trap the exit signal (we need to reset the terminal to a useable state.)
+    # '\e[?7h':  Re-enable line wrapping.
+    # '\e[?25h': Unhide the cursor.
+    # '\e[2J':   Clear the terminal.
+    # '\e[;r':   Set the scroll region to its default value.
+    trap 'printf "\e[?7h\e[?25h\e[2J\e[;r"' EXIT
+
+    # Trap the window resize signal (handle window resize events).
     trap 'get_term_size; clear_screen; print_dir; status_line' WINCH
 
     read_dir
