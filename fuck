@@ -44,14 +44,13 @@ status_line() {
     # '\e[m':      Reset text formatting.
     # '\e[u':      Restore cursor to saved position.
     printf '\e[s\e[%sH\e[A\e[30;41m%s\e[K\e[m\e[u' \
-           "$LINES" "(${scroll:=0}/$((${#list[@]}-1))) $PWD"
+           "$LINES" "(${scroll:=0}/$((${#list[@]}-1))) ${PWD:-/}"
 }
 
 read_dir() {
     # Read a directory to an array and sort it directories first.
     dirs=(); files=()
 
-    # TODO: Set NULLGLOB.
     for item in "$PWD"/*; do
         [[ -d $item ]] && dirs+=("$item") || files+=("$item")
     done
