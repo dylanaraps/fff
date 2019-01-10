@@ -135,7 +135,8 @@ key() {
     case "$1" in
         # Open list item.
         # 'C' is what BASH sees when the right arrow is pressed ('\e[C').
-        C|l) open "${list[scroll]}" ;;
+        # '' is what bash sees when the enter/return key is pressed.
+        C|l|'') open "${list[scroll]}" ;;
 
         # Go to the parent directory.
         # 'D' is what BASH sees when the left arrow is pressed ('\e[D').
