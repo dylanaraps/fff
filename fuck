@@ -2,6 +2,22 @@
 #
 # fuck
 
+get_os() {
+    # Figure out the current operating system to set
+    # some specific variables.
+    case "$OSTYPE" in
+        # Mac OS X / macOS.
+        darwin*)
+            opener="open"
+            file_flags="bIL"
+        ;;
+
+        haiku)
+            opener="open"
+        ;;
+    esac
+}
+
 clear_screen() {
     # '\e[?25l': Hide the cursor.
     # '\e[?7l':  Disable line wrapping.
@@ -34,6 +50,7 @@ read_dir() {
     # Read a directory to an array and sort it directories first.
     dirs=(); files=()
 
+    # TODO: Set NULLGLOB.
     for item in "$PWD"/*; do
         [[ -d $item ]] && dirs+=("$item") || files+=("$item")
     done
@@ -63,7 +80,7 @@ print_dir() {
 
     # Window resize handling.
     # If the entire list fits in the scroll area, move cursor to top.
-    ((${#list[@]} < max_items)) && ((scroll=0))
+    ((${#list[@]} < max_items)) && scroll=0
 
     # 'i=scroll':         Print list items from scroll position.
     # 'max_items+scroll': Print list items up to max_items+scroll_position.
@@ -78,8 +95,51 @@ print_dir() {
     printf '\e[H'
 }
 
+open() {
+    # Open directories and files.
+    if [[ -d $1/ ]]; then
+        PWD="$1"
+        read_dir
+        clear_screen
+        scroll=0
+        print_dir
+
+    elif [[ -f $1 ]]; then
+        # Figure out what kind of file we're working with.
+        mime_type="$(file "-${file_flags:-biL}" "$1")"
+
+        # Open all text-based files in '$EDITOR'.
+        # Everything else goes through 'xdg-open'/'open'.
+        case "$mime_type" in
+            text/*|*x-empty*|*json*)
+                "${EDITOR:-vi}" "$1"
+
+                # Clear the screen afterwards to re-set TUI settings.
+                clear_screen
+                print_dir
+            ;;
+
+            *)
+                # 'nohup':  Make the process immune to hangups.
+                # '&':      Send it to the background.
+                # 'disown': Detach it from the shell.
+                nohup "${FFF_OPENER:-${opener:-xdg-open}}" "$1" &>/dev/null &
+                disown
+            ;;
+        esac
+    fi
+}
+
 key() {
     case "$1" in
+        # Open list item.
+        # 'C' is what BASH sees when the right arrow is pressed ('\e[C').
+        C|l) open "${list[scroll]}" ;;
+
+        # Go to the parent directory.
+        # 'D' is what BASH sees when the left arrow is pressed ('\e[D').
+        D|h) open "${PWD%/*}" ;;
+
         # Scroll down.
         # 'B' is what BASH sees when the down arrow is pressed ('\e[B').
         B|j)
@@ -105,6 +165,8 @@ key() {
                 format_dir "$scroll"
             }
         ;;
+
+        q) exit ;;
     esac
 }
 
@@ -116,6 +178,7 @@ main() {
     # '||:': Do nothing if 'pushd' fails. We don't care.
     pushd "$1" &>/dev/null ||:
 
+    get_os
     get_term_size
     clear_screen
 
