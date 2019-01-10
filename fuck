@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# fuck
+# fff - fucking fast file-manager.
 
 get_os() {
     # Figure out the current operating system to set
@@ -167,6 +167,9 @@ key() {
                 format_dir "$scroll"
             }
         ;;
+
+        # Go to top.
+        g) scroll=0; clear_screen; print_dir ;;
 
         q) exit ;;
     esac
