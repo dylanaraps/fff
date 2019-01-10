@@ -13,35 +13,67 @@
 # DECVCCM—Vertical Cursor-Coupling Mode
 
 clear_screen() {
-    printf '\e[?4h\e[?6l\e[?25l\e[?7l\e[2J\e[?6h\e[1;%sr' "$((LINES-3))"
-    n=0
+    # '\e[?25l': Hide the cursor.
+    # '\e[?7l':  Disable line wrapping.
+    # '\e[2J':   Clear the screen.
+    # '\e[1;Nr': Limit scrolling to scrolling area (LINES-3).
+    printf '\e[?25l\e[?7l\e[2J\e[1;%sr' "$((LINES-3))"
+
+    # Move cursor to top on resize.
+    # TODO: Proper resize handling (keep position.)
+    scroll=0
 }
 
 get_term_size() {
+    # Get terminal size ('stty' is POSIX and always available).
+    # This can't be done reliably in pure BASH.
     read -r LINES _ < <(stty size)
 }
 
 status_line() {
-    printf '\e[s\e[?6l\e[%sH\e[A\e[30;41m%s\e[K\e[m\e[?6h\e[u' "$LINES" "$PWD"
+    # '\e[s':      Save the current cursor position.
+    # '\e[%sH':    Move cursor to bottom of the terminal.
+    # '\e[A':      Move cursor up one to leave room for cmd-line.
+    # '\e[30;41m': Set foreground and background colors.
+    # '\e[K':      Clear to end of line (set background color to whole line).
+    # '\e[m':      Reset text formatting.
+    # '\e[u':      Restore cursor to saved position.
+    printf '\e[s\e[%sH\e[A\e[30;41m%s\e[K\e[m\e[u' "$LINES" "$PWD"
 }
 
 read_dir() {
-    d=(); f=()
+    # Read a directory to an array and sort it directories first.
+    dirs=(); files=()
 
-    for p in "$PWD"/*; do
-        [[ -d $p ]] && d+=("$p") || f+=("$p")
+    for item in "$PWD"/*; do
+        [[ -d $item ]] && dirs+=("$item") || files+=("$item")
     done
 
-    f=("${d[@]}" "${f[@]}"); [[ -z ${f[0]} ]] && f[0]="empty"
+    list=("${dirs[@]}" "${files[@]}")
+
+    # Indicate that the directory is empty.
+    [[ -z ${list[0]} ]] &&
+        list[0]="empty"
 }
 
 format_dir() {
-    (($1 == n)) && local fo+='\e[7m'
-    [[ -d ${f[$1]} ]] && { local fo+='\e[1;31m'; local di=/; }
-    printf '%b%s\e[m\r' "$fo" "${f[$1]##*/}${di}"
+    # Format the list item and print it.
+    (($1 == scroll)) &&
+        local format+='\e[7m'
+
+    [[ -d ${list[$1]} ]] && {
+        local format+='\e[1;32m'
+        local suffix=/
+    }
+
+    printf '%b%s\e[m\r' "$format" "${list[$1]##*/}${suffix}"
 }
 
 print_dir() {
+    # Print from beginning of list to LINES-status_bar.
+    # '\e[1B': Move cursor down after print.
+    #          Prevents issues with lines being eaten by the scroll area.
+    # '\e[H':  Send cursor back home (0,0).
     for ((i=0;i<LINES-3;i++)); {
         format_dir "$i"
         printf '\e[1B'
@@ -52,20 +84,20 @@ print_dir() {
 key() {
     case "$1" in
         j)
-            ((n < ${#f[@]}-1)) && {
-                ((n++))
-                format_dir "$((n-1))"
+            ((scroll < ${#list[@]}-1)) && {
+                ((scroll++))
+                format_dir "$((scroll-1))"
                 printf '\eD'
-                format_dir "$n"
+                format_dir "$scroll"
             }
         ;;
 
         k)
-            ((n > 0)) && {
-                ((n--))
-                format_dir "$((n+1))"
+            ((scroll > 0)) && {
+                ((scroll--))
+                format_dir "$((scroll+1))"
                 printf '\eM'
-                format_dir "$n"
+                format_dir "$scroll"
             }
         ;;
     esac
