@@ -221,6 +221,9 @@ key() {
             redraw
         ;;
 
+        # Go to '$HOME'.
+        \~) open ~ ;;
+
         q) exit ;;
     esac
 }
