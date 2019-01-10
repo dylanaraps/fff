@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+#
+# fuck
+
+# DL—Delete Line
+# IL—Insert Line
+# NEL—Next Line
+# SD—Pan Up
+# SU—Pan Down
+# SGR—Select Graphic Rendition
+# SRM—Local Echo: Send/Receive Mode
+# VPA—Vertical Line Position Absolute
+# DECVCCM—Vertical Cursor-Coupling Mode
+
+clear_screen() {
+    printf '\e[?4h\e[?6l\e[?25l\e[?7l\e[2J\e[?6h\e[1;%sr' "$((LINES-3))"
+    n=0
+}
+
+get_term_size() {
+    read -r LINES _ < <(stty size)
+}
+
+status_line() {
+    printf '\e[s\e[?6l\e[%sH\e[A\e[30;41m%s\e[K\e[m\e[?6h\e[u' "$LINES" "$PWD"
+}
+
+read_dir() {
+    d=(); f=()
+
+    for p in "$PWD"/*; do
+        [[ -d $p ]] && d+=("$p") || f+=("$p")
+    done
+
+    f=("${d[@]}" "${f[@]}"); [[ -z ${f[0]} ]] && f[0]="empty"
+}
+
+format_dir() {
+    (($1 == n)) && local fo+='\e[7m'
+    [[ -d ${f[$1]} ]] && { local fo+='\e[1;31m'; local di=/; }
+    printf '%b%s\e[m\r' "$fo" "${f[$1]##*/}${di}"
+}
+
+print_dir() {
+    for ((i=0;i<LINES-3;i++)); {
+        format_dir "$i"
+        printf '\e[1B'
+    }
+    printf '\e[H'
+}
+
+key() {
+    case "$1" in
+        j)
+            ((n < ${#f[@]}-1)) && {
+                ((n++))
+                format_dir "$((n-1))"
+                printf '\eD'
+                format_dir "$n"
+            }
+        ;;
+
+        k)
+            ((n > 0)) && {
+                ((n--))
+                format_dir "$((n+1))"
+                printf '\eM'
+                format_dir "$n"
+            }
+        ;;
+    esac
+}
+
+main() {
+    pushd "$1" &>/dev/null ||:
+
+    get_term_size
+    clear_screen
+
+    trap 'printf "\e[?61l\e[;r\e[?4l\e[?7h\e[?25h\e[2J\e[H"' EXIT
+    trap 'get_term_size; clear_screen; print_dir; status_line' WINCH
+
+    read_dir
+    print_dir
+
+    for ((;;)); {
+        status_line
+        read -rsn 1 && key "$REPLY"
+    }
+}
+
+main "$@"
