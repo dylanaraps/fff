@@ -3,8 +3,8 @@
 # fff - fucking fast file-manager.
 
 get_os() {
-    # Figure out the current operating system to set
-    # some specific variables.
+    # Figure out the current operating system to set some specific variables.
+    # '$OSTYPE' typically stores the name of the OS kernel.
     case "$OSTYPE" in
         # Mac OS X / macOS.
         darwin*)
