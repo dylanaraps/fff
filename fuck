@@ -195,6 +195,9 @@ key() {
 
         # Go to top.
         g) ((scroll=0)); redraw ;;
+
+        # Go to bottom.
+        # TODO: Fix this.
         G) ((scroll=list_total-1)); redraw ;;
 
         # Show hidden files.
