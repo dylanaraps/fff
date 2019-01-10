@@ -2,16 +2,6 @@
 #
 # fuck
 
-# DL—Delete Line
-# IL—Insert Line
-# NEL—Next Line
-# SD—Pan Up
-# SU—Pan Down
-# SGR—Select Graphic Rendition
-# SRM—Local Echo: Send/Receive Mode
-# VPA—Vertical Line Position Absolute
-# DECVCCM—Vertical Cursor-Coupling Mode
-
 clear_screen() {
     # '\e[?25l': Hide the cursor.
     # '\e[?7l':  Disable line wrapping.
