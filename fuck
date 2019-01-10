@@ -43,7 +43,8 @@ status_line() {
     # '\e[K':      Clear to end of line (set background color to whole line).
     # '\e[m':      Reset text formatting.
     # '\e[u':      Restore cursor to saved position.
-    printf '\e[s\e[%sH\e[A\e[30;41m%s\e[K\e[m\e[u' "$LINES" "$PWD"
+    printf '\e[s\e[%sH\e[A\e[30;41m%s\e[K\e[m\e[u' \
+           "$LINES" "(${scroll:=0}/$((${#list[@]}-1))) $PWD"
 }
 
 read_dir() {
@@ -58,7 +59,8 @@ read_dir() {
     list=("${dirs[@]}" "${files[@]}")
 
     # Indicate that the directory is empty.
-    [[ -z ${list[0]} ]] &&
+    # If the glob 'PWD/*' fails it'll set the array to a literal '*'.
+    [[ ${list[0]} == "${PWD}/*" ]] &&
         list[0]="empty"
 }
 
