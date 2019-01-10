@@ -20,11 +20,12 @@ get_os() {
 
 clear_screen() {
     # Setup the terminal for the TUI.
-    # '\e[?25l': Hide the cursor.
     # '\e[?7l':  Disable line wrapping.
+    # '\e[?25l': Hide the cursor.
     # '\e[2J':   Clear the screen.
     # '\e[1;Nr': Limit scrolling to scrolling area.
-    printf '\e[?25l\e[?7l\e[2J\e[1;%sr' "$max_items"
+    #            Also sets cursor to (0,0).
+    printf '\e[?7l\e[?25l\e[2J\e[1;%sr' "$max_items"
 }
 
 reset_terminal() {
@@ -33,6 +34,7 @@ reset_terminal() {
     # '\e[?25h': Unhide the cursor.
     # '\e[2J':   Clear the terminal.
     # '\e[;r':   Set the scroll region to its default value.
+    #            Also sets cursor to (0,0).
     printf '\e[?7h\e[?25h\e[2J\e[;r'
 }
 
