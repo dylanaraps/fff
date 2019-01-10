@@ -56,7 +56,7 @@ status_line() {
     # '\e[m':      Reset text formatting.
     # '\e[u':      Restore cursor to saved position.
     printf '\e[s\e[%sH\e[A\e[30;41m%s\e[K\e[m\e[u' \
-           "$LINES" "(${scroll:=0}/$((${#list[@]}-1))) ${PWD:-/}"
+           "$LINES" "(${scroll:=0}/$((list_total-1))) ${PWD:-/}"
 }
 
 read_dir() {
@@ -68,6 +68,7 @@ read_dir() {
     done
 
     list=("${dirs[@]}" "${files[@]}")
+    list_total="${#list[@]}"
 
     # Indicate that the directory is empty.
     # If the glob 'PWD/*' fails it'll set the array to a literal '*'.
@@ -91,9 +92,13 @@ format_dir() {
 print_dir() {
     # Print the max directory items that fit in the scroll area.
 
-    # Window resize handling.
     # If the entire list fits in the scroll area, move cursor to top.
-    ((${#list[@]} < max_items)) && scroll=0
+    ((list_total < max_items)) &&
+        ((scroll=0))
+
+    # If the cursor is near the bottom of the list, display the entire bottom.
+    ((list_total - scroll < max_items)) &&
+        ((scroll=list_total-max_items))
 
     # 'i=scroll':         Print list items from scroll position.
     # 'max_items+scroll': Print list items up to max_items+scroll_position.
@@ -167,7 +172,7 @@ key() {
         B|j)
             # '\eD': Move cursor down. If cursor hits the bottom margin of
             #        the scroll area, scroll the window down.
-            ((scroll < ${#list[@]}-1)) && {
+            ((scroll < list_total-1)) && {
                 ((scroll++))
                 format_dir "$((scroll-1))"
                 printf '\eD'
@@ -189,7 +194,8 @@ key() {
         ;;
 
         # Go to top.
-        g) scroll=0; redraw ;;
+        g) ((scroll=0)); redraw ;;
+        G) ((scroll=list_total-1)); redraw ;;
 
         # Show hidden files.
         .)
