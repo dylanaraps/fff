@@ -108,14 +108,23 @@ print_dir() {
     printf '\e[H'
 }
 
+redraw() {
+    # Redraw the current window.
+    # If 'full' is passed, re-fetch the directory list.
+    [[ $1 == full ]] && {
+        read_dir
+        scroll=0
+    }
+
+    clear_screen
+    print_dir
+}
+
 open() {
     # Open directories and files.
     if [[ -d $1/ ]]; then
         PWD="$1"
-        read_dir
-        clear_screen
-        scroll=0
-        print_dir
+        redraw full
 
     elif [[ -f $1 ]]; then
         # Figure out what kind of file we're working with.
@@ -127,9 +136,8 @@ open() {
             text/*|*x-empty*|*json*)
                 "${EDITOR:-vi}" "$1"
 
-                # Clear the screen afterwards to re-set TUI settings.
-                clear_screen
-                print_dir
+                # Redraw the screen afterwards to re-set TUI settings.
+                redraw
             ;;
 
             *)
@@ -181,26 +189,21 @@ key() {
         ;;
 
         # Go to top.
-        g) scroll=0; clear_screen; print_dir ;;
+        g) scroll=0; redraw ;;
 
         # Show hidden files.
         .)
             # 'a=a>0?0:++a': Toggle between both values of 'shopt_flags'.
             shopt_flags=(u s)
             shopt -"${shopt_flags[((a=a>0?0:++a))]}" dotglob
-
-            clear_screen
-            read_dir
-            scroll=0
-            print_dir
+            redraw full
         ;;
 
         # Spawn a shell.
         s)
             reset_terminal
             cd "$PWD" && "$SHELL"
-            clear_screen
-            print_dir
+            redraw
         ;;
 
         q) exit ;;
@@ -227,7 +230,7 @@ main() {
     trap 'reset_terminal' EXIT
 
     # Trap the window resize signal (handle window resize events).
-    trap 'get_term_size; clear_screen; print_dir; status_line' WINCH
+    trap 'get_term_size; redraw; status_line' WINCH
 
     read_dir
     print_dir
