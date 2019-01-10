@@ -19,11 +19,21 @@ get_os() {
 }
 
 clear_screen() {
+    # Setup the terminal for the TUI.
     # '\e[?25l': Hide the cursor.
     # '\e[?7l':  Disable line wrapping.
     # '\e[2J':   Clear the screen.
     # '\e[1;Nr': Limit scrolling to scrolling area.
     printf '\e[?25l\e[?7l\e[2J\e[1;%sr' "$max_items"
+}
+
+reset_terminal() {
+    # Reset the terminal to a useable state (undo all changes).
+    # '\e[?7h':  Re-enable line wrapping.
+    # '\e[?25h': Unhide the cursor.
+    # '\e[2J':   Clear the terminal.
+    # '\e[;r':   Set the scroll region to its default value.
+    printf '\e[?7h\e[?25h\e[2J\e[;r'
 }
 
 get_term_size() {
@@ -171,6 +181,14 @@ key() {
         # Go to top.
         g) scroll=0; clear_screen; print_dir ;;
 
+        # Spawn a shell.
+        s)
+            reset_terminal
+            cd "$PWD" && "$SHELL"
+            clear_screen
+            print_dir
+        ;;
+
         q) exit ;;
     esac
 }
@@ -192,7 +210,7 @@ main() {
     # '\e[?25h': Unhide the cursor.
     # '\e[2J':   Clear the terminal.
     # '\e[;r':   Set the scroll region to its default value.
-    trap 'printf "\e[?7h\e[?25h\e[2J\e[;r"' EXIT
+    trap 'reset_terminal' EXIT
 
     # Trap the window resize signal (handle window resize events).
     trap 'get_term_size; clear_screen; print_dir; status_line' WINCH
