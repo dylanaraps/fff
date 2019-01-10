@@ -183,6 +183,18 @@ key() {
         # Go to top.
         g) scroll=0; clear_screen; print_dir ;;
 
+        # Show hidden files.
+        .)
+            # 'a=a>0?0:++a': Toggle between both values of 'shopt_flags'.
+            shopt_flags=(u s)
+            shopt -"${shopt_flags[((a=a>0?0:++a))]}" dotglob
+
+            clear_screen
+            read_dir
+            scroll=0
+            print_dir
+        ;;
+
         # Spawn a shell.
         s)
             reset_terminal
