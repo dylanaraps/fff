@@ -20,22 +20,24 @@ get_os() {
 
 clear_screen() {
     # Setup the terminal for the TUI.
+    # '\e[?6h':  Restrict cursor to scrolling area.
     # '\e[?7l':  Disable line wrapping.
     # '\e[?25l': Hide the cursor.
     # '\e[2J':   Clear the screen.
     # '\e[1;Nr': Limit scrolling to scrolling area.
     #            Also sets cursor to (0,0).
-    printf '\e[?7l\e[?25l\e[2J\e[1;%sr' "$max_items"
+    printf '\e[?6h\e[?7l\e[?25l\e[2J\e[1;%sr' "$max_items"
 }
 
 reset_terminal() {
     # Reset the terminal to a useable state (undo all changes).
+    # '\e[?6l':  Unrestrict cursor movement (full window).
     # '\e[?7h':  Re-enable line wrapping.
     # '\e[?25h': Unhide the cursor.
     # '\e[2J':   Clear the terminal.
     # '\e[;r':   Set the scroll region to its default value.
     #            Also sets cursor to (0,0).
-    printf '\e[?7h\e[?25h\e[2J\e[;r'
+    printf '\e[?6l\e[?7h\e[?25h\e[2J\e[;r'
 }
 
 get_term_size() {
@@ -49,13 +51,15 @@ get_term_size() {
 
 status_line() {
     # '\e[s':      Save the current cursor position.
+    # '\e[?6l':    Unrestrict cursor movement (full window).
     # '\e[%sH':    Move cursor to bottom of the terminal.
     # '\e[A':      Move cursor up one to leave room for cmd-line.
     # '\e[30;41m': Set foreground and background colors.
     # '\e[K':      Clear to end of line (set background color to whole line).
     # '\e[m':      Reset text formatting.
+    # '\e[?6h':    Restrict cursor to scrolling area.
     # '\e[u':      Restore cursor to saved position.
-    printf '\e[s\e[%sH\e[A\e[30;41m%s\e[K\e[m\e[u' \
+    printf '\e[s\e[?6l\e[%sH\e[A\e[30;41m%s\e[K\e[m\e[?6h\e[u' \
            "$LINES" "(${scroll:=0}/$((list_total-1))) ${PWD:-/}"
 }
 
@@ -93,12 +97,14 @@ print_dir() {
     # Print the max directory items that fit in the scroll area.
 
     # If the entire list fits in the scroll area, move cursor to top.
-    ((list_total < max_items)) &&
+    if ((list_total < max_items)); then
         ((scroll=0))
 
     # If the cursor is near the bottom of the list, display the entire bottom.
-    # ((list_total - scroll < max_items)) &&
-    #     ((scroll=list_total-max_items))
+    elif ((list_total - scroll < max_items)); then
+        ((scroll=list_total-max_items))
+
+    fi
 
     # 'i=scroll':         Print list items from scroll position.
     # 'max_items+scroll': Print list items up to max_items+scroll_position.
@@ -229,20 +235,14 @@ main() {
 
     get_os
     get_term_size
-    clear_screen
 
     # Trap the exit signal (we need to reset the terminal to a useable state.)
-    # '\e[?7h':  Re-enable line wrapping.
-    # '\e[?25h': Unhide the cursor.
-    # '\e[2J':   Clear the terminal.
-    # '\e[;r':   Set the scroll region to its default value.
     trap 'reset_terminal' EXIT
 
     # Trap the window resize signal (handle window resize events).
     trap 'get_term_size; redraw; status_line' WINCH
 
-    read_dir
-    print_dir
+    redraw full
 
     for ((;;)); {
         status_line
