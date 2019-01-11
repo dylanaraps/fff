@@ -60,7 +60,7 @@ status_line() {
     # '\e[?6h':    Restrict cursor to scrolling area.
     # '\e[u':      Restore cursor to saved position.
     printf '\e[s\e[?6l\e[%sH\e[A\e[30;4%sm%s\e[K\e[m\e[?6h\e[u' \
-           "$LINES" "${FFF_COL2:-1}" "(${scroll:=0}/$((list_total-1))) ${PWD:-/} $scroll $list_total $max_items"
+           "$LINES" "${FFF_COL2:-1}" "(${scroll:=0}/$((list_total-1))) ${PWD:-/}"
 }
 
 read_dir() {
