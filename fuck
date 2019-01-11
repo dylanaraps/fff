@@ -18,15 +18,16 @@ get_os() {
     esac
 }
 
-clear_screen() {
+setup_terminal() {
     # Setup the terminal for the TUI.
-    # '\e[?6h':  Restrict cursor to scrolling area.
-    # '\e[?7l':  Disable line wrapping.
-    # '\e[?25l': Hide the cursor.
-    # '\e[2J':   Clear the screen.
-    # '\e[1;Nr': Limit scrolling to scrolling area.
-    #            Also sets cursor to (0,0).
-    printf '\e[?6h\e[?7l\e[?25l\e[2J\e[1;%sr' "$max_items"
+    # '\e[?1049h': Save current terminal screen.
+    # '\e[?6h':    Restrict cursor to scrolling area.
+    # '\e[?7l':    Disable line wrapping.
+    # '\e[?25l':   Hide the cursor.
+    # '\e[2J':     Clear the screen.
+    # '\e[1;Nr':   Limit scrolling to scrolling area.
+    #              Also sets cursor to (0,0).
+    printf '\e[?1049h\e[?6h\e[?7l\e[?25l\e[2J\e[1;%sr' "$max_items"
 }
 
 reset_terminal() {
@@ -40,10 +41,19 @@ reset_terminal() {
     printf '\e[?6l\e[?7h\e[?25h\e[2J\e[;r'
 }
 
+clear_screen() {
+    # Only clear the scrolling window (dir item list).
+    # '\e[%s;%s': Move cursor to bottom right corner of scroll area.
+    # '\e[1J':    Clear screen to top left corner (scroll area) (from cursor up).
+    # '\e[1;%sr': Clearing the screen resets the scroll region(?). Re-set it.
+    #             Also sets cursor to (0,0).
+    printf '\e[%s;%sH\e[1J\e[1;%sr' "$LINES" "$COLUMNS" "$max_items"
+}
+
 get_term_size() {
     # Get terminal size ('stty' is POSIX and always available).
     # This can't be done reliably in pure BASH.
-    read -r LINES _ < <(stty size)
+    read -r LINES COLUMNS < <(stty size)
 
     # Max list items that fit in the scroll area.
     ((max_items=LINES-3))
@@ -287,10 +297,7 @@ main() {
 
     get_os
     get_term_size
-
-    # Save current terminal screen.
-    # This prevents 'fff' from eating the original terminal screen.
-    printf '\e[?1049h'
+    setup_terminal
 
     # Trap the exit signal (we need to reset the terminal to a useable state.)
     # '\e[?1049l': Restore saved terminal screen.
