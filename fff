@@ -2,109 +2,352 @@
 #
 # fff - fucking fast file-manager.
 
-clr() {
-    printf '\e[?7l\e[?25l\e[2J\e[H'
-    LINES=; (:;:); ((LINES==0)) && read -r LINES _ < <(stty size)
-    ((m=LINES-3,j=l>m/2?l>=c-m/2?c+1:l+m/2+1:m,k=k>=0?j-m>=0?j-m:k:k,l=l>c?k:l))
+get_os() {
+    # Figure out the current operating system to set some specific variables.
+    # '$OSTYPE' typically stores the name of the OS kernel.
+    case "$OSTYPE" in
+        # Mac OS X / macOS.
+        darwin*)
+            opener="open"
+            file_flags="bIL"
+        ;;
+
+        haiku)
+            opener="open"
+        ;;
+    esac
 }
 
-get_dir() {
-    d=(); f=()
-    for p in "$PWD"/*; do [[ -d $p ]] && d+=("$p") || f+=("$p"); done
-    f=("${d[@]}" "${f[@]}"); ((${#f[@]}==0)) && f[0]=$'\e[27mempty'
+setup_terminal() {
+    # Setup the terminal for the TUI.
+    # '\e[?1049h': Save current terminal screen.
+    # '\e[?6h':    Restrict cursor to scrolling area.
+    # '\e[?7l':    Disable line wrapping.
+    # '\e[?25l':   Hide the cursor.
+    # '\e[2J':     Clear the screen.
+    # '\e[1;Nr':   Limit scrolling to scrolling area.
+    #              Also sets cursor to (0,0).
+    printf '\e[?1049h\e[?6h\e[?7l\e[?25l\e[2J\e[1;%sr' "$max_items"
 }
 
-draw() {
-    ((c=${#f[@]},j=j>c?c:j))
+reset_terminal() {
+    # Reset the terminal to a useable state (undo all changes).
+    # '\e[?6l':  Unrestrict cursor movement (full window).
+    # '\e[?7h':  Re-enable line wrapping.
+    # '\e[?25h': Unhide the cursor.
+    # '\e[2J':   Clear the terminal.
+    # '\e[;r':   Set the scroll region to its default value.
+    #            Also sets cursor to (0,0).
+    printf '\e[?6l\e[?7h\e[?25h\e[2J\e[;r'
+}
 
-    for((i=${k:=0};i<j;i++)); {
-        [[ -d ${f[i]} ]] && { fo+='\e[1m\e[3'"${FFF_COL1:-2}m"; fp=/; }
-        [[ ${f[i]} == "${f[l]}" ]]  && fo+='\e[7m\e[1m\e[3'"${FFF_COL4:-6}m"
-        [[ ${co[i]} == "${f[i]}" ]] && fo+='\e[3'"${FFF_COL3:-1}m "
-        printf '\e[K%b%s\e[m\n' "$fo" "${f[i]##*/}${fp}"; fo=; fp=
+clear_screen() {
+    # Only clear the scrolling window (dir item list).
+    # '\e[%s;%s': Move cursor to bottom right corner of scroll area.
+    # '\e[1J':    Clear screen to top left corner (scroll area) (from cursor up).
+    # '\e[1;%sr': Clearing the screen resets the scroll region(?). Re-set it.
+    #             Also sets cursor to (0,0).
+    printf '\e[%s;%sH\e[1J\e[1;%sr' "$LINES" "$COLUMNS" "$max_items"
+}
+
+get_term_size() {
+    # Get terminal size ('stty' is POSIX and always available).
+    # This can't be done reliably in pure BASH.
+    read -r LINES COLUMNS < <(stty size)
+
+    # Max list items that fit in the scroll area.
+    ((max_items=LINES-3))
+}
+
+status_line() {
+    # '\e7':       Save cursor position.
+    #              This is more widely supported than '\e[s'.
+    # '\e[?6l':    Unrestrict cursor movement (full window).
+    # '\e[%sH':    Move cursor to bottom of the terminal.
+    # '\e[30;41m': Set foreground and background colors.
+    # '\e[K':      Clear to end of line (set background color to whole line).
+    # '\e[m':      Reset text formatting.
+    # '\e[?6h':    Restrict cursor to scrolling area.
+    # '\e8':       Restore cursor position.
+    #              This is more widely supported than '\e[u'.
+    printf '\e7\e[?6l\e[%sH\e[30;4%sm%s\e[K\e[m\e[?6h\e8' \
+           "$((LINES-1))" \
+           "${FFF_COL2:-1}" \
+           "(${scroll:=0}/${list_total}) ${PWD:-/}"
+}
+
+read_dir() {
+    # Read a directory to an array and sort it directories first.
+    dirs=(); files=(); item_index=
+
+    for item in "$PWD"/*; do
+        if [[ -d $item ]]; then
+            dirs+=("$item")
+            ((item_index++))
+
+            # Find the position of the child directory in the
+            # parent directory list.
+            [[ $item == "$previous_dir" ]] &&
+                ((previous_index=item_index))
+        else
+            files+=("$item")
+        fi
+    done
+
+    list=("${dirs[@]}" "${files[@]}")
+    ((list_total=${#list[@]}-1))
+
+    # Indicate that the directory is empty.
+    # If the glob 'PWD/*' fails it'll set the array to a literal '*'.
+    [[ ${list[0]} == "${PWD}/*" ]] &&
+        list[0]="empty"
+}
+
+print_line() {
+    # Format the list item and print it.
+    [[ -d ${list[$1]} ]] && {
+        local format+="\\e[1;3${FFF_COL1:-2}m"
+        local suffix=/
     }
-    printf '\e[3%sm\e[999B\e[A\e[K%s\e[m\e[H' "${FFF_COL2:-4}" \
-           "($((l+1))/$c) ${co[*]:+[${pr[0]} ${#co[@]}^] [p] -> }$PWD"
+
+    (($1 == scroll)) &&
+        local format+="\\e[1;3${FFF_COL4:-6};7m"
+
+    printf '%b%s\e[m\r' "$format" "${list[$1]##*/}${suffix}"
 }
 
-hist() {
-    l2[((n=n<0?0:++n))]="$l:$k"
+draw_dir() {
+    # Print the max directory items that fit in the scroll area.
+    local scroll_start="$scroll"
+    local scroll_new_pos
+
+    # When going up the directory tree, place the cursor on the position
+    # of the previous directory.
+    ((find_previous == 1)) && {
+        ((scroll_start=previous_index-1))
+        ((scroll=scroll_start))
+
+        # Clear the directory history. We're here now.
+        previous_dir=
+        find_previous=
+    }
+
+    # If the entire list fits in the scroll area, don't print from scroll
+    # position. Print from the start of the list. Also keep the cursor at its
+    # current location.
+    if ((list_total < max_items)); then
+        ((scroll_start=0))
+        ((scroll_new_pos=scroll + 1))
+
+    # If the cursor is near the bottom of the list, display the entire bottom.
+    # Also keep the cursor at its current location.
+    # 'scroll_new_pos' figures out which line number the cursor is on.
+    elif ((list_total - scroll < max_items)); then
+        ((scroll_start=list_total - max_items + 1))
+        ((scroll_new_pos=max_items - (list_total-scroll)))
+    fi
+
+    # 'i=scroll_start':   Print list items from scroll start position.
+    # 'max_items+scroll': Print list items up to max_items+scroll_position.
+    #
+    # '\e[1B': Move cursor down after print.
+    #          Prevents issues with lines being eaten by the scroll area.
+    # '\e[H':  Send cursor back home (0,0).
+    for ((i=scroll_start;i<max_items+scroll;i++)); {
+        print_line "$i"
+        printf '\e[B'
+    }
+
+    # Move the cursor to its new position if it changed.
+    # If the variable 'scroll_new_pos' is empty, the cursor is moved to line '0'.
+    printf '\e[%sH' "$scroll_new_pos"
 }
 
-mark() {
-   [[ $PWD != "$copwd" ]] && co=()
-   [[ ${co[l]} == "${f[l]}" ]] && unset 'co[l]' || co[l]="${f[l]}"; copwd="$PWD"
+redraw() {
+    # Redraw the current window.
+    # If 'full' is passed, re-fetch the directory list.
+    [[ $1 == full ]] && {
+        read_dir
+        scroll=0
+    }
+
+    clear_screen
+    draw_dir
 }
 
 open() {
-    [[ -d $1/ ]] && { l=0; clr; : "${1:-/}"; PWD="${_/\/\///}"; get_dir; draw; }
-    [[ -f $1  ]] && {
-        [[ $OSTYPE == darwin* ]] && { oc=open; fa="bIL"; }
-        [[ $OSTYPE == haiku ]] && oc=open
-        case "$(file "-${fa:-biL}" "$1")" in
-            text/*|*x-empty*|*json*) "${EDITOR:-vi}" "$1"; printf '\e[?25l' ;;
-            *) nohup "${FFF_OPENER:-${oc:-xdg-open}}" "$1" &>/dev/null & disown
-        esac
-    }
-}
+    # Open directories and files.
+    if [[ -d $1/ ]]; then
+        PWD="$1"
+        redraw full
 
-prompt() {
-    printf '\e[999B\e[?25h'
-    case "${1: -1}" in
-        r) read -erp "rename ${f[l]##*/}: "; [[ $REPLY ]] && \
-           mv "${f[l]}" "$PWD/$REPLY" ;;
-        d) read -n 1 -rp "trash ${f[l]##*/}? [y/n]: " y; [[ $y == y ]] && {
-           mv "${f[l]}" "$FFF_TRASH"; ((l>0?l--:l)); } ;;
-        n) read -erp "mkdir: ";  [[ $REPLY ]] && mkdir -p "$PWD/$REPLY" ;;
-        f) read -erp "mkfile: "; [[ $REPLY ]] && : > "$PWD/$REPLY" ;;
-        /) g="$PWD"; IFS= read -n 1 -rsp $'\e[2K\r'"/$s2" s1
-           [[ $s1 == $'\177' ]] && s2="${s2%?}" || s2+="$s1"
-           [[ $s1 == $'\e' ]] && { clr; get_dir; return; }
-           f=("$PWD"/*"$s2"*); l=0; clr; draw; [[ $s1 ]] && prompt /
-           s2=; [[ ${f[*]} ]] && return
-    esac
-    clr; get_dir
+    elif [[ -f $1 ]]; then
+        # Figure out what kind of file we're working with.
+        mime_type="$(file "-${file_flags:-biL}" "$1")"
+
+        # Open all text-based files in '$EDITOR'.
+        # Everything else goes through 'xdg-open'/'open'.
+        case "$mime_type" in
+            text/*|*x-empty*|*json*)
+                "${EDITOR:-vi}" "$1"
+
+                # Re-set TUI settings to make sure '$EDITOR' doesn't
+                # reset them to defaults.
+                setup_terminal
+                redraw
+            ;;
+
+            *)
+                # 'nohup':  Make the process immune to hangups.
+                # '&':      Send it to the background.
+                # 'disown': Detach it from the shell.
+                nohup "${FFF_OPENER:-${opener:-xdg-open}}" "$1" &>/dev/null &
+                disown
+            ;;
+        esac
+    fi
 }
 
 key() {
-    case "${1: -1}" in
-        C|l|"") [[ -d ${f[l]} ]] && hist; open "${f[l]}"; g= ;;
-        D|h) open "${g:-${PWD%/*}}";
-             [[ -z $g ]] && ((n=n<0?0:n,l=${l2[n]/:*},k=${l2[n-1]/*:},n--))
-             [[ $PWD == / ]] && l=0; g=; clr ;;
+    case "$1" in
+        # Open list item.
+        # 'C' is what BASH sees when the right arrow is pressed ('\e[C').
+        # '' is what bash sees when the enter/return key is pressed.
+        l|C|'')
+            open "${list[scroll]}"
+        ;;
 
-        g) l=0; clr ;;
-        G) ((l=c-1)); clr; ((k=k<0?0:k)) ;;
-        .) a=(u s); shopt -"${a[((h=h>0?0:++h))]}" dotglob l=0; clr; get_dir ;;
+        # Go to the parent directory.
+        # 'D' is what BASH sees when the left arrow is pressed ('\e[D').
+        # '\177' is what BASH sees when the backspace key is pressed.
+        # '[[ $PWD ]]' If '$PWD' is empty we're at '/', do nothing.
+        h|D|$'\177')
+            [[ $PWD ]] && {
+                previous_dir="$PWD"
+                find_previous=1
+                open "${PWD%/*}"
+            }
+        ;;
 
-        y|m) mark; [[ $1 == y ]] && pr=(cp -R) || pr=(mv) ;;
-        p) [[ ${co[*]} ]] && { cd "$PWD" && "${pr[@]}" "${co[@]}" .; } && {
-           clr; get_dir; co=(); copwd=; } ;;
-        c) co=() ;;
+        # Scroll down.
+        # 'B' is what BASH sees when the down arrow is pressed ('\e[B').
+        B|j)
+            ((scroll < list_total)) && {
+                ((scroll++))
 
-        r|d|n|f|/) prompt "$1" ;;
-        \~|t) g="$PWD"; hist; [[ $1 == t ]] || open ~ && open "$FFF_TRASH" ;;
+                print_line "$((scroll-1))"
+                printf '\n'
+                print_line "$scroll"
+            }
+        ;;
 
-        s) printf '\e[?7h\e[?25h\e[2J\e[H'; cd "$PWD" && "$SHELL"; clr ;;
-        x) read -rn1 -p $'\e[999B\e[2A\e[1J\e[H'"$(stat "${f[l]}")"; clr ;;
-        q) printf '%s' "${PWD/\/\///}" > "${FFF_CD_FILE:-$HOME/.fff_d}"; exit ;;
+        # Scroll up.
+        # 'A' is what BASH sees when the down arrow is pressed ('\e[A').
+        A|k)
+            # '\e[1L': Insert a line above the cursor.
+            # '\e[A':  Move cursor up a line.
+            ((scroll > 0)) && {
+                ((scroll--))
 
-        B|j) ((l=l==c-1?l:++l,j!=c&&l==j-m/2+1))&&((k=k>=j?k:++k,j=j<c?++j:j)) ;;
-        A|k) ((l=l<1?l:--l,k>0&&l==k+m/2-2))&&((k=k<=j?k>0?--k:0:j,j=j>0?--j:j))
+                print_line "$((scroll+1))"
+
+                if ((y == 1)); then
+                    printf '\e[1L'
+                else
+                    printf '\e[A'
+                fi
+
+                print_line "$scroll"
+            }
+        ;;
+
+        # Go to top.
+        g)
+            ((scroll=0))
+            redraw
+        ;;
+
+        # Go to bottom.
+        G)
+            ((scroll=list_total))
+            redraw
+        ;;
+
+        # Show hidden files.
+        .)
+            # 'a=a>0?0:++a': Toggle between both values of 'shopt_flags'.
+            #                This also works for '3' or more values with
+            #                some modification.
+            shopt_flags=(u s)
+            shopt -"${shopt_flags[((a=a>0?0:++a))]}" dotglob
+            redraw full
+        ;;
+
+        # Spawn a shell.
+        s)
+            reset_terminal
+            cd "$PWD" && "$SHELL"
+            redraw
+        ;;
+
+        # Show file attributes.
+        x)
+            clear_screen
+            stat "${list[scroll]}"
+            read -rn 1
+            redraw
+        ;;
+
+        # Go to '$HOME'.
+        \~) open ~ ;;
+
+        # Quit and store current directory in a file for CD on exit.
+        q)
+            printf '%s\n' "$PWD" > "${FFF_CD_FILE:-$HOME/.fff_d}"
+            exit
+        ;;
     esac
 }
 
 main() {
-    shopt -s nocaseglob nullglob checkwinsize
-    [[ $OSTYPE == haiku ]] &&
-        : "${FFF_TRASH:=$(finddir B_USER_CACHE_DIRECTORY)/fff/trash/}"
-    mkdir -p "${FFF_TRASH:=$HOME/.cache/fff/trash/}"
-    pushd "$1" &>/dev/null ||:; clr; get_dir; draw
+    # Handle a directory as the first argument.
+    # 'pushd' is a cheap way of finding the full path to a directory.
+    # It updates the '$PWD' variable on successful execution.
+    # It handles relative paths as well as '../../../'.
+    #
+    # '||:': Do nothing if 'pushd' fails. We don't care.
+    pushd "$1" &>/dev/null ||:
 
-    trap 'clr; printf "\e[?25h\e[?7h"; key q' INT EXIT
-    trap 'clr; draw' WINCH
+    get_os
+    get_term_size
+    setup_terminal
 
-    for ((;;)); { wait; read -rsn 1; key "$REPLY"; draw & }
+    # Trap the exit signal (we need to reset the terminal to a useable state.)
+    # '\e[?1049l': Restore saved terminal screen.
+    trap 'reset_terminal; printf "\e[?1049l"' EXIT
+
+    # Trap 'Ctrl+c' and exit by mimicking the 'q' keypress.
+    # This allow us to run the same plumbing on exit for both.
+    trap 'key q' INT
+
+    # Trap the window resize signal (handle window resize events).
+    trap 'get_term_size; redraw; status_line' WINCH
+
+    redraw full
+
+    # Vintage infinite loop.
+    for ((;;)); {
+        status_line
+        read -rsn 1 && key "$REPLY"
+
+        # Get cursor position.
+        # This needs to run synchronously and in the same context.
+        # The terminal dies if two read commands happen asynchronously.
+        # '\e[6n': Report cursor position.
+        #          The reply from the terminal acts like user input
+        #          so we read it as so.
+        IFS='[;' read -sp $'\e[6n' -d R -rs _ y _
+    }
 }
 
 main "$@"
