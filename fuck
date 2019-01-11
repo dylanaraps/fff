@@ -208,9 +208,11 @@ key() {
         # '\177' is what BASH sees when the backspace key is pressed.
         # '[[ $PWD ]]' If '$PWD' is empty we're at '/', do nothing.
         h|D|$'\177')
-            previous_dir="$PWD"
-            find_previous=1
-            [[ $PWD ]] && open "${PWD%/*}"
+            [[ $PWD ]] && {
+                previous_dir="$PWD"
+                find_previous=1
+                open "${PWD%/*}"
+            }
         ;;
 
         # Scroll down.
