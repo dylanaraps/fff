@@ -113,6 +113,10 @@ print_dir() {
     ((find_previous == 1)) && {
         ((scroll_start=previous_index-1))
         ((scroll=scroll_start))
+
+        # Clear the directory history. We're here now.
+        previous_dir=
+        find_previous=
     }
 
     # If the entire list fits in the scroll area, don't print from scroll
@@ -195,8 +199,6 @@ key() {
         # 'C' is what BASH sees when the right arrow is pressed ('\e[C').
         # '' is what bash sees when the enter/return key is pressed.
         l|C|'')
-            previous_dir=
-            find_previous=
             open "${list[scroll]}"
         ;;
 
