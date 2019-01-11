@@ -104,7 +104,7 @@ format_dir() {
     printf '%b%s\e[m\r' "$format" "${list[$1]##*/}${suffix}"
 }
 
-print_dir() {
+draw_dir() {
     # Print the max directory items that fit in the scroll area.
     local scroll_start="$scroll"
     local scroll_new_pos
@@ -160,7 +160,7 @@ redraw() {
     }
 
     clear_screen
-    print_dir
+    draw_dir
 }
 
 open() {
