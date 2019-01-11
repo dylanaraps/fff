@@ -288,9 +288,19 @@ main() {
     get_os
     get_term_size
 
+    # Save current terminal screen.
+    # This prevents 'fff' from eating the original terminal screen.
+    printf '\e[?1049h'
+
     # Trap the exit signal (we need to reset the terminal to a useable state.)
     # See: 'help trap', 'trap -l'.
-    trap 'reset_terminal' EXIT
+    # '\e[?1049l': Restore saved terminal screen.
+    trap 'reset_terminal; printf "\e[?1049l"' EXIT
+
+    # Trap 'Ctrl+c' and exit by mimicking the 'q' keypress.
+    # This allow us to run the same plumbing on exit for both.
+    # See: 'help trap', 'trap -l'.
+    trap 'key q' INT
 
     # Trap the window resize signal (handle window resize events).
     # See: 'help trap', 'trap -l'.
