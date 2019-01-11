@@ -284,7 +284,11 @@ key() {
         # Go to '$HOME'.
         \~) open ~ ;;
 
-        q) exit ;;
+        # Quit and store current directory in a file for CD on exit.
+        q)
+            printf '%s\n' "$PWD" > "${FFF_CD_FILE:-$HOME/.fff_d}"
+            exit
+        ;;
     esac
 }
 
