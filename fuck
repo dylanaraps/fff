@@ -55,10 +55,9 @@ status_line() {
     # '\e[%sH':    Move cursor to bottom of the terminal.
     # '\e[30;41m': Set foreground and background colors.
     # '\e[K':      Clear to end of line (set background color to whole line).
-    # '\e[m':      Reset text formatting.
     # '\e[?6h':    Restrict cursor to scrolling area.
     # '\e[u':      Restore cursor to saved position.
-    printf '\e[s\e[?6l\e[%sH\e[30;4%sm%s\e[K\e[7m\e[m\e[?6h\e[u' \
+    printf '\e[s\e[?6l\e[%sH\e[30;4%sm%s\e[K\e[?6h\e[u' \
            "$((LINES-1))" \
            "${FFF_COL2:-1}" \
            "(${scroll:=0}/${list_total}) ${PWD:-/}"
