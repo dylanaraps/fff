@@ -65,9 +65,10 @@ status_line() {
     # '\e[%sH':    Move cursor to bottom of the terminal.
     # '\e[30;41m': Set foreground and background colors.
     # '\e[K':      Clear to end of line (set background color to whole line).
+    # '\e[m':      Reset text formatting.
     # '\e[?6h':    Restrict cursor to scrolling area.
     # '\e[u':      Restore cursor to saved position.
-    printf '\e[s\e[?6l\e[%sH\e[30;4%sm%s\e[K\e[?6h\e[u' \
+    printf '\e[s\e[?6l\e[%sH\e[30;4%sm%s\e[K\e[m\e[?6h\e[u' \
            "$((LINES-1))" \
            "${FFF_COL2:-1}" \
            "(${scroll:=0}/${list_total}) ${PWD:-/}"
@@ -229,12 +230,14 @@ key() {
         # Scroll down.
         # 'B' is what BASH sees when the down arrow is pressed ('\e[B').
         B|j)
-            # '\eD': Move cursor down. If cursor hits the bottom margin of
-            #        the scroll area, scroll the window down.
+            # '\eD':  Move cursor down. If cursor hits the bottom margin of
+            #         the scroll area, scroll the window down.
+            # '\e[K': Clear the line from cursor right to fix issues in
+            #         some terminal emulators (terminology).
             ((scroll < list_total)) && {
                 ((scroll++))
                 print_line "$((scroll-1))"
-                printf '\eD'
+                printf '\eD\e[K'
                 print_line "$scroll"
             }
         ;;
