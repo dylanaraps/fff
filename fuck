@@ -182,7 +182,8 @@ key() {
         # Go to the parent directory.
         # 'D' is what BASH sees when the left arrow is pressed ('\e[D').
         # '\177' is what BASH sees when the backspace key is pressed.
-        h|D|$'\177') open "${PWD%/*}" ;;
+        # '[[ $PWD ]]' If '$PWD' is empty we're at '/', do nothing.
+        h|D|$'\177') [[ $PWD ]] && open "${PWD%/*}" ;;
 
         # Scroll down.
         # 'B' is what BASH sees when the down arrow is pressed ('\e[B').
@@ -219,6 +220,8 @@ key() {
         # Show hidden files.
         .)
             # 'a=a>0?0:++a': Toggle between both values of 'shopt_flags'.
+            #                This also works for '3' or more values with
+            #                some modification.
             shopt_flags=(u s)
             shopt -"${shopt_flags[((a=a>0?0:++a))]}" dotglob
             redraw full
@@ -241,6 +244,7 @@ key() {
 main() {
     # Handle a directory as the first argument.
     # 'pushd' is a cheap way of finding the full path to a directory.
+    # It updates the '$PWD' variable on successful execution.
     # It handles relative paths as well as '../../../'.
     #
     # '||:': Do nothing if 'pushd' fails. We don't care.
@@ -250,13 +254,16 @@ main() {
     get_term_size
 
     # Trap the exit signal (we need to reset the terminal to a useable state.)
+    # See: 'help trap', 'trap -l'.
     trap 'reset_terminal' EXIT
 
     # Trap the window resize signal (handle window resize events).
+    # See: 'help trap', 'trap -l'.
     trap 'get_term_size; redraw; status_line' WINCH
 
     redraw full
 
+    # Vintage infinite loop.
     for ((;;)); {
         status_line
         read -rsn 1 && key "$REPLY"
