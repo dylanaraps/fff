@@ -91,7 +91,7 @@ read_dir() {
         list[0]="empty"
 }
 
-format_dir() {
+print_line() {
     # Format the list item and print it.
     [[ -d ${list[$1]} ]] && {
         local format+="\\e[1;3${FFF_COL1:-2}m"
@@ -142,7 +142,7 @@ draw_dir() {
     #          Prevents issues with lines being eaten by the scroll area.
     # '\e[H':  Send cursor back home (0,0).
     for ((i=scroll_start;i<max_items+scroll;i++)); {
-        format_dir "$i"
+        print_line "$i"
         printf '\e[1B'
     }
 
@@ -220,9 +220,9 @@ key() {
             #        the scroll area, scroll the window down.
             ((scroll < list_total)) && {
                 ((scroll++))
-                format_dir "$((scroll-1))"
+                print_line "$((scroll-1))"
                 printf '\eD'
-                format_dir "$scroll"
+                print_line "$scroll"
             }
         ;;
 
@@ -233,9 +233,9 @@ key() {
             #        the scroll area, scroll the window down.
             ((scroll > 0)) && {
                 ((scroll--))
-                format_dir "$((scroll+1))"
+                print_line "$((scroll+1))"
                 printf '\eM'
-                format_dir "$scroll"
+                print_line "$scroll"
             }
         ;;
 
