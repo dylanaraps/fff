@@ -290,6 +290,14 @@ key() {
             redraw
         ;;
 
+        # Show file attributes.
+        x)
+            clear_screen
+            stat "${list[scroll]}"
+            read -rn 1
+            redraw
+        ;;
+
         # Go to '$HOME'.
         \~) open ~ ;;
 
