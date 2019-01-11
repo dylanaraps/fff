@@ -65,10 +65,20 @@ status_line() {
 
 read_dir() {
     # Read a directory to an array and sort it directories first.
-    dirs=(); files=()
+    dirs=(); files=(); item_index=
 
     for item in "$PWD"/*; do
-        [[ -d $item ]] && dirs+=("$item") || files+=("$item")
+        if [[ -d $item ]]; then
+            dirs+=("$item")
+            ((item_index++))
+
+            # Find the position of the child directory in the
+            # parent directory list.
+            [[ $item == "$previous_dir" ]] &&
+                ((previous_index=item_index))
+        else
+            files+=("$item")
+        fi
     done
 
     list=("${dirs[@]}" "${files[@]}")
@@ -97,6 +107,13 @@ print_dir() {
     # Print the max directory items that fit in the scroll area.
     local scroll_start="$scroll"
     local scroll_new_pos
+
+    # When going up the directory tree, place the cursor on the position
+    # of the previous directory.
+    ((find_previous == 1)) && {
+        ((scroll_start=previous_index-1))
+        ((scroll=scroll_start))
+    }
 
     # If the entire list fits in the scroll area, don't print from scroll
     # position. Print from the start of the list. Also keep the cursor at its
@@ -177,13 +194,21 @@ key() {
         # Open list item.
         # 'C' is what BASH sees when the right arrow is pressed ('\e[C').
         # '' is what bash sees when the enter/return key is pressed.
-        l|C|'') open "${list[scroll]}" ;;
+        l|C|'')
+            previous_dir=
+            find_previous=
+            open "${list[scroll]}"
+        ;;
 
         # Go to the parent directory.
         # 'D' is what BASH sees when the left arrow is pressed ('\e[D').
         # '\177' is what BASH sees when the backspace key is pressed.
         # '[[ $PWD ]]' If '$PWD' is empty we're at '/', do nothing.
-        h|D|$'\177') [[ $PWD ]] && open "${PWD%/*}" ;;
+        h|D|$'\177')
+            previous_dir="$PWD"
+            find_previous=1
+            [[ $PWD ]] && open "${PWD%/*}"
+        ;;
 
         # Scroll down.
         # 'B' is what BASH sees when the down arrow is pressed ('\e[B').
