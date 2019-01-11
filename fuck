@@ -188,7 +188,9 @@ open() {
             text/*|*x-empty*|*json*)
                 "${EDITOR:-vi}" "$1"
 
-                # Redraw the screen afterwards to re-set TUI settings.
+                # Re-set TUI settings to make sure '$EDITOR' doesn't
+                # reset them to defaults.
+                setup_terminal
                 redraw
             ;;
 
