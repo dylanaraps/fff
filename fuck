@@ -68,18 +68,18 @@ get_cursor_pos() {
 }
 
 status_line() {
-    # '\e[s':      Save the current cursor position.
     # '\e[?6l':    Unrestrict cursor movement (full window).
     # '\e[%sH':    Move cursor to bottom of the terminal.
     # '\e[30;41m': Set foreground and background colors.
     # '\e[K':      Clear to end of line (set background color to whole line).
     # '\e[m':      Reset text formatting.
     # '\e[?6h':    Restrict cursor to scrolling area.
-    # '\e[u':      Restore cursor to saved position.
-    printf '\e[s\e[?6l\e[%sH\e[30;4%sm%s\e[K\e[m\e[?6h\e[u' \
+    # '\e[%sH':    Restore cursor to previous position.
+    printf '\e[?6l\e[%sH\e[30;4%sm%s\e[K\e[m\e[?6h\e[%sH' \
            "$((LINES-1))" \
            "${FFF_COL2:-1}" \
-           "(${scroll:=0}/${list_total}) ${PWD:-/}"
+           "(${scroll:=0}/${list_total}) ${PWD:-/}" \
+           "$y"
 }
 
 read_dir() {
@@ -161,7 +161,7 @@ draw_dir() {
     # '\e[H':  Send cursor back home (0,0).
     for ((i=scroll_start;i<max_items+scroll;i++)); {
         print_line "$i"
-        printf '\e[1B'
+        printf '\e[B'
     }
 
     # Move the cursor to its new position if it changed.
