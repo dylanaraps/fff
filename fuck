@@ -59,6 +59,14 @@ get_term_size() {
     ((max_items=LINES-3))
 }
 
+get_cursor_pos() {
+    # Get cursor position in window.
+    # '\e[6n': Report cursor position.
+    #          The reply from the terminal acts like user input
+    #          so we read it as so.
+    IFS='[;' read -sp $'\e[6n' -d R -rs _ y _
+}
+
 status_line() {
     # '\e[s':      Save the current cursor position.
     # '\e[?6l':    Unrestrict cursor movement (full window).
@@ -230,28 +238,34 @@ key() {
         # Scroll down.
         # 'B' is what BASH sees when the down arrow is pressed ('\e[B').
         B|j)
-            # '\eD':  Move cursor down. If cursor hits the bottom margin of
-            #         the scroll area, scroll the window down.
-            # '\e[K': Clear the line from cursor right to fix issues in
-            #         some terminal emulators (terminology).
             ((scroll < list_total)) && {
                 ((scroll++))
+
                 print_line "$((scroll-1))"
-                printf '\eD\e[K'
+                printf '\n'
                 print_line "$scroll"
+                get_cursor_pos
             }
         ;;
 
         # Scroll up.
         # 'A' is what BASH sees when the down arrow is pressed ('\e[A').
         A|k)
-            # '\eM': Move cursor up. If cursor hits the top margin of
-            #        the scroll area, scroll the window down.
+            # '\e[1L': Insert a line above the cursor.
+            # '\e[A':  Move cursor up a line.
             ((scroll > 0)) && {
                 ((scroll--))
+
                 print_line "$((scroll+1))"
-                printf '\eM'
+
+                if ((y == 1)); then
+                    printf '\e[1L'
+                else
+                    printf '\e[A'
+                fi
+
                 print_line "$scroll"
+                get_cursor_pos
             }
         ;;
 
@@ -259,12 +273,14 @@ key() {
         g)
             ((scroll=0))
             redraw
+            get_cursor_pos
         ;;
 
         # Go to bottom.
         G)
             ((scroll=list_total))
             redraw
+            get_cursor_pos
         ;;
 
         # Show hidden files.
@@ -317,7 +333,7 @@ main() {
     trap 'key q' INT
 
     # Trap the window resize signal (handle window resize events).
-    trap 'get_term_size; redraw; status_line' WINCH
+    trap 'get_term_size; redraw; get_cursor_pos; status_line' WINCH
 
     redraw full
 
