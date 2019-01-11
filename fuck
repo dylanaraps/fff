@@ -59,27 +59,21 @@ get_term_size() {
     ((max_items=LINES-3))
 }
 
-get_cursor_pos() {
-    # Get cursor position in window.
-    # '\e[6n': Report cursor position.
-    #          The reply from the terminal acts like user input
-    #          so we read it as so.
-    IFS='[;' read -sp $'\e[6n' -d R -rs _ y _
-}
-
 status_line() {
+    # '\e7':       Save cursor position.
+    #              This is more widely supported than '\e[s'.
     # '\e[?6l':    Unrestrict cursor movement (full window).
     # '\e[%sH':    Move cursor to bottom of the terminal.
     # '\e[30;41m': Set foreground and background colors.
     # '\e[K':      Clear to end of line (set background color to whole line).
     # '\e[m':      Reset text formatting.
     # '\e[?6h':    Restrict cursor to scrolling area.
-    # '\e[%sH':    Restore cursor to previous position.
-    printf '\e[?6l\e[%sH\e[30;4%sm%s\e[K\e[m\e[?6h\e[%sH' \
+    # '\e8':       Restore cursor position.
+    #              This is more widely supported than '\e[u'.
+    printf '\e7\e[?6l\e[%sH\e[30;4%sm%s\e[K\e[m\e[?6h\e8' \
            "$((LINES-1))" \
            "${FFF_COL2:-1}" \
-           "(${scroll:=0}/${list_total}) ${PWD:-/}" \
-           "$y"
+           "(${scroll:=0}/${list_total}) ${PWD:-/}"
 }
 
 read_dir() {
@@ -179,7 +173,6 @@ redraw() {
 
     clear_screen
     draw_dir
-    get_cursor_pos
 }
 
 open() {
@@ -245,7 +238,6 @@ key() {
                 print_line "$((scroll-1))"
                 printf '\n'
                 print_line "$scroll"
-                get_cursor_pos
             }
         ;;
 
@@ -266,7 +258,6 @@ key() {
                 fi
 
                 print_line "$scroll"
-                get_cursor_pos
             }
         ;;
 
@@ -340,6 +331,14 @@ main() {
     for ((;;)); {
         status_line
         read -rsn 1 && key "$REPLY"
+
+        # Get cursor position.
+        # This needs to run synchronously and in the same context.
+        # The terminal dies if two read commands happen asynchronously.
+        # '\e[6n': Report cursor position.
+        #          The reply from the terminal acts like user input
+        #          so we read it as so.
+        IFS='[;' read -sp $'\e[6n' -d R -rs _ y _
     }
 }
 
