@@ -134,7 +134,7 @@ draw_dir() {
         ((scroll_new_pos=max_items - (list_total-scroll)))
     fi
 
-    # 'i=scroll':         Print list items from scroll position.
+    # 'i=scroll_start':   Print list items from scroll start position.
     # 'max_items+scroll': Print list items up to max_items+scroll_position.
     #
     # '\e[1B': Move cursor down after print.
@@ -241,10 +241,16 @@ key() {
         ;;
 
         # Go to top.
-        g) ((scroll=0)); redraw ;;
+        g)
+            ((scroll=0))
+            redraw
+        ;;
 
         # Go to bottom.
-        G) ((scroll=list_total)); redraw ;;
+        G)
+            ((scroll=list_total))
+            redraw
+        ;;
 
         # Show hidden files.
         .)
