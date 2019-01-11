@@ -53,14 +53,15 @@ status_line() {
     # '\e[s':      Save the current cursor position.
     # '\e[?6l':    Unrestrict cursor movement (full window).
     # '\e[%sH':    Move cursor to bottom of the terminal.
-    # '\e[A':      Move cursor up one to leave room for cmd-line.
     # '\e[30;41m': Set foreground and background colors.
     # '\e[K':      Clear to end of line (set background color to whole line).
     # '\e[m':      Reset text formatting.
     # '\e[?6h':    Restrict cursor to scrolling area.
     # '\e[u':      Restore cursor to saved position.
-    printf '\e[s\e[?6l\e[%sH\e[A\e[30;4%sm%s\e[K\e[m\e[?6h\e[u' \
-           "$LINES" "${FFF_COL2:-1}" "(${scroll:=0}/$((list_total-1))) ${PWD:-/}"
+    printf '\e[s\e[?6l\e[%sH\e[30;4%sm%s\e[K\e[7m\e[m\e[?6h\e[u' \
+           "$((LINES-1))" \
+           "${FFF_COL2:-1}" \
+           "(${scroll:=0}/${list_total}) ${PWD:-/}"
 }
 
 read_dir() {
@@ -82,7 +83,7 @@ read_dir() {
     done
 
     list=("${dirs[@]}" "${files[@]}")
-    list_total="${#list[@]}"
+    ((list_total=${#list[@]}-1))
 
     # Indicate that the directory is empty.
     # If the glob 'PWD/*' fails it'll set the array to a literal '*'.
@@ -130,8 +131,8 @@ print_dir() {
     # Also keep the cursor at its current location.
     # 'scroll_new_pos' figures out which line number the cursor is on.
     elif ((list_total - scroll < max_items)); then
-        ((scroll_start=list_total-max_items))
-        ((scroll_new_pos=max_items - (list_total-scroll-1)))
+        ((scroll_start=list_total - max_items + 1))
+        ((scroll_new_pos=max_items - (list_total-scroll)))
     fi
 
     # 'i=scroll':         Print list items from scroll position.
@@ -217,7 +218,7 @@ key() {
         B|j)
             # '\eD': Move cursor down. If cursor hits the bottom margin of
             #        the scroll area, scroll the window down.
-            ((scroll < list_total-1)) && {
+            ((scroll < list_total)) && {
                 ((scroll++))
                 format_dir "$((scroll-1))"
                 printf '\eD'
@@ -242,7 +243,7 @@ key() {
         g) ((scroll=0)); redraw ;;
 
         # Go to bottom.
-        G) ((scroll=list_total-1)); redraw ;;
+        G) ((scroll=list_total)); redraw ;;
 
         # Show hidden files.
         .)
