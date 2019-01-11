@@ -60,7 +60,7 @@ status_line() {
     # '\e[?6h':    Restrict cursor to scrolling area.
     # '\e[u':      Restore cursor to saved position.
     printf '\e[s\e[?6l\e[%sH\e[A\e[30;4%sm%s\e[K\e[m\e[?6h\e[u' \
-           "$LINES" "${FFF_COL2:-1}" "(${scroll:=0}/$((list_total-1))) ${PWD:-/}"
+           "$LINES" "${FFF_COL2:-1}" "(${scroll:=0}/$((list_total-1))) ${PWD:-/} $scroll $list_total $max_items"
 }
 
 read_dir() {
@@ -95,14 +95,22 @@ format_dir() {
 
 print_dir() {
     # Print the max directory items that fit in the scroll area.
+    local scroll_start="$scroll"
+    local scroll_new_pos
 
-    # If the entire list fits in the scroll area, move cursor to top.
+    # If the entire list fits in the scroll area, don't print from scroll
+    # position. Print from the start of the list. Also keep the cursor at its
+    # current location.
     if ((list_total < max_items)); then
-        ((scroll=0))
+        ((scroll_start=0))
+        ((scroll_new_pos=scroll + 1))
 
     # If the cursor is near the bottom of the list, display the entire bottom.
+    # Also keep the cursor at its current location.
+    # 'scroll_new_pos' figures out which line number the cursor is on.
     elif ((list_total - scroll < max_items)); then
-        ((scroll=list_total-max_items))
+        ((scroll_start=list_total-max_items))
+        ((scroll_new_pos=max_items - (list_total-scroll-1)))
     fi
 
     # 'i=scroll':         Print list items from scroll position.
@@ -111,11 +119,14 @@ print_dir() {
     # '\e[1B': Move cursor down after print.
     #          Prevents issues with lines being eaten by the scroll area.
     # '\e[H':  Send cursor back home (0,0).
-    for ((i=scroll;i<max_items+scroll;i++)); {
+    for ((i=scroll_start;i<max_items+scroll;i++)); {
         format_dir "$i"
         printf '\e[1B'
     }
-    printf '\e[H'
+
+    # Move the cursor to its new position if it changed.
+    # If the variable 'scroll_new_pos' is empty, the cursor is moved to line '0'.
+    printf '\e[%sH' "$scroll_new_pos"
 }
 
 redraw() {
@@ -203,7 +214,6 @@ key() {
         g) ((scroll=0)); redraw ;;
 
         # Go to bottom.
-        # TODO: Fix this.
         G) ((scroll=list_total-1)); redraw ;;
 
         # Show hidden files.
