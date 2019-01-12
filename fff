@@ -192,7 +192,7 @@ redraw() {
 trash() {
     # 'trash' a file.
     # The last function argument is '.' (mv file dir file .).
-    cmd_line 1 "trash [${#marked_files[@]}] items? [y/n]"
+    cmd_line "trash [${#marked_files[@]}] items? [y/n]: " y n
 
     [[ $cmd_reply == y ]] && {
         cd "$FFF_TRASH" && mv "$@"
@@ -239,8 +239,49 @@ cmd_line() {
     # Write to the command_line (under status_line).
     cmd_reply=
 
+    # '\e7':     Save cursor position.
+    # '\e[?6l':  Unrestrict cursor movement.
+    # '\e[?25h': Unhide the cursor.
+    # '\e[%sH':  Move cursor to bottom (cmd_line).
     printf '\e7\e[?6l\e[?25h\e[%sH' "$LINES"
-    read -ern "$1" -p "${2}: " cmd_reply
+
+    while read -sn 1 -rp $'\r\e[K'"${1}${cmd_reply}" read_reply; do
+        case "$read_reply" in
+            # Backspace.
+            # '\177' is what bash sees when you press the backspace key.
+            $'\177')
+                cmd_reply="${cmd_reply%?}"
+            ;;
+
+            # Escape / Custom 'no' value (used as a replacement for '-n 1').
+            # '\e' is what bash sees when you press the escape key.
+            $'\e'|"$3")
+                cmd_reply=
+                break
+            ;;
+
+            # Enter/Return.
+            "")
+                break
+            ;;
+
+            # Custom 'yes' value (used as a replacement for '-n 1').
+            "$2")
+                cmd_reply="$read_reply"
+                break
+            ;;
+
+            # Anything else, add it to read reply.
+            *)
+                cmd_reply+="$read_reply"
+            ;;
+        esac
+    done
+
+    # '\e[2K':   Clear the entire cmd_line on finish.
+    # '\e[?6h':  Restrict cursor position.
+    # '\e[?25l': Hide the cursor.
+    # '\e8':     Restore cursor position.
     printf '\e[2K\e[?6h\e[?25l\e8'
 }
 
@@ -367,6 +408,11 @@ key() {
         c)
             marked_files=()
             redraw
+        ;;
+
+        # Rename list item.
+        r)
+            cmd_line "rename ${list[scroll]##*/}: "
         ;;
 
         # Show file attributes.
