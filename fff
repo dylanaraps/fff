@@ -278,7 +278,7 @@ cmd_line() {
         esac
 
         # Search on keypress if search passed as an argument.
-        [[ "$2" == search ]] && {
+        [[ $2 == search ]] && {
             # '\e[?25h': Hide the cursor.
             printf '\e[?25l'
 
@@ -317,11 +317,16 @@ key() {
         # '\177' is what BASH sees when the backspace key is pressed.
         # '[[ $PWD ]]' If '$PWD' is empty we're at '/', do nothing.
         h|D|$'\177')
-            [[ $PWD ]] && {
+            # If a search was done, clear the results and open the current dir.
+            if ((search == 1)); then
+                open "$PWD"
+                search=
+
+            elif [[ $PWD ]]; then
                 previous_dir="$PWD"
                 find_previous=1
                 open "${PWD%/*}"
-            }
+            fi
         ;;
 
         # Scroll down.
@@ -386,11 +391,13 @@ key() {
             cmd_line "/" "search"
 
             # If the search came up empty, redraw the current dir.
-            [[ -z ${list[*]} ]] && {
+            if [[ -z ${list[*]} ]]; then
                 list=("${cur_list[@]}")
                 ((list_total=${#list[@]}-1))
                 redraw
-            }
+            else
+                search=1
+            fi
         ;;
 
         # Spawn a shell.
