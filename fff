@@ -247,7 +247,7 @@ cmd_line() {
 
     # '\r\e[K': Redraw the read prompt on every keypress.
     #           This is mimicking what happens normally.
-    while read -rsn 1 -p $'\r\e[K'"${1}${cmd_reply}" read_reply; do
+    while IFS= read -rsn 1 -p $'\r\e[K'"${1}${cmd_reply}" read_reply; do
         case "$read_reply" in
             # Backspace.
             $'\177')
@@ -272,7 +272,7 @@ cmd_line() {
             ;;
 
             # Anything else, add it to read reply.
-            *)
+            " "|*)
                 cmd_reply+="$read_reply"
             ;;
         esac
