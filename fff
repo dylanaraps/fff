@@ -268,7 +268,7 @@ cmd_line() {
     while IFS= read -rsn 1 -p $'\r\e[K'"${1}${cmd_reply}" read_reply; do
         case "$read_reply" in
             # Backspace.
-            $'\177')
+            $'\177'|$'\b')
                 cmd_reply="${cmd_reply%?}"
             ;;
 
@@ -334,7 +334,7 @@ key() {
         # 'D' is what BASH sees when the left arrow is pressed ('\e[D').
         # '\177' is what BASH sees when the backspace key is pressed.
         # '[[ $PWD ]]' If '$PWD' is empty we're at '/', do nothing.
-        h|D|$'\177')
+        h|D|$'\177'|$'\b')
             # If a search was done, clear the results and open the current dir.
             if ((search == 1)); then
                 open "$PWD"
