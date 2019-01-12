@@ -62,8 +62,16 @@ get_term_size() {
     ((max_items=LINES-3))
 }
 
+get_cursor_pos() {
+    # Get cursor position.
+    # '\e[6n': Report cursor position.
+    #          The reply from the terminal acts like user input
+    #          so we read it as so.
+    IFS='[;' read -sp $'\e[6n' -d R -rs _ y _
+}
+
 status_line() {
-    # Status_line to show when files are marked for operation.
+    # Status_line to print when files are marked for operation.
     mark_ui="[${#marked_files[@]}] selected (${file_program[*]}) [p] ->"
 
     # '\e7':       Save cursor position.
@@ -341,6 +349,7 @@ key() {
                 print_line "$((scroll-1))"
                 printf '\n'
                 print_line "$scroll"
+                get_cursor_pos
             }
         ;;
 
@@ -361,6 +370,7 @@ key() {
                 fi
 
                 print_line "$scroll"
+                get_cursor_pos
             }
         ;;
 
@@ -368,12 +378,14 @@ key() {
         g)
             ((scroll=0))
             redraw
+            get_cursor_pos
         ;;
 
         # Go to bottom.
         G)
             ((scroll=list_total))
             redraw
+            get_cursor_pos
         ;;
 
         # Show hidden files.
@@ -558,19 +570,12 @@ main() {
     trap 'get_term_size; redraw; status_line' WINCH
 
     redraw full
+    status_line
 
     # Vintage infinite loop.
     for ((;;)); {
         status_line
-        read -rsn 1 && key "$REPLY"
-
-        # Get cursor position.
-        # This needs to run synchronously and in the same context.
-        # The terminal dies if two read commands happen asynchronously.
-        # '\e[6n': Report cursor position.
-        #          The reply from the terminal acts like user input
-        #          so we read it as so.
-        IFS='[;' read -sp $'\e[6n' -d R -rs _ y _
+        read -srn 1 && key "$REPLY"
     }
 }
 
