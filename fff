@@ -456,6 +456,11 @@ key() {
             cmd_line "rename ${list[scroll]##*/}: "
 
             [[ $cmd_reply ]] && {
+                # Error handling.
+                # 'mv' will nest the dir if it already exists.
+                [[ -e ${PWD}/${cmd_reply} ]] &&
+                    cmd_reply+="(copy)"
+
                 mv "${list[scroll]}" "${PWD}/${cmd_reply}"
                 redraw full
             }
