@@ -50,7 +50,7 @@ clear_screen() {
     # '\e[1J':    Clear screen to top left corner (scroll area) (from cursor up).
     # '\e[1;%sr': Clearing the screen resets the scroll region(?). Re-set it.
     #             Also sets cursor to (0,0).
-    printf '\e[%s;%sH\e[1J\e[1;%sr' "$LINES" "$COLUMNS" "$max_items"
+    printf '\e[%s;%sH\e[1J\e[1;%sr' "$((max_items+1))" "$COLUMNS" "$max_items"
 }
 
 get_term_size() {
@@ -76,7 +76,7 @@ status_line() {
     # '\e[?6h':    Restrict cursor to scrolling area.
     # '\e8':       Restore cursor position.
     #              This is more widely supported than '\e[u'.
-    printf '\e7\e[?6l\e[%sH\e[30;4%sm%s %s%s\e[K\e[m\e[?6h\e8' \
+    printf '\e7\e[?6l\e[%sH\e[30;4%sm%s %s%s\e[K\e[m\n\e[K\e[?6h\e8' \
            "$((LINES-1))" \
            "${FFF_COL2:-1}" \
            "(${scroll:=0}/${list_total})" \
@@ -243,7 +243,7 @@ cmd_line() {
     # '\e[?6l':  Unrestrict cursor movement.
     # '\e[?25h': Unhide the cursor.
     # '\e[%sH':  Move cursor to bottom (cmd_line).
-    printf '\e7\e[?6l\e[?25h\e[%sH' "$LINES"
+    printf '\e7\e[?6l\e[%sH\e[?25h' "$LINES"
 
     # '\r\e[K': Redraw the read prompt on every keypress.
     #           This is mimicking what happens normally.
@@ -276,6 +276,24 @@ cmd_line() {
                 cmd_reply+="$read_reply"
             ;;
         esac
+
+        # Search on keypress if search passed as an argument.
+        [[ "$2" == search ]] && {
+            # '\e[?25h': Hide the cursor.
+            printf '\e[?25l'
+
+            # Use a greedy glob to search.
+            list=("$PWD"/*"$cmd_reply"*)
+            ((list_total=${#list[@]}-1))
+
+            # Draw the search results on screen.
+            scroll=0
+            redraw
+
+            # '\e[?6l':  Unrestrict cursor position.
+            # '\e[?25h': Unhide the cursor.
+            printf '\e[?6l\e[%sH\e[?25h' "$LINES"
+        }
     done
 
     # '\e[2K':   Clear the entire cmd_line on finish.
@@ -358,6 +376,21 @@ key() {
             shopt_flags=(u s)
             shopt -"${shopt_flags[((a=a>0?0:++a))]}" dotglob
             redraw full
+        ;;
+
+        # Search.
+        /)
+            # Save the old list.
+            cur_list=("${list[@]}")
+
+            cmd_line "/" "search"
+
+            # If the search came up empty, redraw the current dir.
+            [[ -z ${list[*]} ]] && {
+                list=("${cur_list[@]}")
+                ((list_total=${#list[@]}-1))
+                redraw
+            }
         ;;
 
         # Spawn a shell.
@@ -478,6 +511,11 @@ main() {
     get_os
     get_term_size
     setup_terminal
+
+    # Set some BASH options.
+    # 'nocaseglob': Glob case insensitively (Used for case insensitive search).
+    # 'nullglob':   Don't expand non-matching globs to themselves.
+    shopt -s nocaseglob nullglob
 
     # Create the trash directory if it doesn't exist.
     # Better to get this done early.
