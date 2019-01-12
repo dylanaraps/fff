@@ -177,6 +177,7 @@ draw_dir() {
     # Move the cursor to its new position if it changed.
     # If the variable 'scroll_new_pos' is empty, the cursor is moved to line '0'.
     printf '\e[%sH' "$scroll_new_pos"
+    ((y=scroll_new_pos))
 }
 
 redraw() {
@@ -353,7 +354,7 @@ key() {
 
                 print_line "$((scroll+1))"
 
-                if ((y == 1)); then
+                if ((y < 2)); then
                     printf '\e[1L'
                 else
                     printf '\e[A'
