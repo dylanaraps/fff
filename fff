@@ -208,6 +208,7 @@ trash() {
 open() {
     # Open directories and files.
     if [[ -d $1/ ]]; then
+        search=
         PWD="$1"
         redraw full
 
@@ -323,7 +324,6 @@ key() {
             # If a search was done, clear the results and open the current dir.
             if ((search == 1)); then
                 open "$PWD"
-                search=
 
             elif [[ $PWD ]]; then
                 previous_dir="$PWD"
