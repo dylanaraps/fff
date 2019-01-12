@@ -111,15 +111,15 @@ read_dir() {
     done
 
     list=("${dirs[@]}" "${files[@]}")
+
+    # Indicate that the directory is empty.
+    [[ -z ${list[0]} ]] &&
+        list[0]="empty"
+
     ((list_total=${#list[@]}-1))
 
     # Save the original dir in a second list as a backup.
     cur_list=("${list[@]}")
-
-    # Indicate that the directory is empty.
-    # If the glob 'PWD/*' fails it'll set the array to a literal '*'.
-    [[ ${list[0]} == "${PWD}/*" ]] &&
-        list[0]="empty"
 }
 
 print_line() {
