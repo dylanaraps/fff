@@ -245,17 +245,17 @@ cmd_line() {
     # '\e[%sH':  Move cursor to bottom (cmd_line).
     printf '\e7\e[?6l\e[?25h\e[%sH' "$LINES"
 
-    while read -sn 1 -rp $'\r\e[K'"${1}${cmd_reply}" read_reply; do
+    # '\r\e[K': Redraw the read prompt on every keypress.
+    #           This is mimicking what happens normally.
+    while read -rsn 1 -p $'\r\e[K'"${1}${cmd_reply}" read_reply; do
         case "$read_reply" in
             # Backspace.
-            # '\177' is what bash sees when you press the backspace key.
             $'\177')
                 cmd_reply="${cmd_reply%?}"
             ;;
 
             # Escape / Custom 'no' value (used as a replacement for '-n 1').
-            # '\e' is what bash sees when you press the escape key.
-            $'\e'|"$3")
+            $'\e'|"${3:-null}")
                 cmd_reply=
                 break
             ;;
@@ -266,7 +266,7 @@ cmd_line() {
             ;;
 
             # Custom 'yes' value (used as a replacement for '-n 1').
-            "$2")
+            "${2:-null}")
                 cmd_reply="$read_reply"
                 break
             ;;
@@ -413,6 +413,31 @@ key() {
         # Rename list item.
         r)
             cmd_line "rename ${list[scroll]##*/}: "
+
+            [[ $cmd_reply ]] && {
+                mv "${list[scroll]}" "${PWD}/${cmd_reply}"
+                redraw full
+            }
+        ;;
+
+        # Create a directory.
+        n)
+            cmd_line "mkdir: "
+
+            [[ $cmd_reply ]] && {
+                mkdir -p "${PWD}/${cmd_reply}"
+                redraw full
+            }
+        ;;
+
+        # Create a file.
+        f)
+            cmd_line "mkfile: "
+
+            [[ $cmd_reply ]] && {
+                : > "${PWD}/${cmd_reply}"
+                redraw full
+            }
         ;;
 
         # Show file attributes.
