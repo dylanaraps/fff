@@ -176,9 +176,6 @@ draw_dir() {
         ((scroll_new_pos=max_items/2+1))
     fi
 
-    # 'i=scroll_start':   Print list items from scroll start position.
-    # 'max_items+scroll': Print list items up to max_items+scroll_position.
-    #
     # '\e[1B': Move cursor down after print.
     #          Prevents issues with lines being eaten by the scroll area.
     # '\e[H':  Send cursor back home (0,0).
