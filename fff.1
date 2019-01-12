@@ -1,123 +1,81 @@
-.TH FFF "1" "October 2018" "fff-dev" "User Commands"
+.
+.TH FFF "1" "October 2018" "fff" "User Commands"
 .SH NAME
 fff \- :rocket: fucking fast file-manager
 .SH SYNOPSIS
 .B fff
 .SH DESCRIPTION
-A [WIP] simple file manager written in bash. It's Fucking Fast, Minimal (~100 lines of bash), Smooth Scrolling (using vim keybindings.), File Operations (copy, paste, rename, cut, delete), Basic Search.
+A simple file manager written in bash.
 .PP
-.SH KEYBINDINGS
-.TP
+.SH "Usage"
+.
+.nf
 
-\fBj\fR
-scroll down
-.TP
-\fBk\fR
-scroll up
-.TP
-\fBh\fR
-go to parent dir
-.TP
-\fBl\fR
-go to child dir
-.TP
+j: scroll down
+k: scroll up
+h: go to parent dir
+l: go to child dir
 
-\fBenter\fR
-go to child dir
-.TP
+enter: go to child dir
+backspace: go to parent dir
 
-\fBg\fR
-go to top
-.TP
-\fBG\fR
-go to bottom
-.TP
+\-: Go to previous dir\.
 
-\fB.\fR
-toggle hidden files
-.TP
-\fB/\fR
-search
-.TP
-\fBt\fR
-go to trash
-.TP
-\fB~\fR
-go to home
-.TP
-\fBs\fR
-open shell in current dir
-.TP
-\fBx\fR
-view file/dir attributes
-.TP
+g: go to top
+G: go to bottom
 
-\fBdown\fR
-scroll down
-.TP
-\fBup\fR
-scroll up
-.TP
-\fBleft\fR
-go to parent dir
-.TP
-\fBright\fR
-go to child dir
-.TP
+\.: toggle hidden files
+/: search
+t: go to trash
+~: go to home
+s: open shell in current dir
+x: view file/dir attributes
 
-\fBf\fR
-new file
-.TP
-\fBn\fR
-new dir
-.TP
-\fBy\fR
-mark copy
-.TP
-\fBm\fR
-mark move
-.TP
-\fBp\fR
-paste/move
-.TP
-\fBc\fR
-clear file selections
-.TP
-\fBr\fR
-rename
-.TP
-\fBd\fR
-trash (~/.cache/fff/trash/)
+down:  scroll down
+up:    scroll up
+left:  go to parent dir
+right: go to child dir
 
-.TP
-\fBq\fR
-exit
+f: new file
+n: new dir
+r: rename
 
-.PP
-.SH CUSTOMIZATION
-.TP
+y: mark copy
+m: mark move
+d: mark trash (~/\.cache/fff/trash/)
+p: paste/move/delete
+c: clear file selections
 
-\fBDirectory color [0-9]\fR
+q: exit
+.
+.fi
+.
+.SH "Customization"
+.
+.nf
+
+# Directory color [0\-9]
 export FFF_COL1=2
-.TP
-\fBStatus color [0-9]\fR
+
+# Status color [0\-9]
 export FFF_COL2=7
-.TP
-\fBSelection color [0-9] (copied/moved files)\fR
-export FFF_COL3=1
-.TP
-\fBCursor color [0-9]\fR
-export FFF_COL4=6
-.TP
-\fBText Editor\fR
+
+# Selection color [0\-9] (copied/moved files)
+export FFF_COL3=6
+
+# Cursor color [0\-9]
+export FFF_COL4=1
+
+# Text Editor
 export EDITOR="vim"
-.TP
-\fBFile Opener\fR
-export FFF_OPENER="xdg-open"
-.TP
-\fBCD on exit helper file\fR
-export FFF_CD_FILE=~/.fff_d
-.TP
-\fBTrash Directory\fR
-export FFF_TRASH=~/.cache/fff/trash
-.TP
+
+# File Opener
+export FFF_OPENER="xdg\-open"
+
+# CD on exit helper file
+export FFF_CD_FILE=~/\.fff_d
+
+# Trash Directory
+export FFF_TRASH=~/\.cache/fff/trash
+.
+.fi

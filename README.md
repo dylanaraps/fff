@@ -5,7 +5,7 @@
 A [WIP] simple file manager written in `bash`.
 
 - It's Fucking Fast 🚀
-- Minimal (*~100 lines of bash*)
+- Minimal (*500~ lines of **readable** bash*)
 - Smooth Scrolling (*using vim keybindings*)
 - File Operations (*copy, paste, rename, cut, etc*)
 - Instant as you type search
@@ -15,7 +15,9 @@ A [WIP] simple file manager written in `bash`.
 ## Dependencies
 
 - `bash 3.2+`
-- program handling (non-text): `xdg-utils` (*not needed on macos and Haiku*)
+- program handling (non-text): `xdg-utils`
+    - *Not needed on macos and Haiku.*
+    - *Customizable (if not using `xdg-open`): `$FFF_OPENER`.*
 - file operations: `coreutils`
 - mime types: `file`
 
@@ -50,6 +52,9 @@ h: go to parent dir
 l: go to child dir
 
 enter: go to child dir
+backspace: go to parent dir
+
+-: Go to previous dir.
 
 g: go to top
 G: go to bottom
@@ -68,13 +73,13 @@ right: go to child dir
 
 f: new file
 n: new dir
+r: rename
 
 y: mark copy
 m: mark move
-p: paste/move
+d: mark trash (~/.cache/fff/trash/)
+p: paste/move/delete
 c: clear file selections
-r: rename
-d: trash (~/.cache/fff/trash/)
 
 q: exit
 ```
