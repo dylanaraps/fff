@@ -105,6 +105,9 @@ read_dir() {
     list=("${dirs[@]}" "${files[@]}")
     ((list_total=${#list[@]}-1))
 
+    # Save the original dir in a second list as a backup.
+    cur_list=("${list[@]}")
+
     # Indicate that the directory is empty.
     # If the glob 'PWD/*' fails it'll set the array to a literal '*'.
     [[ ${list[0]} == "${PWD}/*" ]] &&
@@ -385,16 +388,14 @@ key() {
 
         # Search.
         /)
-            # Save the old list.
-            cur_list=("${list[@]}")
-
             cmd_line "/" "search"
 
             # If the search came up empty, redraw the current dir.
-            if [[ -z ${list[*]} ]]; then
+            if [[ -z ${list[*]} || -z $cmd_reply ]]; then
                 list=("${cur_list[@]}")
                 ((list_total=${#list[@]}-1))
                 redraw
+                search=
             else
                 search=1
             fi
