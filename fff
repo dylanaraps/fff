@@ -145,6 +145,7 @@ draw_dir() {
     # Print the max directory items that fit in the scroll area.
     local scroll_start="$scroll"
     local scroll_new_pos
+    local scroll_end
 
     # When going up the directory tree, place the cursor on the position
     # of the previous directory.
@@ -156,19 +157,23 @@ draw_dir() {
         find_previous=
     }
 
-    # If the entire list fits in the scroll area, don't print from scroll
-    # position. Print from the start of the list. Also keep the cursor at its
-    # current location.
-    if ((list_total < max_items)); then
+    # If current dir is near the top of the list, keep scroll position.
+    if ((list_total < max_items || scroll < max_items/2)); then
         ((scroll_start=0))
+        ((scroll_end=max_items))
         ((scroll_new_pos=scroll + 1))
 
-    # If the cursor is near the bottom of the list, display the entire bottom.
-    # Also keep the cursor at its current location.
-    # 'scroll_new_pos' figures out which line number the cursor is on.
-    elif ((list_total - scroll < max_items)); then
+    # If curent dir is near the end of the list, keep scroll position.
+    elif ((list_total - scroll < max_items/2)); then
         ((scroll_start=list_total - max_items + 1))
         ((scroll_new_pos=max_items - (list_total-scroll)))
+        ((scroll_end=max_items+scroll))
+
+    # If current dir is somewhere in the middle, center scroll position.
+    else
+        ((scroll_start=scroll-max_items/2))
+        ((scroll_end=scroll_start+max_items))
+        ((scroll_new_pos=max_items/2+1))
     fi
 
     # 'i=scroll_start':   Print list items from scroll start position.
@@ -177,7 +182,7 @@ draw_dir() {
     # '\e[1B': Move cursor down after print.
     #          Prevents issues with lines being eaten by the scroll area.
     # '\e[H':  Send cursor back home (0,0).
-    for ((i=scroll_start;i<max_items+scroll;i++)); {
+    for ((i=scroll_start;i<scroll_end;i++)); {
         print_line "$i"
         printf '\e[B'
     }
