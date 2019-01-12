@@ -1,8 +1,8 @@
 # fff (*Fucking Fast File-Manager*)
 
-<a href="https://asciinema.org/a/IKG1pSkeIQkc4dSjw4S0DZjXj" target="_blank"><img src="https://asciinema.org/a/IKG1pSkeIQkc4dSjw4S0DZjXj.png" alt="img" height="300px" align="right"/></a>
+<a href="https://asciinema.org/a/bsXSyPmUkaeR0ti2Qh3eZiKS8" target="_blank"><img src="https://asciinema.org/a/bsXSyPmUkaeR0ti2Qh3eZiKS8.svg" alt="img" height="300px" align="right"/></a>
 
-A [WIP] simple file manager written in `bash`.
+A simple file manager written in `bash`.
 
 - It's Fucking Fast 🚀
 - Minimal (*500~ lines of **readable** bash*)
