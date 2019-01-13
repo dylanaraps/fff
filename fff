@@ -86,6 +86,7 @@ get_ls_colors() {
     ls_cols="${ls_cols//:/\';}"
 
     # bash 3 compatible method of sourcing a variable.
+    # see: https://i.imgur.com/e4tIACE.jpg
     # shellcheck source=/dev/null
     source /dev/stdin <<< "$ls_cols" >/dev/null 2>&1
 }
