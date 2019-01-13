@@ -205,7 +205,9 @@ print_line() {
 
     # Color files that end in a pattern as defined in LS_COLORS.
     # 'BASH_REMATCH' is an array that stores each REGEX match.
-    elif [[ $ls_patterns && $file_name =~ ($ls_patterns)$ ]]; then
+    elif [[ $FFF_LS_COLORS == 1 &&
+            $ls_patterns &&
+            $file_name =~ ($ls_patterns)$ ]]; then
         match="${BASH_REMATCH[0]}"
         file_ext="ls_${match//[^a-zA-Z0-9=\\;]/_}"
         format+="\\e[${!file_ext:-${fi:-37}}m"
@@ -213,7 +215,8 @@ print_line() {
     # Color files based on file extension and LS_COLORS.
     # Check if file extension adheres to POSIX naming
     # stardard before checking if it's a variable.
-    elif [[ $file_ext != "$file_name" &&
+    elif [[ $FFF_LS_COLORS == 1 &&
+            $file_ext != "$file_name" &&
             $file_ext =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
         file_ext="ls_${file_ext}"
         format+="\\e[${!file_ext:-${fi:-37}}m"
