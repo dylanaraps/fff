@@ -85,7 +85,7 @@ get_ls_colors() {
     # Iterate over the list and separate patterns
     # from '.ext' matching.
     for col in "${ls_cols[@]}"; do
-
+        # Entry is a pattern instead of a file extension.
         [[ $col =~ ^\*[^\.] ]] &&
             ls_patterns+="${col/=*}|"
 
