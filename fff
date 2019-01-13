@@ -82,18 +82,25 @@ get_ls_colors() {
     # Turn $LS_COLORS into an array.
     IFS=: read -ra ls_cols <<< "$LS_COLORS"
 
-    # Iterate over the list and separate patterns
-    # from '.ext' matching.
-    for col in "${ls_cols[@]}"; do
-        # Entry is a pattern instead of a file extension.
-        [[ $col =~ ^\*[^\.] ]] &&
-            ls_patterns+="${col/=*}|"
+    for ((i=0;i<${#ls_cols[@]};i++)); {
+        # Separate patterns from file types.
+        [[ ${ls_cols[i]} =~ ^\*[^\.] ]] &&
+            ls_patterns+="${ls_cols[i]/=*}|"
 
-        col="${col/\*./ls_}"
-        col="${col/./ls_}"
-        col="${col/\*/ls_}"
-        ls_exts+="${col//;/\\;};"
-    done
+        # Prepend 'ls_' to all LS_COLORS items
+        # if they aren't types of files (symbolic links, block files etc.)
+        [[ ${ls_cols[i]} =~ ^(\*|\.) ]] && {
+            ls_cols[i]="${ls_cols[i]#\*}"
+            ls_cols[i]="ls_${ls_cols[i]#.}"
+        }
+
+        ls_cols[i]="${ls_cols[i]//;/\\;};"
+   }
+
+    # Strip non-ascii characters from the string as they're
+    # used as a key to color the dir items and variable
+    # names in bash must be '[a-zA-z0-9_]'.
+    ls_exts="${ls_cols[*]//[^a-zA-Z0-9=\\;]/_}"
 
     # Store the patterns in a '|' separated string
     # for use in a REGEX match later.
@@ -196,19 +203,19 @@ print_line() {
     elif [[ -S ${list[$1]} ]]; then
         format+="\\e[${so:-01;35}m"
 
+    # Color files that end in a pattern as defined in LS_COLORS.
+    # 'BASH_REMATCH' is an array that stores each REGEX match.
+    elif [[ $ls_patterns && $file_name =~ ($ls_patterns)$ ]]; then
+        match="${BASH_REMATCH[0]}"
+        file_ext="ls_${match//[^a-zA-Z0-9=\\;]/_}"
+        format+="\\e[${!file_ext:-${fi:-37}}m"
+
     # Color files based on file extension and LS_COLORS.
     # Check if file extension adheres to POSIX naming
     # stardard before checking if it's a variable.
     elif [[ $file_ext != "$file_name" &&
             $file_ext =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
         file_ext="ls_${file_ext}"
-        format+="\\e[${!file_ext:-${fi:-37}}m"
-
-    # Color files that end in a pattern as defined in LS_COLORS.
-    # 'BASH_REMATCH' is an array that stores each REGEX match.
-    elif [[ $file_name =~ [a-zA-Z_][a-zA-Z0-9_]*$ &&
-            $file_name =~ .*($ls_patterns)$ ]]; then
-        file_ext="ls_${BASH_REMATCH[1]}"
         format+="\\e[${!file_ext:-${fi:-37}}m"
 
     else
