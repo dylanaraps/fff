@@ -134,13 +134,13 @@ read_dir() {
 
 print_line() {
     # Format the list item and print it.
+    local file_name="${list[$1]##*/}"
+    local file_ext="${file_name##*.}"
     local format
     local suffix
-    # local file_name="${list[$1]##*/}"
-    # local file_ext="${file_name##*.}"
 
     if [[ -d ${list[$1]} ]]; then
-        format+="\\e[${di:-3${FFF_COL1:-2}}m"
+        format+="\\e[${di:-1;3${FFF_COL1:-2}}m"
         suffix+='/'
 
     elif [[ -b ${list[$1]} ]]; then
@@ -161,10 +161,9 @@ print_line() {
     elif [[ -S ${list[$1]} ]]; then
         format+="\\e[${so:-01;35}m"
 
-    # elif [[ $file_ext != "$file_name" &&
-    #         $LS_COLORS == *."$file_ext"=* ]]; then
-    #     local ls_color="${LS_COLORS/*.${file_ext}=}"
-    #     local format+="\\e[${ls_color/:*}m"
+    elif [[ $file_ext != "$file_name" ]]; then
+        file_ext="file_${file_ext//-}"
+        format+="\\e[${!file_ext:-37}m"
 
     else
         format+="\\e[${fi:-37}m"
@@ -180,7 +179,7 @@ print_line() {
         suffix+='*'
     }
 
-    printf '%b%s\e[m\r' "$format" "${list[$1]##*/}${suffix}"
+    printf '%b%s\e[m\r' "$format" "${file_name}${suffix}"
 }
 
 draw_dir() {
