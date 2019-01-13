@@ -200,6 +200,7 @@ redraw() {
 
     clear_screen
     draw_dir
+    status_line
 }
 
 trash() {
@@ -352,6 +353,7 @@ key() {
                 printf '\n'
                 print_line "$scroll"
                 get_cursor_pos
+                status_line
             }
         ;;
 
@@ -373,6 +375,7 @@ key() {
 
                 print_line "$scroll"
                 get_cursor_pos
+                status_line
             }
         ;;
 
@@ -547,6 +550,16 @@ main() {
         exit
     }
 
+    # bash 5 and some versions of bash 4 don't allow SIGWINCH to interrupt
+    # a 'read' command and instead wait for it to complete. In this case it
+    # causes the window to not redraw on resize until the user has pressed
+    # a key (causing the read to finish). This sets a read timeout on the
+    # affected versions of bash.
+    # NOTE: This shouldn't affect idle performance as the loop doesn't do
+    # anything until a key is pressed.
+    ((BASH_VERSINFO[0] > 3)) &&
+        read_flags=(-t 0.05)
+
     get_os
     get_term_size
     setup_terminal
@@ -569,14 +582,13 @@ main() {
     trap 'key q' INT
 
     # Trap the window resize signal (handle window resize events).
-    trap 'get_term_size; redraw; status_line' WINCH
+    trap 'get_term_size; redraw' WINCH
 
     redraw full
 
     # Vintage infinite loop.
     for ((;;)); {
-        status_line
-        read -srn 1 && key "$REPLY"
+        read "${read_flags[@]}" -srn 1 && key "$REPLY"
     }
 }
 
