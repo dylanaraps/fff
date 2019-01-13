@@ -557,6 +557,7 @@ main() {
     # affected versions of bash.
     # NOTE: This shouldn't affect idle performance as the loop doesn't do
     # anything until a key is pressed.
+    # SEE: https://github.com/dylanaraps/fff/issues/48
     ((BASH_VERSINFO[0] > 3)) &&
         read_flags=(-t 0.05)
 
