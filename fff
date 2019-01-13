@@ -134,7 +134,7 @@ read_dir() {
 
 print_line() {
     # Format the list item and print it.
-    local file_name="${list[$1]##*/}"
+    # local file_name="${list[$1]##*/}"
     # local file_ext="${file_name##*.}"
 
     if [[ -d ${list[$1]} ]]; then
@@ -142,22 +142,22 @@ print_line() {
         local suffix+='/'
 
     elif [[ -b ${list[$1]} ]]; then
-        local format+="\\e[${bd}m"
+        local format+="\\e[${bd:-40;33;01}m"
 
     elif [[ -c ${list[$1]} ]]; then
-        local format+="\\e[${cd}m"
+        local format+="\\e[${cd:-40;33;01}m"
 
     elif [[ -x ${list[$1]} ]]; then
-        local format+="\\e[${ex}m"
+        local format+="\\e[${ex:-01;32}m"
 
     elif [[ -h ${list[$1]} ]]; then
-        local format+="\\e[${ln}m"
+        local format+="\\e[${ln:-01;36}m"
 
     elif [[ -p ${list[$1]} ]]; then
-        local format+="\\e[${pi}m"
+        local format+="\\e[${pi:-40;33}m"
 
     elif [[ -S ${list[$1]} ]]; then
-        local format+="\\e[${so}m"
+        local format+="\\e[${so:-01;35}m"
 
     # elif [[ $file_ext != "$file_name" &&
     #         $LS_COLORS == *."$file_ext"=* ]]; then
