@@ -73,30 +73,30 @@ get_cursor_pos() {
 get_ls_colors() {
     # Parse the LS_COLORS variable and source each file type
     # as a separate variable.
-    # Format: :.ext=0;0:*.jpg=0;0;0:*png=0;0;0;0:
+    # Format: ':.ext=0;0:*.jpg=0;0;0:*png=0;0;0;0:'
     [[ -z $LS_COLORS ]] && {
         FFF_LS_COLORS=0
         return
     }
 
-    # Turn the LS_COLORS into an array.
-    IFS=":" read -ra ls_cols <<< "$LS_COLORS"
+    # Turn $LS_COLORS into an array.
+    IFS=: read -ra ls_cols <<< "$LS_COLORS"
 
     # Iterate over the list and separate patterns
     # from '.ext' matching.
     for col in "${ls_cols[@]}"; do
-        col="${col/\*./file_}"
-        col="${col/./file_}"
 
-        # ls color is a pattern.
-        [[ $col == '*'* ]] &&
+        [[ $col =~ ^\*[^\.] ]] &&
             ls_patterns+="${col/=*}|"
 
-        col="${col/\*/file_}"
+        col="${col/\*./ls_}"
+        col="${col/./ls_}"
+        col="${col/\*/ls_}"
         ls_exts+="${col//;/\\;};"
     done
 
-    # Store the patterns in a '|' separated string.
+    # Store the patterns in a '|' separated string
+    # for use in a REGEX match later.
     ls_patterns="${ls_patterns//\*}"
     ls_patterns="${ls_patterns%?}"
 
@@ -196,22 +196,19 @@ print_line() {
     elif [[ -S ${list[$1]} ]]; then
         format+="\\e[${so:-01;35}m"
 
+    # Color files based on file extension and LS_COLORS.
     # Check if file extension adheres to POSIX naming
     # stardard before checking if it's a variable.
     elif [[ $file_ext != "$file_name" &&
             $file_ext =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
-        # Dynamically use the variable 'file_${file_ext}'
-        # which stores the color from LS_COLORS.
-        file_ext="file_${file_ext}"
+        file_ext="ls_${file_ext}"
         format+="\\e[${!file_ext:-${fi:-37}}m"
 
     # Color files that end in a pattern as defined in LS_COLORS.
     # 'BASH_REMATCH' is an array that stores each REGEX match.
     elif [[ $file_name =~ [a-zA-Z_][a-zA-Z0-9_]*$ &&
             $file_name =~ .*($ls_patterns)$ ]]; then
-        # Dynamically use the variable 'file_${BASH_REMATCH[1]}'
-        # which stores the color from LS_COLORS.
-        file_ext="file_${BASH_REMATCH[1]}"
+        file_ext="ls_${BASH_REMATCH[1]}"
         format+="\\e[${!file_ext:-${fi:-37}}m"
 
     else
