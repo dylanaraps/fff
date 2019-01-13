@@ -79,16 +79,31 @@ get_ls_colors() {
         return
     }
 
-    ls_cols="${LS_COLORS//:\*./:file_}"
-    ls_cols="${ls_cols//:./:file_}"
-    ls_cols="${ls_cols//:\*/:file_}"
-    ls_cols="${ls_cols//=/=\'}"
-    ls_cols="${ls_cols//:/\';}"
+    # Turn the LS_COLORS into an array.
+    IFS=":" read -ra ls_cols <<< "$LS_COLORS"
+
+    # Iterate over the list and separate patterns
+    # from '.ext' matching.
+    for col in "${ls_cols[@]}"; do
+        col="${col/\*./file_}"
+        col="${col/./file_}"
+
+        # ls color is a pattern.
+        [[ $col == '*'* ]] &&
+            ls_patterns+="${col/=*}|"
+
+        col="${col/\*/file_}"
+        ls_exts+="${col//;/\\;};"
+    done
+
+    # Store the patterns in a '|' separated string.
+    ls_patterns="${ls_patterns//\*}"
+    ls_patterns="${ls_patterns%?}"
 
     # bash 3 compatible method of sourcing a variable.
     # see: https://i.imgur.com/e4tIACE.jpg
     # shellcheck source=/dev/null
-    source /dev/stdin <<< "$ls_cols" >/dev/null 2>&1
+    source /dev/stdin <<< "$ls_exts" >/dev/null 2>&1
 }
 
 status_line() {
@@ -188,6 +203,14 @@ print_line() {
         # Dynamically use the variable 'file_${file_ext}'
         # which stores the color from LS_COLORS.
         file_ext="file_${file_ext}"
+        format+="\\e[${!file_ext:-${fi:-37}}m"
+
+    # Color files that end in a pattern as defined in LS_COLORS.
+    # 'BASH_REMATCH' is an array that stores each REGEX match.
+    elif [[ $file_name =~ .*($ls_patterns)$ ]]; then
+        # Dynamically use the variable 'file_${BASH_REMATCH[1]}'
+        # which stores the color from LS_COLORS.
+        file_ext="file_${BASH_REMATCH[1]}"
         format+="\\e[${!file_ext:-${fi:-37}}m"
 
     else
