@@ -5,7 +5,7 @@
 A simple file manager written in `bash`.
 
 - It's Fucking Fast 🚀
-- Minimal (*500~ lines of **readable** bash*)
+- Minimal (*only requires bash and coreutils*)
 - Smooth Scrolling (*using vim keybindings*)
 - Supports `LS_COLORS`!
 - File Operations (*copy, paste, rename, cut, etc*)
