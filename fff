@@ -134,30 +134,32 @@ read_dir() {
 
 print_line() {
     # Format the list item and print it.
+    local format
+    local suffix
     # local file_name="${list[$1]##*/}"
     # local file_ext="${file_name##*.}"
 
     if [[ -d ${list[$1]} ]]; then
-        local format+="\\e[${di:-3${FFF_COL1:-2}}m"
-        local suffix+='/'
+        format+="\\e[${di:-3${FFF_COL1:-2}}m"
+        suffix+='/'
 
     elif [[ -b ${list[$1]} ]]; then
-        local format+="\\e[${bd:-40;33;01}m"
+        format+="\\e[${bd:-40;33;01}m"
 
     elif [[ -c ${list[$1]} ]]; then
-        local format+="\\e[${cd:-40;33;01}m"
+        format+="\\e[${cd:-40;33;01}m"
 
     elif [[ -x ${list[$1]} ]]; then
-        local format+="\\e[${ex:-01;32}m"
+        format+="\\e[${ex:-01;32}m"
 
     elif [[ -h ${list[$1]} ]]; then
-        local format+="\\e[${ln:-01;36}m"
+        format+="\\e[${ln:-01;36}m"
 
     elif [[ -p ${list[$1]} ]]; then
-        local format+="\\e[${pi:-40;33}m"
+        format+="\\e[${pi:-40;33}m"
 
     elif [[ -S ${list[$1]} ]]; then
-        local format+="\\e[${so:-01;35}m"
+        format+="\\e[${so:-01;35}m"
 
     # elif [[ $file_ext != "$file_name" &&
     #         $LS_COLORS == *."$file_ext"=* ]]; then
@@ -165,17 +167,17 @@ print_line() {
     #     local format+="\\e[${ls_color/:*}m"
 
     else
-        local format+="\\e[${fi:-37}m"
+        format+="\\e[${fi:-37}m"
     fi
 
     # If the list item is under the cursor.
     (($1 == scroll)) &&
-        local format+="\\e[1;3${FFF_COL4:-6};7m"
+        format+="\\e[1;3${FFF_COL4:-6};7m"
 
     # If the list item is marked for operation.
     [[ ${marked_files[$1]} == "${list[$1]:-null}" ]] && {
-        local format+="\\e[3${FFF_COL3:-1}m "
-        local suffix+='*'
+        format+="\\e[3${FFF_COL3:-1}m "
+        suffix+='*'
     }
 
     printf '%b%s\e[m\r' "$format" "${list[$1]##*/}${suffix}"
