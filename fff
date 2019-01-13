@@ -87,7 +87,7 @@ status_line() {
     printf '\e7\e[?6l\e[%sH\e[30;4%sm%s %s%s\e[K\e[m\n\e[K\e[?6h\e8' \
            "$((LINES-1))" \
            "${FFF_COL2:-1}" \
-           "(${scroll:=0}/${list_total})" \
+           "($((scroll+1))/$((list_total+1)))" \
            "${marked_files[*]:+${mark_ui}}" \
            "${PWD:-/}"
 }
@@ -572,7 +572,6 @@ main() {
     trap 'get_term_size; redraw; status_line' WINCH
 
     redraw full
-    status_line
 
     # Vintage infinite loop.
     for ((;;)); {
