@@ -70,6 +70,49 @@ get_cursor_pos() {
     IFS='[;' read -sp $'\e[6n' -d R -rs _ y _
 }
 
+get_ls_colors() {
+    # Parse the LS_COLORS variable and source each file type
+    # as a separate variable.
+    # Format: ':.ext=0;0:*.jpg=0;0;0:*png=0;0;0;0:'
+    [[ -z $LS_COLORS ]] && {
+        FFF_LS_COLORS=0
+        return
+    }
+
+    # Turn $LS_COLORS into an array.
+    IFS=: read -ra ls_cols <<< "$LS_COLORS"
+
+    for ((i=0;i<${#ls_cols[@]};i++)); {
+        # Separate patterns from file types.
+        [[ ${ls_cols[i]} =~ ^\*[^\.] ]] &&
+            ls_patterns+="${ls_cols[i]/=*}|"
+
+        # Prepend 'ls_' to all LS_COLORS items
+        # if they aren't types of files (symbolic links, block files etc.)
+        [[ ${ls_cols[i]} =~ ^(\*|\.) ]] && {
+            ls_cols[i]="${ls_cols[i]#\*}"
+            ls_cols[i]="ls_${ls_cols[i]#.}"
+        }
+
+        ls_cols[i]="${ls_cols[i]//;/\\;};"
+   }
+
+    # Strip non-ascii characters from the string as they're
+    # used as a key to color the dir items and variable
+    # names in bash must be '[a-zA-z0-9_]'.
+    ls_exts="${ls_cols[*]//[^a-zA-Z0-9=\\;]/_}"
+
+    # Store the patterns in a '|' separated string
+    # for use in a REGEX match later.
+    ls_patterns="${ls_patterns//\*}"
+    ls_patterns="${ls_patterns%?}"
+
+    # bash 3 compatible method of sourcing a variable.
+    # see: https://i.imgur.com/e4tIACE.jpg
+    # shellcheck source=/dev/null
+    source /dev/stdin <<< "$ls_exts" >/dev/null 2>&1
+}
+
 status_line() {
     # Status_line to print when files are marked for operation.
     local mark_ui="[${#marked_files[@]}] selected (${file_program[*]}) [p] ->"
@@ -127,22 +170,72 @@ read_dir() {
 
 print_line() {
     # Format the list item and print it.
-    [[ -d ${list[$1]} ]] && {
-        local format+="\\e[1;3${FFF_COL1:-2}m"
-        local suffix+='/'
-    }
+    local file_name="${list[$1]##*/}"
+    local file_ext="${file_name##*.}"
+    local format
+    local suffix
+
+    if [[ -d ${list[$1]} ]]; then
+        format+="\\e[${di:-1;3${FFF_COL1:-2}}m"
+        suffix+='/'
+
+    # Block special file.
+    elif [[ -b ${list[$1]} ]]; then
+        format+="\\e[${bd:-40;33;01}m"
+
+    # Character special file.
+    elif [[ -c ${list[$1]} ]]; then
+        format+="\\e[${cd:-40;33;01}m"
+
+    # Executable file.
+    elif [[ -x ${list[$1]} ]]; then
+        format+="\\e[${ex:-01;32}m"
+
+    # Symbolic Link.
+    elif [[ -h ${list[$1]} ]]; then
+        format+="\\e[${ln:-01;36}m"
+
+    # Fifo file.
+    elif [[ -p ${list[$1]} ]]; then
+        format+="\\e[${pi:-40;33}m"
+
+    # Socket file.
+    elif [[ -S ${list[$1]} ]]; then
+        format+="\\e[${so:-01;35}m"
+
+    # Color files that end in a pattern as defined in LS_COLORS.
+    # 'BASH_REMATCH' is an array that stores each REGEX match.
+    elif [[ $FFF_LS_COLORS == 1 &&
+            $ls_patterns &&
+            $file_name =~ ($ls_patterns)$ ]]; then
+        match="${BASH_REMATCH[0]}"
+        file_ext="ls_${match//[^a-zA-Z0-9=\\;]/_}"
+        format+="\\e[${!file_ext:-${fi:-37}}m"
+
+    # Color files based on file extension and LS_COLORS.
+    # Check if file extension adheres to POSIX naming
+    # stardard before checking if it's a variable.
+    elif [[ $FFF_LS_COLORS == 1 &&
+            $file_ext != "$file_name" &&
+            $file_ext =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
+        file_ext="ls_${file_ext}"
+        format+="\\e[${!file_ext:-${fi:-37}}m"
+
+    else
+        format+="\\e[${fi:-37}m"
+    fi
 
     # If the list item is under the cursor.
     (($1 == scroll)) &&
-        local format+="\\e[1;3${FFF_COL4:-6};7m"
+        format+="\\e[1;3${FFF_COL4:-6};7m"
 
     # If the list item is marked for operation.
     [[ ${marked_files[$1]} == "${list[$1]:-null}" ]] && {
-        local format+="\\e[3${FFF_COL3:-1}m "
-        local suffix+='*'
+        format+="\\e[3${FFF_COL3:-1}m "
+        suffix+='*'
     }
 
-    printf '%b%s\e[m\r' "$format" "${list[$1]##*/}${suffix}"
+    printf '%b%s\e[m\r' "$format" "${file_name}${suffix}"
 }
 
 draw_dir() {
@@ -573,6 +666,10 @@ main() {
     # SEE: https://github.com/dylanaraps/fff/issues/48
     ((BASH_VERSINFO[0] > 3)) &&
         read_flags=(-t 0.05)
+
+    # Initialize LS_COLORS support if enabled.
+    ((${FFF_LS_COLORS:=1} == 1)) &&
+        get_ls_colors
 
     get_os
     get_term_size
