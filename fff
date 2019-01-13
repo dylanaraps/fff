@@ -132,6 +132,7 @@ print_line() {
         local suffix+='/'
     }
 
+    # If the list item is under the cursor.
     (($1 == scroll)) &&
         local format+="\\e[1;3${FFF_COL4:-6};7m"
 
@@ -204,6 +205,37 @@ redraw() {
 
     clear_screen
     draw_dir
+    status_line
+}
+
+mark() {
+    # Mark file for operation.
+    # If an item is marked in a second directory,
+    # clear the marked files.
+    [[ $PWD != "$mark_dir" ]] &&
+        marked_files=()
+
+    if [[ ${marked_files[$1]} == "${list[$1]}" ]]; then
+        unset 'marked_files[scroll]'
+
+    else
+        marked_files[$1]="${list[$1]}"
+        mark_dir="$PWD"
+    fi
+
+    # Clear line before changing it.
+    printf '\e[K'
+    print_line "$1"
+
+    # Find the program to use.
+    case "$2" in
+        y) file_program=(cp -R) ;;
+        m) file_program=(mv) ;;
+
+        # Trash is an 'fff' function.
+        d) file_program=(trash) ;;
+    esac
+
     status_line
 }
 
@@ -431,33 +463,7 @@ key() {
 
         # Mark files for operation.
         y|m|d)
-            # If an item is marked in a second directory,
-            # clear the marked files.
-            [[ $PWD != "$mark_dir" ]] &&
-                marked_files=()
-
-            if [[ ${marked_files[scroll]} == "${list[scroll]}" ]]; then
-                unset 'marked_files[scroll]'
-
-            else
-                marked_files[scroll]="${list[scroll]}"
-                mark_dir="$PWD"
-            fi
-
-            # Clear line before changing it.
-            printf '\e[K'
-            print_line "$scroll"
-
-            # Find the program to use.
-            case "$1" in
-                y) file_program=(cp -R) ;;
-                m) file_program=(mv) ;;
-
-                # Trash is an 'fff' function.
-                d) file_program=(trash) ;;
-            esac
-
-            status_line
+            mark "$scroll" "$1"
         ;;
 
         # Do the file operation.
