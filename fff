@@ -71,10 +71,15 @@ get_cursor_pos() {
 }
 
 get_ls_colors() {
+    # Parse the LS_COLORS variable and source each file type
+    # as a separate variable.
+    # Format: :*.ext=0;0:*.jpg=0;0;0:
     ls_cols="${LS_COLORS//\*./file_}"
     ls_cols="${ls_cols//=/=\'}"
     ls_cols="${ls_cols//:/\';}"
-    source <(printf '%s' "$ls_cols")
+
+    # bash 3 compatible method of sourcing a variable.
+    source /dev/stdin <<< "$ls_cols"
 }
 
 status_line() {
@@ -611,6 +616,7 @@ main() {
     ((BASH_VERSINFO[0] > 3)) &&
         read_flags=(-t 0.05)
 
+    # Initialize LS_COLORS support if enabled.
     ((${FFF_LS_COLORS:=1} == 1)) &&
         get_ls_colors
 
