@@ -55,7 +55,7 @@ clear_screen() {
 
 get_term_size() {
     # Get terminal size ('stty' is POSIX and always available).
-    # This can't be done reliably in pure BASH.
+    # This can't be done reliably across all bash versions in pure bash.
     read -r LINES COLUMNS < <(stty size)
 
     # Max list items that fit in the scroll area.
@@ -72,7 +72,7 @@ get_cursor_pos() {
 
 status_line() {
     # Status_line to print when files are marked for operation.
-    mark_ui="[${#marked_files[@]}] selected (${file_program[*]}) [p] ->"
+    local mark_ui="[${#marked_files[@]}] selected (${file_program[*]}) [p] ->"
 
     # '\e7':       Save cursor position.
     #              This is more widely supported than '\e[s'.
@@ -81,6 +81,7 @@ status_line() {
     # '\e[30;41m': Set foreground and background colors.
     # '\e[K':      Clear to end of line (set background color to whole line).
     # '\e[m':      Reset text formatting.
+    # '\n\e[K':    Also clear the line below the status_line.
     # '\e[?6h':    Restrict cursor to scrolling area.
     # '\e8':       Restore cursor position.
     #              This is more widely supported than '\e[u'.
@@ -94,7 +95,9 @@ status_line() {
 
 read_dir() {
     # Read a directory to an array and sort it directories first.
-    dirs=(); files=(); item_index=
+    local dirs=()
+    local files=()
+    local item_index
 
     for item in "$PWD"/*; do
         if [[ -d $item ]]; then
@@ -323,15 +326,15 @@ cmd_line() {
 key() {
     case "$1" in
         # Open list item.
-        # 'C' is what BASH sees when the right arrow is pressed ('\e[C').
+        # 'C' is what bash sees when the right arrow is pressed ('\e[C').
         # '' is what bash sees when the enter/return key is pressed.
         l|C|'')
             open "${list[scroll]}"
         ;;
 
         # Go to the parent directory.
-        # 'D' is what BASH sees when the left arrow is pressed ('\e[D').
-        # '\177' is what BASH sees when the backspace key is pressed.
+        # 'D' is what bash sees when the left arrow is pressed ('\e[D').
+        # '\177' is what bash sees when the backspace key is pressed.
         # '[[ $PWD ]]' If '$PWD' is empty we're at '/', do nothing.
         h|D|$'\177'|$'\b')
             # If a search was done, clear the results and open the current dir.
@@ -345,7 +348,7 @@ key() {
         ;;
 
         # Scroll down.
-        # 'B' is what BASH sees when the down arrow is pressed ('\e[B').
+        # 'B' is what bash sees when the down arrow is pressed ('\e[B').
         B|j)
             ((scroll < list_total)) && {
                 ((scroll++))
@@ -359,7 +362,7 @@ key() {
         ;;
 
         # Scroll up.
-        # 'A' is what BASH sees when the down arrow is pressed ('\e[A').
+        # 'A' is what bash sees when the down arrow is pressed ('\e[A').
         A|k)
             # '\e[1L': Insert a line above the cursor.
             # '\e[A':  Move cursor up a line.
@@ -453,6 +456,8 @@ key() {
                 # Trash is an 'fff' function.
                 d) file_program=(trash) ;;
             esac
+
+            status_line
         ;;
 
         # Do the file operation.
@@ -567,7 +572,7 @@ main() {
     get_term_size
     setup_terminal
 
-    # Set some BASH options.
+    # Set some bash options.
     # 'nocaseglob': Glob case insensitively (Used for case insensitive search).
     # 'nullglob':   Don't expand non-matching globs to themselves.
     shopt -s nocaseglob nullglob
