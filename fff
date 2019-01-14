@@ -651,7 +651,9 @@ key() {
         ;;
 
         # Quit and store current directory in a file for CD on exit.
-        "${FFF_KEY_QUIT:=q}")
+        # Don't allow user to redefine 'q' so a bad keybinding doesn't
+        # remove the option to quit.
+        q)
             : "${FFF_CD_FILE:=${XDG_CACHE_HOME:=${HOME}/.cache}/fff/.fff_d}"
             printf '%s\n' "$PWD" > "$FFF_CD_FILE"
             exit
@@ -707,9 +709,9 @@ main() {
     # '\e[?1049l': Restore saved terminal screen.
     trap 'reset_terminal; printf "\e[?1049l"' EXIT
 
-    # Trap 'Ctrl+c' and exit by mimicking the 'exit' keypress.
+    # Trap 'Ctrl+c' and exit by mimicking the 'q' keypress.
     # This allow us to run the same plumbing on exit for both.
-    trap 'key ${FFF_KEY_QUIT}' INT
+    trap 'key q' INT
 
     # Trap the window resize signal (handle window resize events).
     trap 'get_term_size; redraw' WINCH
