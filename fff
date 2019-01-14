@@ -443,11 +443,14 @@ cmd_line() {
 }
 
 key() {
+    # shellcheck disable=SC2153
     case "$1" in
         # Open list item.
         # 'C' is what bash sees when the right arrow is pressed ('\e[C').
         # '' is what bash sees when the enter/return key is pressed.
-        l|C|'')
+        "${FFF_KEY_CHILD1:=l}"|\
+        "${FFF_KEY_CHILD2:=C}"|\
+        "${FFF_KEY_CHILD3:=''}")
             open "${list[scroll]}"
         ;;
 
@@ -455,7 +458,10 @@ key() {
         # 'D' is what bash sees when the left arrow is pressed ('\e[D').
         # '\177' and '\b' are what bash sometimes sees when the backspace
         # key is pressed.
-        h|D|$'\177'|$'\b')
+        "${FFF_KEY_PARENT1:=h}"|\
+        "${FFF_KEY_PARENT2:=D}"|\
+        "${FFF_KEY_PARENT3=$'\177'}"|\
+        "${FFF_KEY_PARENT4=$'\b'}")
             # If a search was done, clear the results and open the current dir.
             if ((search == 1)); then
                 open "$PWD"
@@ -469,7 +475,8 @@ key() {
 
         # Scroll down.
         # 'B' is what bash sees when the down arrow is pressed ('\e[B').
-        B|j)
+        "${FFF_KEY_SCROLL_DOWN1:=j}"|\
+        "${FFF_KEY_SCROLL_DOWN2:=B}")
             ((scroll < list_total)) && {
                 ((scroll++))
 
@@ -483,7 +490,8 @@ key() {
 
         # Scroll up.
         # 'A' is what bash sees when the down arrow is pressed ('\e[A').
-        A|k)
+        "${FFF_KEY_SCROLL_UP1:=k}"|\
+        "${FFF_KEY_SCROLL_UP2:=A}")
             # '\e[1L': Insert a line above the cursor.
             # '\e[A':  Move cursor up a line.
             ((scroll > 0)) && {
@@ -504,7 +512,7 @@ key() {
         ;;
 
         # Go to top.
-        g)
+        "${FFF_KEY_TO_TOP:=g}")
             ((scroll != 0)) && {
                 ((scroll=0))
                 redraw
@@ -513,7 +521,7 @@ key() {
         ;;
 
         # Go to bottom.
-        G)
+        "${FFF_KEY_TO_BOTTOM:=G}")
             ((scroll != list_total)) && {
                 ((scroll=list_total))
                 redraw
@@ -522,7 +530,7 @@ key() {
         ;;
 
         # Show hidden files.
-        .)
+        "${FFF_KEY_HIDDEN:=.}")
             # 'a=a>0?0:++a': Toggle between both values of 'shopt_flags'.
             #                This also works for '3' or more values with
             #                some modification.
@@ -532,7 +540,7 @@ key() {
         ;;
 
         # Search.
-        /)
+        "${FFF_KEY_SEARCH:=/}")
             cmd_line "/" "search"
 
             # If the search came up empty, redraw the current dir.
@@ -547,19 +555,21 @@ key() {
         ;;
 
         # Spawn a shell.
-        s)
+        "${FFF_KEY_SHELL:=s}")
             reset_terminal
             cd "$PWD" && "$SHELL"
             redraw
         ;;
 
         # Mark files for operation.
-        y|m|d)
+        "${FFF_KEY_YANK:=y}"|\
+        "${FFF_KEY_MOVE:=m}"|\
+        "${FFF_KEY_TRASH:=d}")
             mark "$scroll" "$1"
         ;;
 
         # Do the file operation.
-        p)
+        "${FFF_KEY_PASTE:=p}")
             [[ ${marked_files[*]} ]] && {
                 cd "$PWD" && "${file_program[@]}" "${marked_files[@]}" .
                 marked_files=()
@@ -568,13 +578,13 @@ key() {
         ;;
 
         # Clear all marked files.
-        c)
+        "${FFF_KEY_CLEAR:=c}")
             marked_files=()
             redraw
         ;;
 
         # Rename list item.
-        r)
+        "${FFF_KEY_RENAME:=r}")
             cmd_line "rename ${list[scroll]##*/}: "
 
             [[ $cmd_reply ]] && {
@@ -589,7 +599,7 @@ key() {
         ;;
 
         # Create a directory.
-        n)
+        "${FFF_KEY_MKDIR:=n}")
             cmd_line "mkdir: "
 
             [[ $cmd_reply ]] && {
@@ -599,7 +609,7 @@ key() {
         ;;
 
         # Create a file.
-        f)
+        "${FFF_KEY_MKFILE:=f}")
             cmd_line "mkfile: "
 
             [[ $cmd_reply ]] && {
@@ -609,7 +619,7 @@ key() {
         ;;
 
         # Show file attributes.
-        x)
+        "${FFF_KEY_ATTRIBUTES:=x}")
             clear_screen
             stat "${list[scroll]}"
             read -rn 1
@@ -617,17 +627,17 @@ key() {
         ;;
 
         # Go to '$HOME'.
-        \~)
+        "${FFF_KEY_GO_HOME:=\~}")
             open ~
         ;;
 
         # Go to trash.
-        t)
+        "${FFF_KEY_GO_TRASH:=t}")
             open "$FFF_TRASH"
         ;;
 
         # Go to previous dir.
-        -)
+        "${FFF_KEY_PREVIOUS:=-}")
             open "$previous_dir"
         ;;
 
@@ -641,7 +651,7 @@ key() {
         ;;
 
         # Quit and store current directory in a file for CD on exit.
-        q)
+        "${FFF_KEY_QUIT:=q}")
             : "${FFF_CD_FILE:=${XDG_CACHE_HOME:=${HOME}/.cache}/fff/.fff_d}"
             printf '%s\n' "$PWD" > "$FFF_CD_FILE"
             exit
