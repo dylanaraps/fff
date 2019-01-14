@@ -261,7 +261,7 @@ draw_dir() {
     elif ((list_total - scroll < max_items/2)); then
         ((scroll_start=list_total - max_items + 1))
         ((scroll_new_pos=max_items - (list_total-scroll)))
-        ((scroll_end=max_items+scroll))
+        ((scroll_end=list_total+1))
 
     # If current dir is somewhere in the middle, center scroll position.
     else
@@ -270,12 +270,9 @@ draw_dir() {
         ((scroll_new_pos=max_items/2+1))
     fi
 
-    # '\e[1B': Move cursor down after print.
-    #          Prevents issues with lines being eaten by the scroll area.
-    # '\e[H':  Send cursor back home (0,0).
     for ((i=scroll_start;i<scroll_end;i++)); {
+        printf '\n'
         print_line "$i"
-        printf '\e[B'
     }
 
     # Move the cursor to its new position if it changed.
@@ -508,7 +505,7 @@ key() {
 
         # Go to top.
         g)
-            ((y > 1)) && {
+            ((scroll != 0)) && {
                 ((scroll=0))
                 redraw
                 get_cursor_pos
@@ -517,7 +514,7 @@ key() {
 
         # Go to bottom.
         G)
-            ((y < max_items)) && {
+            ((scroll != list_total)) && {
                 ((scroll=list_total))
                 redraw
                 get_cursor_pos
