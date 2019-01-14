@@ -465,9 +465,29 @@ key_user() {
     [[ $1 == "${FFF_KEY_H:-null}" ]] &&
         key="h"
 
-    # If user has rebound 'h'
+    # If user has rebound 'Left Arrow'
     [[ $1 == "${FFF_KEY_LEFT:-null}" ]] &&
-        key="D"
+        key="h"
+
+    # If user has rebound 'Backspace'
+    [[ $1 == "${FFF_KEY_BS:-null}" ]] &&
+        key="h"
+
+    # If user has rebound 'j'
+    [[ $1 == "${FFF_KEY_J:-null}" ]] &&
+        key="j"
+
+    # If user has rebound 'j'
+    [[ $1 == "${FFF_KEY_DOWN:-null}" ]] &&
+        key="j"
+
+    # If user has rebound 'j'
+    [[ $1 == "${FFF_KEY_K:-null}" ]] &&
+        key="k"
+
+    # If user has rebound 'j'
+    [[ $1 == "${FFF_KEY_UP:-null}" ]] &&
+        key="k"
 
     # If user has rebound '-'
     [[ $1 == "${FFF_KEY_DASH:-null}" ]] &&
