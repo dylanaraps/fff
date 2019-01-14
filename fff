@@ -423,6 +423,11 @@ cmd_line() {
 
             # Use a greedy glob to search.
             list=("$PWD"/*"$cmd_reply"*)
+
+            # Use an even greedier glob in 2 level search.
+            [[ $1 == "?" ]] &&
+                list+=("$PWD"/*/*"$cmd_reply"*)
+
             ((list_total=${#list[@]}-1))
 
             # Draw the search results on screen.
@@ -532,8 +537,8 @@ key() {
         ;;
 
         # Search.
-        /)
-            cmd_line "/" "search"
+        /|'?')
+            cmd_line "$1" "search"
 
             # If the search came up empty, redraw the current dir.
             if [[ -z ${list[*]} || -z $cmd_reply ]]; then
