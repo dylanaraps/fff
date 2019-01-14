@@ -328,9 +328,9 @@ mark() {
 
 trash() {
     # 'trash' a file.
-    # The last function argument is '.' (mv file dir file .).
     cmd_line "trash [${#marked_files[@]}] items? [y/n]: " y n
 
+    # The last function argument is '.' (mv file dir file .).
     [[ $cmd_reply == y ]] && {
         cd "$FFF_TRASH" && mv "$@"
 
