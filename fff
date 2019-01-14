@@ -443,7 +443,17 @@ cmd_line() {
 }
 
 key() {
-    case "$1" in
+    local key="$1"
+
+    # If user has rebound '-'
+    [[ $1 == "${FFF_PREV_DIR_KEY:-null}" ]] &&
+        key="-"
+
+    # If user has rebound 'h'
+    [[ $1 == "${FFF_PARENT_DIR_KEY:-null}" ]] &&
+        key="h"
+
+    case "$key" in
         # Open list item.
         # 'C' is what bash sees when the right arrow is pressed ('\e[C').
         # '' is what bash sees when the enter/return key is pressed.
@@ -555,7 +565,7 @@ key() {
 
         # Mark files for operation.
         y|m|d)
-            mark "$scroll" "$1"
+            mark "$scroll" "$key"
         ;;
 
         # Do the file operation.
