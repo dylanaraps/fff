@@ -95,6 +95,8 @@ d: mark trash (~/.cache/fff/trash/)
 p: paste/move/delete
 c: clear file selections
 
+[1-9]: favourites/bookmarks (see customization)
+
 q: exit
 ```
 
@@ -133,6 +135,17 @@ export FFF_CD_FILE=~/.fff_d
 # Default: '${XDG_CACHE_HOME}/fff/trash'
 #          If not using XDG, '${HOME}/.cache/fff/trash' is used.
 export FFF_TRASH=~/.cache/fff/trash
+
+# Favourites (Bookmarks) (keys 1-9) (dir or file)
+export FFF_FAV1=~/projects
+export FFF_FAV2=~/.bashrc
+export FFF_FAV3=~/Pictures/Wallpapers/
+export FFF_FAV4=/usr/share
+export FFF_FAV5=/
+export FFF_FAV6=
+export FFF_FAV7=
+export FFF_FAV8=
+export FFF_FAV9=
 ```
 
 ## Why?

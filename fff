@@ -631,6 +631,15 @@ key() {
             open "$previous_dir"
         ;;
 
+        # Directory favourites.
+        [1-9])
+            favourite="FFF_FAV${1}"
+            favourite="${!favourite}"
+
+            [[ $favourite ]] &&
+                open "$favourite"
+        ;;
+
         # Quit and store current directory in a file for CD on exit.
         q)
             : "${FFF_CD_FILE:=${XDG_CACHE_HOME:=${HOME}/.cache}/fff/.fff_d}"
