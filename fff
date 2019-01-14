@@ -456,13 +456,14 @@ key() {
 
         # Go to the parent directory.
         # 'D' is what bash sees when the left arrow is pressed ('\e[D').
-        # '\177' is what bash sees when the backspace key is pressed.
-        # '[[ $PWD ]]' If '$PWD' is empty we're at '/', do nothing.
+        # '\177' and '\b' are what bash sometimes sees when the backspace
+        # key is pressed.
         h|D|$'\177'|$'\b')
             # If a search was done, clear the results and open the current dir.
             if ((search == 1)); then
                 open "$PWD"
 
+            # If '$PWD' is empty we're at '/', do nothing.
             elif [[ $PWD ]]; then
                 find_previous=1
                 open "${PWD%/*}"
