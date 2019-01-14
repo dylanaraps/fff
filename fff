@@ -507,16 +507,20 @@ key() {
 
         # Go to top.
         g)
-            ((scroll=0))
-            redraw
-            get_cursor_pos
+            ((y > 1)) && {
+                ((scroll=0))
+                redraw
+                get_cursor_pos
+            }
         ;;
 
         # Go to bottom.
         G)
-            ((scroll=list_total))
-            redraw
-            get_cursor_pos
+            ((y < max_items)) && {
+                ((scroll=list_total))
+                redraw
+                get_cursor_pos
+            }
         ;;
 
         # Show hidden files.
