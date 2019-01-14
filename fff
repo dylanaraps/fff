@@ -444,14 +444,34 @@ cmd_line() {
 
 key_user() {
     # Handle user rebound keys.
+    # We set the variable to 'null' if its unset
+    # since the value of '$key' won't be longer
+    # than 1 char. The variables need a default
+    # value since return/enter is a blank string.
 
-    # If user has rebound '-'
-    [[ $1 == "${FFF_PREV_DIR_KEY:-null}" ]] &&
-        key="-"
+    # If user has rebound 'l'
+    [[ $1 == "${FFF_KEY_L:-null}" ]] &&
+        key="l"
+
+    # If user has rebound 'Right Arrow'
+    [[ $1 == "${FFF_KEY_RIGHT:-null}" ]] &&
+        key="C"
+
+    # If user has rebound 'Right Arrow'
+    [[ $1 == "${FFF_KEY_ENTER:-null}" ]] &&
+        key=""
 
     # If user has rebound 'h'
-    [[ $1 == "${FFF_PARENT_DIR_KEY:-null}" ]] &&
+    [[ $1 == "${FFF_KEY_H:-null}" ]] &&
         key="h"
+
+    # If user has rebound 'h'
+    [[ $1 == "${FFF_KEY_LEFT:-null}" ]] &&
+        key="D"
+
+    # If user has rebound '-'
+    [[ $1 == "${FFF_KEY_DASH:-null}" ]] &&
+        key="-"
 }
 
 key() {
