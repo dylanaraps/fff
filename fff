@@ -450,7 +450,7 @@ key() {
         # '' is what bash sees when the enter/return key is pressed.
         "${FFF_KEY_CHILD1:=l}"|\
         "${FFF_KEY_CHILD2:=C}"|\
-        "${FFF_KEY_CHILD3:=''}")
+        "${FFF_KEY_CHILD3:=""}")
             open "${list[scroll]}"
         ;;
 
