@@ -489,9 +489,74 @@ key_user() {
     [[ $1 == "${FFF_KEY_BS:-null}" ]] &&
         key="h"
 
+    # If user has rebound 'g'
+    [[ $1 == "${FFF_KEY_g:-null}" ]] &&
+        key="g"
+
+    # If user has rebound 'g'
+    [[ $1 == "${FFF_KEY_G:-null}" ]] &&
+        key="G"
+
+    # If user has rebound '.'
+    [[ $1 == "${FFF_KEY_DOT:-null}" ]] &&
+        key="."
+
+    # If user has rebound '/'
+    [[ $1 == "${FFF_KEY_SLASH:-null}" ]] &&
+        key="/"
+
+    # If user has rebound 's'
+    [[ $1 == "${FFF_KEY_s:-null}" ]] &&
+        key="s"
+
+    # If user has rebound 'y'
+    [[ $1 == "${FFF_KEY_y:-null}" ]] &&
+        key="y"
+
+    # If user has rebound 'm'
+    [[ $1 == "${FFF_KEY_m:-null}" ]] &&
+        key="m"
+
+    # If user has rebound 'd'
+    [[ $1 == "${FFF_KEY_d:-null}" ]] &&
+        key="d"
+
+    # If user has rebound 'p'
+    [[ $1 == "${FFF_KEY_p:-null}" ]] &&
+        key="p"
+
+    # If user has rebound 'c'
+    [[ $1 == "${FFF_KEY_c:-null}" ]] &&
+        key="c"
+
+    # If user has rebound 'r'
+    [[ $1 == "${FFF_KEY_r:-null}" ]] &&
+        key="r"
+
+    # If user has rebound 'n'
+    [[ $1 == "${FFF_KEY_n:-null}" ]] &&
+        key="n"
+
+    # If user has rebound 'f'
+    [[ $1 == "${FFF_KEY_f:-null}" ]] &&
+        key="f"
+
+    # If user has rebound 'x'
+    [[ $1 == "${FFF_KEY_x:-null}" ]] &&
+        key="x"
+
+    # If user has rebound '~'
+    [[ $1 == "${FFF_KEY_TILDE:-null}" ]] &&
+        key="~"
+
+    # If user has rebound 't'
+    [[ $1 == "${FFF_KEY_t:-null}" ]] &&
+        key="t"
+
     # If user has rebound '-'
     [[ $1 == "${FFF_KEY_DASH:-null}" ]] &&
         key="-"
+
 }
 
 key() {
