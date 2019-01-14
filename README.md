@@ -1,6 +1,6 @@
 # fff (*Fucking Fast File-Manager*)
 
-<a href="https://asciinema.org/a/bsXSyPmUkaeR0ti2Qh3eZiKS8" target="_blank"><img src="https://asciinema.org/a/bsXSyPmUkaeR0ti2Qh3eZiKS8.svg" alt="img" height="300px" align="right"/></a>
+<a href="https://asciinema.org/a/QBCXlA7qbkQPCcfdBGDoPUWiH" target="_blank"><img src="https://asciinema.org/a/QBCXlA7qbkQPCcfdBGDoPUWiH.svg" alt="img" height="300px" align="right"/></a>
 
 A simple file manager written in `bash`.
 
