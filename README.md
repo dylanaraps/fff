@@ -13,6 +13,17 @@ A simple file manager written in `bash`.
 - Automatic CD on exit (*see [setup](#cd-on-exit)*)
 
 
+## Introduction
+
+The entire program has been rewritten in **readable** bash. It's no longer 100 obfuscated lines and<br>
+no longer has that restriction. Numerous bugs were discovered in the rewrite and have<br>
+been all fixed. The program has been highly optimized now. The old version did a full screen<br>
+redraw on every keypress while the new version redraws only when necessary<br>
+(*Scrolling only redraws 2 lines now!*).
+
+Take a peek at the source code. I've done my best to explain the non-obvious and tricky parts.
+
+
 ## Dependencies
 
 - `bash 3.2+`
