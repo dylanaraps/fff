@@ -627,7 +627,7 @@ key() {
         ;;
 
         # Go to '$HOME'.
-        "${FFF_KEY_GO_HOME:=\~}")
+        "${FFF_KEY_GO_HOME:=~}")
             open ~
         ;;
 
