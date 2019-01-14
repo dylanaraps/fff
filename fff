@@ -449,45 +449,45 @@ key_user() {
     # than 1 char. The variables need a default
     # value since return/enter is a blank string.
 
+    # If user has rebound 'h'
+    [[ $1 == "${FFF_KEY_h:-null}" ]] &&
+        key="h"
+
+    # If user has rebound 'j'
+    [[ $1 == "${FFF_KEY_j:-null}" ]] &&
+        key="j"
+
+    # If user has rebound 'k'
+    [[ $1 == "${FFF_KEY_k:-null}" ]] &&
+        key="k"
+
     # If user has rebound 'l'
-    [[ $1 == "${FFF_KEY_L:-null}" ]] &&
+    [[ $1 == "${FFF_KEY_l:-null}" ]] &&
         key="l"
 
-    # If user has rebound 'Right Arrow'
-    [[ $1 == "${FFF_KEY_RIGHT:-null}" ]] &&
-        key="C"
+    # If user has rebound 'Up Arrow'
+    [[ $1 == "${FFF_KEY_UP:-null}" ]] &&
+        key="k"
 
-    # If user has rebound 'Right Arrow'
-    [[ $1 == "${FFF_KEY_ENTER:-null}" ]] &&
-        key=""
-
-    # If user has rebound 'h'
-    [[ $1 == "${FFF_KEY_H:-null}" ]] &&
-        key="h"
+    # If user has rebound 'Down Arrow'
+    [[ $1 == "${FFF_KEY_DOWN:-null}" ]] &&
+        key="j"
 
     # If user has rebound 'Left Arrow'
     [[ $1 == "${FFF_KEY_LEFT:-null}" ]] &&
         key="h"
 
+    # If user has rebound 'Right Arrow'
+    [[ $1 == "${FFF_KEY_RIGHT:-null}" ]] &&
+        key="C"
+
+    # If user has rebound 'Enter'
+    [[ $1 == "${FFF_KEY_ENTER:-null}" ]] &&
+        key=""
+
     # If user has rebound 'Backspace'
     [[ $1 == "${FFF_KEY_BS:-null}" ]] &&
         key="h"
-
-    # If user has rebound 'j'
-    [[ $1 == "${FFF_KEY_J:-null}" ]] &&
-        key="j"
-
-    # If user has rebound 'j'
-    [[ $1 == "${FFF_KEY_DOWN:-null}" ]] &&
-        key="j"
-
-    # If user has rebound 'j'
-    [[ $1 == "${FFF_KEY_K:-null}" ]] &&
-        key="k"
-
-    # If user has rebound 'j'
-    [[ $1 == "${FFF_KEY_UP:-null}" ]] &&
-        key="k"
 
     # If user has rebound '-'
     [[ $1 == "${FFF_KEY_DASH:-null}" ]] &&
