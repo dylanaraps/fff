@@ -78,9 +78,13 @@ export EDITOR="vim"
 export FFF_OPENER="xdg\-open"
 
 # CD on exit helper file
-export FFF_CD_FILE=~/\.fff_d
+# Default: '${XDG_CACHE_HOME}/fff/fff.d'
+#          If not using XDG, '${HOME}/.cache/fff/fff.d' is used.
+export FFF_CD_FILE=~/.fff_d
 
 # Trash Directory
-export FFF_TRASH=~/\.cache/fff/trash
+# Default: '${XDG_CACHE_HOME}/fff/trash'
+#          If not using XDG, '${HOME}/.cache/fff/trash' is used.
+export FFF_TRASH=~/.cache/fff/trash
 .
 .fi

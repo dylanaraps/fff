@@ -46,6 +46,8 @@ Take a peek at the source code. I've done my best to explain the non-obvious and
 f() { fff "$@"; cd "$(< ~/.fff_d)"; }
 
 # Customization (temporary file to use)
+# Default: '${XDG_CACHE_HOME}/fff/fff.d'
+#          If not using XDG, '${HOME}/.cache/fff/fff.d' is used.
 export FFF_CD_FILE=~/.fff_d
 
 
@@ -123,9 +125,13 @@ export EDITOR="vim"
 export FFF_OPENER="xdg-open"
 
 # CD on exit helper file
+# Default: '${XDG_CACHE_HOME}/fff/fff.d'
+#          If not using XDG, '${HOME}/.cache/fff/fff.d' is used.
 export FFF_CD_FILE=~/.fff_d
 
 # Trash Directory
+# Default: '${XDG_CACHE_HOME}/fff/trash'
+#          If not using XDG, '${HOME}/.cache/fff/trash' is used.
 export FFF_TRASH=~/.cache/fff/trash
 ```
 
