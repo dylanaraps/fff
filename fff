@@ -707,9 +707,9 @@ main() {
     # '\e[?1049l': Restore saved terminal screen.
     trap 'reset_terminal; printf "\e[?1049l"' EXIT
 
-    # Trap 'Ctrl+c' and exit by mimicking the 'q' keypress.
+    # Trap 'Ctrl+c' and exit by mimicking the 'exit' keypress.
     # This allow us to run the same plumbing on exit for both.
-    trap 'key q' INT
+    trap 'key ${FFF_KEY_QUIT}' INT
 
     # Trap the window resize signal (handle window resize events).
     trap 'get_term_size; redraw' WINCH
