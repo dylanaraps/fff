@@ -443,7 +443,6 @@ cmd_line() {
 }
 
 key() {
-    # shellcheck disable=SC2153
     case "$1" in
         # Open list item.
         # 'C' is what bash sees when the right arrow is pressed ('\e[C').
@@ -460,8 +459,8 @@ key() {
         # key is pressed.
         "${FFF_KEY_PARENT1:=h}"|\
         "${FFF_KEY_PARENT2:=D}"|\
-        "${FFF_KEY_PARENT3=$'\177'}"|\
-        "${FFF_KEY_PARENT4=$'\b'}")
+        "${FFF_KEY_PARENT3:=$'\177'}"|\
+        "${FFF_KEY_PARENT4:=$'\b'}")
             # If a search was done, clear the results and open the current dir.
             if ((search == 1)); then
                 open "$PWD"
