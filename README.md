@@ -88,6 +88,11 @@ q: exit
 ## Customization
 
 ```sh
+# Use LS_COLORS to color fff.
+# (On by default if available)
+# (Ignores FFF_COL1)
+export FFF_LS_COLORS=1
+
 # Directory color [0-9]
 export FFF_COL1=2
 
