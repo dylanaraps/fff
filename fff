@@ -59,14 +59,6 @@ get_term_size() {
     ((max_items=LINES-3))
 }
 
-get_cursor_pos() {
-    # Get cursor position.
-    # '\e[6n': Report cursor position.
-    #          The reply from the terminal acts like user input
-    #          so we read it as so.
-    IFS='[;' read -sp $'\e[6n' -d R -rs _ y _
-}
-
 get_ls_colors() {
     # Parse the LS_COLORS variable and source each file type
     # as a separate variable.
@@ -472,11 +464,11 @@ key() {
         B|j)
             ((scroll < list_total)) && {
                 ((scroll++))
+                ((y < max_items )) && ((y++))
 
                 print_line "$((scroll-1))"
                 printf '\n'
                 print_line "$scroll"
-                get_cursor_pos
                 status_line
             }
         ;;
@@ -495,11 +487,12 @@ key() {
                     printf '\e[1L'
                 else
                     printf '\e[A'
+                    ((y--))
                 fi
 
                 print_line "$scroll"
-                get_cursor_pos
                 status_line
+
             }
         ;;
 
@@ -508,7 +501,6 @@ key() {
             ((scroll != 0)) && {
                 ((scroll=0))
                 redraw
-                get_cursor_pos
             }
         ;;
 
@@ -517,7 +509,6 @@ key() {
             ((scroll != list_total)) && {
                 ((scroll=list_total))
                 redraw
-                get_cursor_pos
             }
         ;;
 
