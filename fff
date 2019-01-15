@@ -224,7 +224,7 @@ print_line() {
         suffix+='*'
     }
 
-    printf '%b%s\e[m\r' "$format" "${file_name}${suffix}"
+    printf '\r%b%s\e[m\r' "$format" "${file_name}${suffix}"
 }
 
 draw_dir() {
