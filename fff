@@ -263,7 +263,10 @@ draw_dir() {
     fi
 
     for ((i=scroll_start;i<scroll_end;i++)); {
-        printf '\n'
+        # Don't print one too many newlines.
+        ((i > scroll_start)) &&
+            printf '\n'
+
         print_line "$i"
     }
 
