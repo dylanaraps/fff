@@ -34,10 +34,14 @@ Take a peek at the source code. I've done my best to explain the non-obvious and
 - mime types: `file`
 
 
-## Running
+## Installation.
 
-1. `fff` or `fff path/to/dir`, `fff ../../`, `fff /usr/share/`
-2. optional: `alias f="fff"`
+- Download `fff`.
+- Put it somewhere in your `$PATH`.
+- Run it.
+    1. `fff` or `fff path/to/dir`, `fff ../../`, `fff /usr/share/`
+    2. optional: `alias f="fff"`
+
 
 #### CD on Exit
 
@@ -53,7 +57,6 @@ export FFF_CD_FILE=~/.fff_d
 
 # Example setup (posix) (in .shellrc)
 f() { fff "$@"; cd "$(cat ~/.fff_d)"; }
-
 ```
 
 
