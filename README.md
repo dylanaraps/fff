@@ -176,6 +176,8 @@ export FFF_FAV9=
 
 This is the list of full keybindings along with their default values. You only need to modify the keybindings that you'd like to change from the default. `fff` will run perfectly fine without any of these defined.
 
+**NOTE:** This is in the next release (or you can `git clone`).
+
 ```sh
 ### Moving around.
 
