@@ -101,3 +101,100 @@ export FFF_FAV8=
 export FFF_FAV9=
 .
 .fi
+.
+.SH "Keybindings"
+.
+.nf
+For more information see:
+    https://github.com/dylanaraps/fff#customizing-the-keybindings
+
+### Moving around.
+
+# Go to child directory.
+export FFF_KEY_CHILD1="l"
+export FFF_KEY_CHILD2="C" # Right Arrow
+export FFF_KEY_CHILD3=""  # Enter / Return
+
+# Go to parent directory.
+export FFF_KEY_PARENT1="h"
+export FFF_KEY_PARENT2="D"     # Left Arrow
+export FFF_KEY_PARENT3=$'\\177' # Backspace
+export FFF_KEY_PARENT4=$'\\b'   # Backspace (Older terminals)
+
+# Go to previous directory.
+export FFF_KEY_PREVIOUS="\-"
+
+# Search.
+export FFF_KEY_SEARCH="/"
+
+# Spawn a shell.
+export FFF_KEY_SHELL="s"
+
+# Scroll down.
+export FFF_KEY_SCROLL_DOWN1="j"
+export FFF_KEY_SCROLL_DOWN2="B" # Down Arrow
+
+# Scroll up.
+export FFF_KEY_SCROLL_UP1="k"
+export FFF_KEY_SCROLL_UP2="A" # Up Arrow
+
+# Go to top and bottom.
+export FFF_KEY_TO_TOP="g"
+export FFF_KEY_TO_BOTTOM="G"
+
+# Go to dirs.
+export FFF_KEY_GO_HOME="~"
+export FFF_KEY_GO_TRASH="t"
+
+### File operations.
+
+export FFF_KEY_YANK="y"
+export FFF_KEY_MOVE="m"
+export FFF_KEY_TRASH="d"
+
+export FFF_KEY_PASTE="p"
+export FFF_KEY_CLEAR="c"
+
+export FFF_KEY_RENAME="r"
+export FFF_KEY_MKDIR="n"
+export FFF_KEY_MKFILE="f"
+
+### Miscellaneous
+
+# Show file attributes.
+export FFF_KEY_ATTRIBUTES="x"
+
+# Toggle hidden files.
+export FFF_KEY_HIDDEN="."
+
+.
+.fi
+
+.SH "Disabling keybindings"
+.
+.nf
+
+You can't unset keybindings by making their value `''`.
+What you need to do is change their value to `off`.
+
+Example:
+
+# KEY_GO_TRASH was bound to 't', now its unset.
+export FFF_KEY_GO_TRASH="off"
+
+# KEY_MKFILE is now set to 't' and its original
+# keybinding is also unset 'f'.
+export FFF_KEY_MKFILE="t"
+.
+.fi
+
+.SH "Dealing with conflicting keybindings"
+.
+.nf
+
+When rebinding a key in `fff` make sure you don't have two bindings
+with the same value. You can avoid this by setting the other
+conflicting key-binding to something else or by changing its value to `off`.
+
+.
+.fi
