@@ -106,8 +106,9 @@ status_line() {
     # Status_line to print when files are marked for operation.
     local mark_ui="[${#marked_files[@]}] selected (${file_program[*]}) [p] ->"
 
-    # Escape the directory string before printing it.
-    escape_dir "${PWD:-/}"
+    # Escape the directory string.
+    # Remove all non-printable characters.
+    PWD_escaped="${PWD//[^[:print:]]/^[}"
 
     # '\e7':       Save cursor position.
     #              This is more widely supported than '\e[s'.
@@ -125,7 +126,7 @@ status_line() {
            "${FFF_COL2:-1}" \
            "($((scroll+1))/$((list_total+1)))" \
            "${marked_files[*]:+${mark_ui}}" \
-           "$escaped_dir"
+           "${PWD_escaped:-/}"
 }
 
 read_dir() {
@@ -158,20 +159,6 @@ read_dir() {
 
     # Save the original dir in a second list as a backup.
     cur_list=("${list[@]}")
-}
-
-escape_dir() {
-    # Escape a directory string.
-    # '%q' prints strings literally which is what I always.
-    # assumed '%s' did.
-    printf -v escaped_dir '%q' "$1"
-
-    # Fix dir names with '\ ', '\[', '\]', '\(', '\)'.
-    escaped_dir="${escaped_dir//\\ / }"
-    escaped_dir="${escaped_dir//'\['/[}"
-    escaped_dir="${escaped_dir//'\]'/]}"
-    escaped_dir="${escaped_dir//'\('/(}"
-    escaped_dir="${escaped_dir//'\)'/)}"
 }
 
 print_line() {
@@ -247,9 +234,10 @@ print_line() {
     }
 
     # Escape the directory string.
-    escape_dir "$file_name"
+    # Remove all non-printable characters.
+    file_name="${file_name//[^[:print:]]/^[}"
 
-    printf '\r%b%s\e[m\r' "$format" "${escaped_dir}${suffix}"
+    printf '\r%b%s\e[m\r' "$format" "${file_name}${suffix}"
 }
 
 draw_dir() {
