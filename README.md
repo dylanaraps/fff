@@ -95,6 +95,8 @@ backspace: go to parent dir
 g: go to top
 G: go to bottom
 
+:: go to a directory by typing.
+
 .: toggle hidden files
 /: search
 t: go to trash
@@ -212,6 +214,7 @@ export FFF_KEY_TO_TOP="g"
 export FFF_KEY_TO_BOTTOM="G"
 
 # Go to dirs.
+export FFF_KEY_GO_DIR=":"
 export FFF_KEY_GO_HOME="~"
 export FFF_KEY_GO_TRASH="t"
 

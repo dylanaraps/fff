@@ -641,6 +641,14 @@ key() {
             redraw
         ;;
 
+        # Go to dir.
+        "${FFF_KEY_GO_DIR:=:}")
+            cmd_line "go to dir: "
+
+            pushd "$cmd_reply" &>/dev/null &&
+                open "$PWD"
+        ;;
+
         # Go to '$HOME'.
         "${FFF_KEY_GO_HOME:=~}")
             open ~
