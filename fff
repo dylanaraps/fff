@@ -105,6 +105,10 @@ get_ls_colors() {
 status_line() {
     # Status_line to print when files are marked for operation.
     local mark_ui="[${#marked_files[@]}] selected (${file_program[*]}) [p] ->"
+    local PWD_print="${PWD:-/}"
+
+    # Escape the directory string before printing it.
+    escape_dir PWD_print
 
     # '\e7':       Save cursor position.
     #              This is more widely supported than '\e[s'.
@@ -122,7 +126,7 @@ status_line() {
            "${FFF_COL2:-1}" \
            "($((scroll+1))/$((list_total+1)))" \
            "${marked_files[*]:+${mark_ui}}" \
-           "${PWD:-/}"
+           "$PWD_print"
 }
 
 read_dir() {
@@ -157,6 +161,20 @@ read_dir() {
     cur_list=("${list[@]}")
 }
 
+escape_dir() {
+    # Escape a directory string.
+    # Use the reference to the variable stored in the
+    # value of '$1'.
+    declare -n dir="$1"
+
+    # '%q' prints string literally which is what I always.
+    # assumed '%s' did.
+    printf -v escaped_dir '%q' "$dir"
+
+    # Fix directories with spaces.
+    dir="${escaped_dir//\\ / }"
+}
+
 print_line() {
     # Format the list item and print it.
     local file_name="${list[$1]##*/}"
@@ -164,7 +182,12 @@ print_line() {
     local format
     local suffix
 
-    if [[ -d ${list[$1]} ]]; then
+    # If the dir item doesn't exist, end here.
+    if [[ ! -e ${list[$1]} ]]; then
+        return
+
+    # Directory.
+    elif [[ -d ${list[$1]} ]]; then
         format+="\\e[${di:-1;3${FFF_COL1:-2}}m"
         suffix+='/'
 
@@ -223,6 +246,9 @@ print_line() {
         format+="\\e[3${FFF_COL3:-1}m "
         suffix+='*'
     }
+
+    # Escape the directory string.
+    escape_dir file_name
 
     printf '\r%b%s\e[m\r' "$format" "${file_name}${suffix}"
 }
