@@ -166,8 +166,12 @@ escape_dir() {
     # assumed '%s' did.
     printf -v escaped_dir '%q' "$1"
 
-    # Fix directories with spaces.
+    # Fix dir names with '\ ', '\[', '\]', '\(', '\)'.
     escaped_dir="${escaped_dir//\\ / }"
+    escaped_dir="${escaped_dir//'\['/[}"
+    escaped_dir="${escaped_dir//'\]'/]}"
+    escaped_dir="${escaped_dir//'\('/(}"
+    escaped_dir="${escaped_dir//'\)'/)}"
 }
 
 print_line() {
