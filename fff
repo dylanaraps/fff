@@ -434,8 +434,9 @@ cmd_line() {
 
         # Search on keypress if search passed as an argument.
         [[ $2 == search ]] && {
-            # '\e[?25h': Hide the cursor.
-            printf '\e[?25l'
+            # '\e[?25l': Hide the cursor.
+            # '\e[?6h':  Restrict cursor position.
+            printf '\e[?25l\e[?6h'
 
             # Use a greedy glob to search.
             list=("$PWD"/*"$cmd_reply"*)
