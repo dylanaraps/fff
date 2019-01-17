@@ -338,13 +338,20 @@ trash() {
     # 'trash' a file.
     cmd_line "trash [${#marked_files[@]}] items? [y/n]: " y n
 
-    # The last function argument is '.' (mv file dir file .).
-    [[ $cmd_reply == y ]] && {
-        cd "$FFF_TRASH" && "${FFF_TRASH_CMD:-mv}" "$@"
+    [[ $cmd_reply != y ]] &&
+        return
+
+    if [[ $FFF_TRASH_CMD ]]; then
+        # Pass all but the last argument to the user's
+        # custom script.
+        "$FFF_TRASH_CMD" "${@:1:$#-1}"
+
+    else
+        cd "$FFF_TRASH" && "mv" "$@"
 
         # Go back to where we were.
         cd - &>/dev/null ||:
-    }
+    fi
 }
 
 open() {
