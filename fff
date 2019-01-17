@@ -400,7 +400,6 @@ cmd_line() {
             # Backspace.
             $'\177'|$'\b')
                 cmd_reply="${cmd_reply%?}"
-                unset comp2
             ;;
 
             $'\t')
@@ -449,9 +448,6 @@ cmd_line() {
             # Anything else, add it to read reply.
             " "|*)
                 cmd_reply+="$read_reply"
-
-                # Unset tab completion variables since we're done.
-                unset comp2 c
             ;;
         esac
 
