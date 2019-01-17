@@ -403,15 +403,13 @@ cmd_line() {
             ;;
 
             $'\t')
-                [[ -z ${comp2[*]} ]] && {
-                    IFS=$'\n' read -d "" -ra comp \
-                        < <(compgen -G "$cmd_reply*/")
-                    comp2=("${comp[@]}")
+                [[ -z ${comp[0]} ]] && {
+                    IFS=$'\n' read -d "" -ra comp < <(compgen -G "$cmd_reply*/")
                 }
 
-                [[ -n ${comp2[c]} ]] && {
-                    cmd_reply="${comp2[${c:-0}]%%/}"
-                    ((c=c >= ${#comp2[@]}-1 ? 0 : ++c))
+                [[ -n ${comp[${c:=0}]} ]] && {
+                    cmd_reply="${comp[c]%%/}"
+                    ((c=c >= ${#comp[@]}-1 ? 0 : ++c))
                 }
             ;;
 
@@ -430,7 +428,7 @@ cmd_line() {
                     search_end_early=1
 
                     # Unset tab completion variables since we're done.
-                    unset comp2 c
+                    unset comp c
 
                     printf '\e[?25l\e[?6h'
                     return
@@ -472,7 +470,7 @@ cmd_line() {
     done
 
     # Unset tab completion variables since we're done.
-    unset comp2 c
+    unset comp c
 
     # '\e[2K':   Clear the entire cmd_line on finish.
     # '\e[?6h':  Restrict cursor position.
