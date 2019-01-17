@@ -647,6 +647,9 @@ key() {
         "${FFF_KEY_GO_DIR:=:}")
             cmd_line "go to dir: "
 
+            # Let 'pushd' know about the current directory.
+            pushd "$PWD" &>/dev/null ||:
+
             [[ $cmd_reply ]] && pushd "$cmd_reply" &>/dev/null &&
                 open "$PWD"
         ;;
