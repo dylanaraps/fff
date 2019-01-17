@@ -351,6 +351,7 @@ open() {
     # Open directories and files.
     if [[ -d $1/ ]]; then
         search=
+        search_end_early=
         previous_dir="$PWD"
         PWD="$1"
         redraw full
@@ -409,6 +410,15 @@ cmd_line() {
 
             # Enter/Return.
             "")
+                # If there's only one search result and its a directory,
+                # enter it on one enter keypress.
+                [[ $2 == search && -d ${list[0]} ]] && ((list_total == 0)) && {
+                    open "${list[0]}"
+                    search_end_early=1
+                    printf '\e[?25l\e[?6h'
+                    return
+                }
+
                 break
             ;;
 
@@ -471,7 +481,7 @@ key() {
         "${FFF_KEY_PARENT3:=$'\177'}"|\
         "${FFF_KEY_PARENT4:=$'\b'}")
             # If a search was done, clear the results and open the current dir.
-            if ((search == 1)); then
+            if ((search == 1 && search_end_early != 1)); then
                 open "$PWD"
 
             # If '$PWD' is empty we're at '/', do nothing.
