@@ -650,8 +650,9 @@ key() {
             # Let 'pushd' know about the current directory.
             pushd "$PWD" &>/dev/null ||:
 
-            [[ $cmd_reply ]] && pushd "$cmd_reply" &>/dev/null &&
-                open "$PWD"
+            [[ $cmd_reply ]] &&
+                pushd "${cmd_reply/\~/$HOME}" &>/dev/null &&
+                    open "$PWD"
         ;;
 
         # Go to '$HOME'.
