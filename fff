@@ -405,14 +405,13 @@ cmd_line() {
                 unset comp c
             ;;
 
+            # Tab.
             $'\t')
-                # Pass the argument dirs to limit completion to directories.
-                if [[ $2 == dirs ]]; then
-                    comp_glob="$cmd_reply*/"
+                comp_glob="$cmd_reply*"
 
-                else
-                    comp_glob="$cmd_reply*"
-                fi
+                # Pass the argument dirs to limit completion to directories.
+                [[ $2 == dirs ]] &&
+                    comp_glob="$cmd_reply*/"
 
                 # Generate a completion list once.
                 [[ -z ${comp[0]} ]] &&
