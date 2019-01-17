@@ -126,7 +126,7 @@ status_line() {
            "${FFF_COL2:-1}" \
            "($((scroll+1))/$((list_total+1)))" \
            "${marked_files[*]:+${mark_ui}}" \
-           "${PWD_escaped:-/} $c"
+           "${PWD_escaped:-/}"
 }
 
 read_dir() {
@@ -410,8 +410,10 @@ cmd_line() {
                     comp2=("${comp[@]}")
                 }
 
-                cmd_reply="${comp2[${c:-0}]%%\/}"
-                ((c=c >= ${#comp2[@]}-1 ? 0 : ++c))
+                [[ -n ${comp2[c]} ]] && {
+                    cmd_reply="${comp2[${c:-0}]%%/}"
+                    ((c=c >= ${#comp2[@]}-1 ? 0 : ++c))
+                }
             ;;
 
             # Escape / Custom 'no' value (used as a replacement for '-n 1').
@@ -427,7 +429,10 @@ cmd_line() {
                 [[ $2 == search && -d ${list[0]} ]] && ((list_total == 0)) && {
                     open "${list[0]}"
                     search_end_early=1
-                    unset comp2
+
+                    # Unset tab completion variables since we're done.
+                    unset comp2 c
+
                     printf '\e[?25l\e[?6h'
                     return
                 }
@@ -444,7 +449,9 @@ cmd_line() {
             # Anything else, add it to read reply.
             " "|*)
                 cmd_reply+="$read_reply"
-                unset comp2
+
+                # Unset tab completion variables since we're done.
+                unset comp2 c
             ;;
         esac
 
@@ -468,7 +475,8 @@ cmd_line() {
         }
     done
 
-    unset comp2
+    # Unset tab completion variables since we're done.
+    unset comp2 c
 
     # '\e[2K':   Clear the entire cmd_line on finish.
     # '\e[?6h':  Restrict cursor position.
