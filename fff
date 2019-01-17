@@ -340,10 +340,10 @@ trash() {
 
     # The last function argument is '.' (mv file dir file .).
     [[ $cmd_reply == y ]] && {
-        cd "$FFF_TRASH" && mv "$@"
+        cd "$FFF_TRASH" && "${FFF_TRASH_CMD:-mv}" "$@"
 
         # Go back to where we were.
-        cd - ||:;
+        cd - &>/dev/null ||:
     }
 }
 

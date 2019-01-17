@@ -91,6 +91,13 @@ export FFF_CD_FILE=~/.fff_d
 #          If not using XDG, '${HOME}/.cache/fff/trash' is used.
 export FFF_TRASH=~/.cache/fff/trash
 
+# Trash Command
+# Default: 'mv'
+#          Define a custom program to use to trash files.
+#          The last passed argument is '.' and the rest are
+#          the selected files ('mv file1 file2 .').
+export FFF_TRASH_CMD="mv"
+
 # Favourites (Bookmarks) (keys 1-9) (dir or file)
 export FFF_FAV1=~/projects
 export FFF_FAV2=~/.bashrc
