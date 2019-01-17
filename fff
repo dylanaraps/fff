@@ -353,7 +353,7 @@ open() {
         search=
         search_end_early=
         previous_dir="$PWD"
-        PWD="$1"
+        cd "$1" ||:
         redraw full
 
     elif [[ -f $1 ]]; then
@@ -400,6 +400,28 @@ cmd_line() {
             # Backspace.
             $'\177'|$'\b')
                 cmd_reply="${cmd_reply%?}"
+
+                # Clear tab-completion.
+                unset comp c
+            ;;
+
+            # Tab.
+            $'\t')
+                comp_glob="$cmd_reply*"
+
+                # Pass the argument dirs to limit completion to directories.
+                [[ $2 == dirs ]] &&
+                    comp_glob="$cmd_reply*/"
+
+                # Generate a completion list once.
+                [[ -z ${comp[0]} ]] &&
+                    IFS=$'\n' read -d "" -ra comp < <(compgen -G "$comp_glob")
+
+                # On each tab press, cycle through the completion list.
+                [[ -n ${comp[c]} ]] && {
+                    cmd_reply="${comp[c]}"
+                    ((c=c >= ${#comp[@]}-1 ? 0 : ++c))
+                }
             ;;
 
             # Escape / Custom 'no' value (used as a replacement for '-n 1').
@@ -415,6 +437,10 @@ cmd_line() {
                 [[ $2 == search && -d ${list[0]} ]] && ((list_total == 0)) && {
                     open "${list[0]}"
                     search_end_early=1
+
+                    # Unset tab completion variables since we're done.
+                    unset comp c
+
                     printf '\e[?25l\e[?6h'
                     return
                 }
@@ -431,6 +457,9 @@ cmd_line() {
             # Anything else, add it to read reply.
             " "|*)
                 cmd_reply+="$read_reply"
+
+                # Clear tab-completion.
+                unset comp c
             ;;
         esac
 
@@ -453,6 +482,9 @@ cmd_line() {
             printf '\e[?6l\e[%sH\e[?25h' "$LINES"
         }
     done
+
+    # Unset tab completion variables since we're done.
+    unset comp c
 
     # '\e[2K':   Clear the entire cmd_line on finish.
     # '\e[?6h':  Restrict cursor position.
@@ -617,7 +649,7 @@ key() {
 
         # Create a directory.
         "${FFF_KEY_MKDIR:=n}")
-            cmd_line "mkdir: "
+            cmd_line "mkdir: " "dirs"
 
             [[ $cmd_reply ]] && {
                 mkdir -p "${PWD}/${cmd_reply}"
@@ -645,7 +677,7 @@ key() {
 
         # Go to dir.
         "${FFF_KEY_GO_DIR:=:}")
-            cmd_line "go to dir: "
+            cmd_line "go to dir: " "dirs"
 
             # Let 'pushd' know about the current directory.
             pushd "$PWD" &>/dev/null ||:
