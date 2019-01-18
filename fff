@@ -748,7 +748,7 @@ main() {
     # Handle version as the first argument.
     # TODO: Add full argument passing if I decide to add '-h' etc.
     [[ $1 == -v ]] && {
-        printf '%s\n' "fff 1.3"
+        printf '%s\n' "fff 1.4"
         exit
     }
 
