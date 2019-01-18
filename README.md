@@ -10,6 +10,7 @@ A simple file manager written in `bash`.
 - Supports `LS_COLORS`!
 - File Operations (*copy, paste, rename, cut, etc*)
 - Instant as you type search
+- Tab completion for all commands!
 - Automatic CD on exit (*see [setup](#cd-on-exit)*)
 
 
