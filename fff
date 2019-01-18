@@ -126,7 +126,7 @@ status_line() {
            "${FFF_COL2:-1}" \
            "($((scroll+1))/$((list_total+1)))" \
            "${marked_files[*]:+${mark_ui}}" \
-           "${PWD_escaped/#\/\///}"
+           "${PWD_escaped:-/}"
 }
 
 read_dir() {
@@ -134,6 +134,9 @@ read_dir() {
     local dirs=()
     local files=()
     local item_index
+
+    # If '$PWD' is '/', unset it to avoid '//'.
+    [[ $PWD == / ]] && PWD=
 
     for item in "$PWD"/*; do
         if [[ -d $item ]]; then
