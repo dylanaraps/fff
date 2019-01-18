@@ -126,7 +126,7 @@ status_line() {
            "${FFF_COL2:-1}" \
            "($((scroll+1))/$((list_total+1)))" \
            "${marked_files[*]:+${mark_ui}}" \
-           "$PWD_escaped"
+           "${PWD_escaped/#\/\///}"
 }
 
 read_dir() {
@@ -361,7 +361,6 @@ open() {
         search_end_early=
         previous_dir="$PWD"
         cd "${1:-/}" ||:
-        PWD="${PWD/#\/\///}"
         redraw full
 
     elif [[ -f $1 ]]; then
