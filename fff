@@ -443,13 +443,14 @@ cmd_line() {
                 # If there's only one search result and its a directory,
                 # enter it on one enter keypress.
                 [[ $2 == search && -d ${list[0]} ]] && ((list_total == 0)) && {
+                    # Hide te cursor and restrict cursor position.
+                    printf '\e[?25l\e[?6h'
+
                     open "${list[0]}"
                     search_end_early=1
 
                     # Unset tab completion variables since we're done.
                     unset comp c
-
-                    printf '\e[?25l\e[?6h'
                     return
                 }
 
