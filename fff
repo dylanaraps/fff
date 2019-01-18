@@ -360,7 +360,7 @@ open() {
         search=
         search_end_early=
         previous_dir="$PWD"
-        cd "$1" ||:
+        cd "${1:-/}" ||:
         redraw full
 
     elif [[ -f $1 ]]; then
@@ -523,8 +523,8 @@ key() {
             if ((search == 1 && search_end_early != 1)); then
                 open "$PWD"
 
-            # If '$PWD' is empty we're at '/', do nothing.
-            elif [[ $PWD ]]; then
+            # If '$PWD' is '/', do nothing.
+            elif [[ $PWD != / ]]; then
                 find_previous=1
                 open "${PWD%/*}"
             fi
