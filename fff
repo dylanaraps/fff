@@ -614,6 +614,7 @@ key() {
         "${FFF_KEY_SHELL:=s}")
             reset_terminal
             cd "$PWD" && "$SHELL"
+            setup_terminal
             redraw
         ;;
 
