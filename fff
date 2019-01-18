@@ -462,6 +462,11 @@ cmd_line() {
                 break
             ;;
 
+            # Replace '~' with '$HOME'.
+            "~")
+                cmd_reply+="$HOME"
+            ;;
+
             # Anything else, add it to read reply.
             " "|*)
                 cmd_reply+="$read_reply"
