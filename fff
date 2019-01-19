@@ -668,20 +668,28 @@ key() {
         "${FFF_KEY_MKDIR:=n}")
             cmd_line "mkdir: " "dirs"
 
-            [[ $cmd_reply ]] && {
-                mkdir -p "${PWD}/${cmd_reply}"
-                redraw full
-            }
+            [[ $cmd_reply ]] &&
+                if [[ -w $PWD ]]; then
+                    mkdir -p "${PWD}/${cmd_reply}"
+                    redraw full
+
+                else
+                    cmd_line "warn: no write access to dir."
+                fi
         ;;
 
         # Create a file.
         "${FFF_KEY_MKFILE:=f}")
             cmd_line "mkfile: "
 
-            [[ $cmd_reply ]] && {
-                : > "${PWD}/${cmd_reply}"
-                redraw full
-            }
+            [[ $cmd_reply ]] &&
+                if [[ -w $PWD ]]; then
+                    : > "${PWD}/${cmd_reply}"
+                    redraw full
+
+                else
+                    cmd_line "warn: no write access to dir."
+                fi
         ;;
 
         # Show file attributes.
