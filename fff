@@ -658,7 +658,7 @@ key() {
                     # Error handling.
                     # 'mv' will nest the dir if it already exists.
                     [[ -e ${PWD}/${cmd_reply} ]] &&
-                        cmd_reply+="(copy)"
+                        cmd_reply+=" (copy)"
 
                     mv "${list[scroll]}" "${PWD}/${cmd_reply}"
                     redraw full
@@ -686,7 +686,10 @@ key() {
             cmd_line "mkfile: "
 
             [[ $cmd_reply ]] &&
-                if [[ -w $PWD ]]; then
+                if [[ -e $cmd_reply ]]; then
+                    cmd_line "warn: '$cmd_reply' already exists."
+
+                elif [[ -w $PWD ]]; then
                     : > "${PWD}/${cmd_reply}"
                     redraw full
 
