@@ -118,7 +118,7 @@ status_line() {
     # '%*s':       Insert enough spaces to fill the screen width.
     #              This sets the background color to the whole line
     #              and fixes issues in 'screen' where '\e[K' doesn't work.
-    # '\r':        Move cursor back to column 0 (cursor was at EOL due to above).
+    # '\r':        Move cursor back to column 0 (was at EOL due to above).
     # '\e[m':      Reset text formatting.
     # '\n\e[K':    Also clear the line below the status_line.
     # '\e[?6h':    Restrict cursor to scrolling area.
