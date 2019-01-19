@@ -115,15 +115,19 @@ status_line() {
     # '\e[?6l':    Unrestrict cursor movement (full window).
     # '\e[%sH':    Move cursor to bottom of the terminal.
     # '\e[30;41m': Set foreground and background colors.
-    # '\e[K':      Clear to end of line (set background color to whole line).
+    # '%*s':       Insert enough spaces to fill the screen width.
+    #              This sets the background color to the whole line
+    #              and fixes issues in 'screen' where '\e[K' doesn't work.
+    # '\r':        Move cursor back to column 0 (cursor was at EOL due to above).
     # '\e[m':      Reset text formatting.
     # '\n\e[K':    Also clear the line below the status_line.
     # '\e[?6h':    Restrict cursor to scrolling area.
     # '\e8':       Restore cursor position.
     #              This is more widely supported than '\e[u'.
-    printf '\e7\e[?6l\e[%sH\e[30;4%sm%s %s%s\e[K\e[m\n\e[K\e[?6h\e8' \
+    printf '\e7\e[?6l\e[%sH\e[30;4%sm%*s\r%s %s%s\e[m\n\e[K\e[?6h\e8' \
            "$((LINES-1))" \
            "${FFF_COL2:-1}" \
+           "$COLUMNS" "" \
            "($((scroll+1))/$((list_total+1)))" \
            "${marked_files[*]:+${mark_ui}}" \
            "${PWD_escaped:-/}"
