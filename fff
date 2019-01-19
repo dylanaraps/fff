@@ -637,9 +637,18 @@ key() {
         # Do the file operation.
         "${FFF_KEY_PASTE:=p}")
             [[ ${marked_files[*]} ]] && {
-                cd "$PWD" && "${file_program[@]}" "${marked_files[@]}" .
+                if [[ ! -w $PWD ]]; then
+                    cmd_line "warn: no write access to dir."
+
+                elif "${file_program[@]}" "${marked_files[@]}" .; then
+                    redraw full
+
+                else
+                    cmd_line "warn: '${file_program[0]}' failed."
+                fi
+
                 marked_files=()
-                redraw full
+                redraw
             }
         ;;
 
