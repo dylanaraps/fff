@@ -653,15 +653,18 @@ key() {
         "${FFF_KEY_RENAME:=r}")
             cmd_line "rename ${list[scroll]##*/}: "
 
-            [[ $cmd_reply ]] && {
-                # Error handling.
-                # 'mv' will nest the dir if it already exists.
-                [[ -e ${PWD}/${cmd_reply} ]] &&
-                    cmd_reply+="(copy)"
+            [[ $cmd_reply ]] &&
+                if [[ -w ${list[scroll]} ]]; then
+                    # Error handling.
+                    # 'mv' will nest the dir if it already exists.
+                    [[ -e ${PWD}/${cmd_reply} ]] &&
+                        cmd_reply+="(copy)"
 
-                mv "${list[scroll]}" "${PWD}/${cmd_reply}"
-                redraw full
-            }
+                    mv "${list[scroll]}" "${PWD}/${cmd_reply}"
+                    redraw full
+                else
+                    cmd_line "warn: no write access to file."
+                fi
         ;;
 
         # Create a directory.
