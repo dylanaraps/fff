@@ -172,7 +172,7 @@ print_line() {
     local suffix
 
     # If the dir item doesn't exist, end here.
-    if [[ ! -e ${list[$1]} ]]; then
+    if [[ -z ${list[$1]} ]]; then
         return
 
     # Directory.
@@ -191,6 +191,10 @@ print_line() {
     # Executable file.
     elif [[ -x ${list[$1]} ]]; then
         format+="\\e[${ex:-01;32}m"
+
+    # Symbolic Link (broken).
+    elif [[ -h ${list[$1]} && ! -e ${list[$1]} ]]; then
+        format+="\\e[${mi:-01;31;7}m"
 
     # Symbolic Link.
     elif [[ -h ${list[$1]} ]]; then
