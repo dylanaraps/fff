@@ -544,7 +544,7 @@ key() {
                 open "$PWD"
 
             # If '$PWD' is '/', do nothing.
-            elif [[ $PWD != / ]]; then
+            elif [[ $PWD && $PWD != / ]]; then
                 find_previous=1
                 open "${PWD%/*}"
             fi
