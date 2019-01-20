@@ -42,11 +42,14 @@ reset_terminal() {
 }
 
 clear_screen() {
+    # Only clear the scrolling window (dir item list).
+    # '\e[%s;%sH': Move cursor to bottom right corner of scroll area.
+    # '\e[1J':     Clear screen to top left corner (from cursor up).
     # Clear the screen.
     # '\e[2J':     Clear screen.
     # '\e[1;%sr':  Clearing the screen resets the scroll region(?). Re-set it.
     #              Also sets cursor to (0,0).
-    printf '\e[2J\e[1;%sr' "$max_items"
+    printf '\e[%s;%sH\e[1J\e[1;%sr' "$((LINES-1))" "$COLUMNS" "$max_items"
 }
 
 get_term_size() {
