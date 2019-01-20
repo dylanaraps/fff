@@ -49,7 +49,7 @@ clear_screen() {
     # '\e[2J':     Clear screen.
     # '\e[1;%sr':  Clearing the screen resets the scroll region(?). Re-set it.
     #              Also sets cursor to (0,0).
-    printf '\e[%s;%sH\e[1J\e[1;%sr' "$((LINES-1))" "$COLUMNS" "$max_items"
+    printf '\e[%s;%sH\e[1J\e[1;%sr' "$((max_items+1))" "$COLUMNS" "$max_items"
 }
 
 get_term_size() {
