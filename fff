@@ -691,7 +691,10 @@ key() {
             cmd_line "mkdir: " "dirs"
 
             [[ $cmd_reply ]] &&
-                if [[ -w $PWD ]]; then
+                if [[ -e $cmd_reply ]]; then
+                    cmd_line "warn: '$cmd_reply' already exists."
+
+                elif [[ -w $PWD ]]; then
                     mkdir -p "${PWD}/${cmd_reply}"
                     redraw full
 
