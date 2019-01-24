@@ -145,7 +145,11 @@ read_dir() {
     # If '$PWD' is '/', unset it to avoid '//'.
     [[ $PWD == / ]] && PWD=
 
+    max_len=1
     for item in "$PWD"/*; do
+        if [[ ${#item} -gt $max_len ]]; then
+            max_len=${#item}
+        fi
         if [[ -d $item ]]; then
             dirs+=("$item")
             ((item_index++))
@@ -170,6 +174,37 @@ read_dir() {
     # Save the original dir in a second list as a backup.
     cur_list=("${list[@]}")
 }
+
+# Convert number to a human readable format (with K, M, G suffixes)
+human_readable()
+{
+    local s=$1
+    if [[ $s -lt 1024 ]]; then
+        echo "$s\\e[33m"
+    elif [[ $s -lt 1048576 ]]; then
+        echo "$((s / 1024))\\e[32mK"
+    elif [[ $s -lt $((1048576 * 1024)) ]]; then
+        echo "$((s / 1048576))\\e[32mM"
+    elif [[ $s -lt $((1048576 * 1048576)) ]]; then
+        echo "$((s / (1048576 * 1024)))\\e[32mG"
+    else
+        echo "$s"
+    fi
+}
+
+# Show file size in a human readable format, only for a regular files
+human_readable_size()
+{
+    local f="$1"
+    if [[ -L "$f" ]]; then
+        echo ""
+    elif [[ -f "$f" ]]; then
+        echo "\\e[33m$(human_readable "$(stat --printf=%s "$f")")"
+    else
+        echo ""
+    fi
+}
+
 
 print_line() {
     # Format the list item and print it.
@@ -251,7 +286,12 @@ print_line() {
     # Remove all non-printable characters.
     file_name="${file_name//[^[:print:]]/^[}"
 
-    printf '\r%b%s\e[m\r' "$format" "${file_name}${suffix}"
+    if [[ $details -gt 0 ]]; then
+        x=$(human_readable_size "${list[$1]}")
+        printf '\r%b%s%*b\e[m\r' "$format" "${file_name}${suffix}" "$((max_len - ${#file_name}))" "$x"
+    else
+        printf '\r%b%s\e[m\r' "$format" "${file_name}${suffix}"
+    fi
 }
 
 draw_dir() {
@@ -522,6 +562,12 @@ cmd_line() {
 
 key() {
     case "$1" in
+        # toggle details mode
+        "${FFF_KEY_FSIZE1:=z}")
+            details=$((-details))
+            redraw
+        ;;
+
         # Open list item.
         # 'C' is what bash sees when the right arrow is pressed ('\e[C').
         # '' is what bash sees when the enter/return key is pressed.
@@ -829,6 +875,10 @@ main() {
 
     # Trap the window resize signal (handle window resize events).
     trap 'get_term_size; redraw' WINCH
+
+    # Show file size mode
+    FFF_SHOW_FSIZE=${FFF_SHOW_FSIZE:=1}
+    details=$((FFF_SHOW_FSIZE>0?1:-1))
 
     redraw full
 
