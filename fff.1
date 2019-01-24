@@ -58,6 +58,7 @@ B: mark all for bulk rename
 
 p: paste/move/delete/bulk_rename
 c: clear file selections
+z: toggle show file size mode
 
 [1-9]: favourites/bookmarks (see customization)
 
@@ -108,6 +109,10 @@ export FFF_TRASH=~/.local/share/fff/trash
 #          The program will be passed the list of selected files
 #          and directories.
 export FFF_TRASH_CMD="mv"
+
+# Show file size by default. May be toggled by FFF_KEY_FSIZE key later
+# Default: 1
+FFF_SHOW_FSIZE=1
 
 # Favourites (Bookmarks) (keys 1-9) (dir or file)
 export FFF_FAV1=~/projects
@@ -199,6 +204,9 @@ export FFF_KEY_ATTRIBUTES="x"
 
 # Toggle hidden files.
 export FFF_KEY_HIDDEN="."
+
+# Toggle show file size mode
+export FFF_KEY_FSIZE="z"
 
 .
 .fi
