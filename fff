@@ -338,6 +338,7 @@ mark() {
 
     # Find the program to use.
     case "$2" in
+        b) file_program=(bulk_rename) ;;
         y) file_program=(cp -R) ;;
         m) file_program=(mv) ;;
 
@@ -366,6 +367,49 @@ trash() {
         # Go back to where we were.
         cd - &>/dev/null ||:
     fi
+}
+
+bulk_rename() {
+  local tmp_file="$(mktemp)"
+
+  # Write all input file names to temporary file and open it in an editor.
+  printf "%s\n" "${@:1:$#-1}" > "$tmp_file"
+  "${EDITOR:-vi}" "$tmp_file"
+
+  local commands_file="$(mktemp)"
+
+  # Add instructions to the file with commands.
+  echo '# This file will be executed when you close the editor.' > "$commands_file"
+  echo '# Please double-check everything, clear the file to abort.' >> "$commands_file"
+
+  local counter=0
+  local changed=0
+  while read -r line || [ -n "$line" ] ; do
+    let counter+=1
+
+    # Trim read line.
+    line="${line#"${line%%[![:space:]]*}"}"
+    line="${line%"${line##*[![:space:]]}"}"
+
+    [ -z $line ] && continue
+
+    # Escape source and target arguments of mv command.
+    local source=$(printf "%q" "${@:$counter:1}")
+    local target=$(printf "%q" "$line")
+
+    [ "$source" != "$target" ] && {
+      printf "%s\n" "mv -vi -- $source $target" >> "$commands_file"
+      changed=1
+    }
+  done < "$tmp_file"
+
+  # Old and new locations are the same for all files, do nothing.
+  [ $changed -eq 0 ] && return
+
+  "${EDITOR:-vi}" "$commands_file"
+
+  # Execute commands.
+  source "$commands_file"
 }
 
 open() {
@@ -639,6 +683,7 @@ key() {
         ;;
 
         # Mark files for operation.
+        "${FFF_KEY_BULK_RENAME:=b}"|\
         "${FFF_KEY_YANK:=y}"|\
         "${FFF_KEY_MOVE:=m}"|\
         "${FFF_KEY_TRASH:=d}")
