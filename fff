@@ -212,11 +212,11 @@ human_readable()
     if [[ $s -lt 1024 ]]; then
         echo "$s\\e[33m"
     elif [[ $s -lt 1048576 ]]; then
-        echo "$(($s / 1024))\\e[32mK"
+        echo "$((s / 1024))\\e[32mK"
     elif [[ $s -lt $((1048576 * 1024)) ]]; then
-        echo "$(($s / 1048576))\\e[32mM"
+        echo "$((s / 1048576))\\e[32mM"
     elif [[ $s -lt $((1048576 * 1048576)) ]]; then
-        echo "$(($s / (1048576 * 1024)))\\e[32mG"
+        echo "$((s / (1048576 * 1024)))\\e[32mG"
     else
         echo "$s"
     fi
@@ -229,7 +229,7 @@ human_readable_size()
     if [[ -L "$f" ]]; then
         echo ""
     elif [[ -f "$f" ]]; then
-        echo "\\e[33m"$(human_readable $(stat --printf=%s "$f"))
+        echo "\\e[33m$(human_readable "$(stat --printf=%s "$f")")"
     else
         echo ""
     fi
@@ -318,7 +318,7 @@ print_line() {
 
     if [[ $details -gt 0 ]]; then
         x=$(human_readable_size "${list[$1]}")
-        printf '\r%b%s%*b\e[m\r' "$format" "${file_name}${suffix}" "$(($max_len - ${#file_name}))" "$x"
+        printf '\r%b%s%*b\e[m\r' "$format" "${file_name}${suffix}" "$((max_len - ${#file_name}))" "$x"
     else
         printf '\r%b%s\e[m\r' "$format" "${file_name}${suffix}"
     fi
