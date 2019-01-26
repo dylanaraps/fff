@@ -28,6 +28,7 @@ setup_terminal() {
     # '\e[1;Nr':   Limit scrolling to scrolling area.
     #              Also sets cursor to (0,0).
     printf '\e[?1049h\e[?6h\e[?7l\e[?25l\e[2J\e[1;%sr' "$max_items"
+    printf '\e[?1000h\e[?1006h'
 }
 
 reset_terminal() {
@@ -521,12 +522,18 @@ cmd_line() {
 }
 
 key() {
-    case "$1" in
+    # Handle special key presses.
+    [[ $1 == $'\e' ]] && {
+        read -rsn 2
+        local special_key="${1}${REPLY}"
+    }
+
+    case "${special_key:-$1}" in
         # Open list item.
         # 'C' is what bash sees when the right arrow is pressed ('\e[C').
         # '' is what bash sees when the enter/return key is pressed.
         "${FFF_KEY_CHILD1:=l}"|\
-        "${FFF_KEY_CHILD2:=C}"|\
+        "${FFF_KEY_CHILD2:=$'\e[C'}"|\
         "${FFF_KEY_CHILD3:=""}")
             open "${list[scroll]}"
         ;;
@@ -536,7 +543,7 @@ key() {
         # '\177' and '\b' are what bash sometimes sees when the backspace
         # key is pressed.
         "${FFF_KEY_PARENT1:=h}"|\
-        "${FFF_KEY_PARENT2:=D}"|\
+        "${FFF_KEY_PARENT2:=$'\e[D'}"|\
         "${FFF_KEY_PARENT3:=$'\177'}"|\
         "${FFF_KEY_PARENT4:=$'\b'}")
             # If a search was done, clear the results and open the current dir.
@@ -553,7 +560,7 @@ key() {
         # Scroll down.
         # 'B' is what bash sees when the down arrow is pressed ('\e[B').
         "${FFF_KEY_SCROLL_DOWN1:=j}"|\
-        "${FFF_KEY_SCROLL_DOWN2:=B}")
+        "${FFF_KEY_SCROLL_DOWN2:=$'\e[B'}")
             ((scroll < list_total)) && {
                 ((scroll++))
                 ((y < max_items )) && ((y++))
@@ -568,7 +575,7 @@ key() {
         # Scroll up.
         # 'A' is what bash sees when the down arrow is pressed ('\e[A').
         "${FFF_KEY_SCROLL_UP1:=k}"|\
-        "${FFF_KEY_SCROLL_UP2:=A}")
+        "${FFF_KEY_SCROLL_UP2:=$'\e[A'}")
             # '\e[1L': Insert a line above the cursor.
             # '\e[A':  Move cursor up a line.
             ((scroll > 0)) && {
