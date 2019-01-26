@@ -1,4 +1,4 @@
-# fff (*Fucking Fast File-Manager*)
+# fff (*Fucking Fast File-Manager*) [![Build Status](https://travis-ci.org/dylanaraps/fff.svg?branch=master)](https://travis-ci.org/dylanaraps/fff)
 
 <a href="https://asciinema.org/a/IKG1pSkeIQkc4dSjw4S0DZjXj" target="_blank"><img src="https://asciinema.org/a/IKG1pSkeIQkc4dSjw4S0DZjXj.png" alt="img" height="300px" align="right"/></a>
 
