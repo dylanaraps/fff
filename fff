@@ -385,7 +385,7 @@ open() {
         # Everything else goes through 'xdg-open'/'open'.
         case "$mime_type" in
             text/*|*x-empty*|*json*)
-                "${EDITOR:-vi}" "$1"
+                "${VISUAL:-${EDITOR:-vi}}" "$1"
 
                 # Re-set TUI settings to make sure '$EDITOR' doesn't
                 # reset them to defaults.
