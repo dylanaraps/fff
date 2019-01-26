@@ -8,7 +8,7 @@ A new and **original** file manager written in `bash`.
 - Minimal (*only requires **bash** and coreutils*)
 - Smooth Scrolling (*using **vim** keybindings*)
 - Supports `LS_COLORS`!
-- File Operations (*copy, paste, rename, cut, etc*)
+- File Operations (*copy, paste, rename, cut, **bulk rename**, etc*)
 - Instant as you type search
 - Tab completion for all commands!
 - Automatic CD on exit (*see [setup](#cd-on-exit)*)
