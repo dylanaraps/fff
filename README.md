@@ -8,7 +8,7 @@ A new and **original** file manager written in `bash`.
 - Minimal (*only requires **bash** and coreutils*)
 - Smooth Scrolling (*using **vim** keybindings*)
 - Supports `LS_COLORS`!
-- File Operations (*copy, paste, rename, cut, etc*)
+- File Operations (*copy, paste, rename, cut, **bulk rename**, etc*)
 - Instant as you type search
 - Tab completion for all commands!
 - Automatic CD on exit (*see [setup](#cd-on-exit)*)
@@ -106,6 +106,7 @@ r: rename
 y: mark copy
 m: mark move
 d: mark trash (~/.cache/fff/trash/)
+b: mark bulk rename
 p: paste/move/delete
 c: clear file selections
 
@@ -220,6 +221,7 @@ export FFF_KEY_GO_TRASH="t"
 export FFF_KEY_YANK="y"
 export FFF_KEY_MOVE="m"
 export FFF_KEY_TRASH="d"
+export FFF_KEY_BULK_RENAME="b"
 
 export FFF_KEY_PASTE="p"
 export FFF_KEY_CLEAR="c"
