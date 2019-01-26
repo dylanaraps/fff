@@ -376,7 +376,7 @@ bulk_rename() {
 
     # Save marked files to a file and open them for editing.
     printf '%s\n' "${marked_files[@]##*/}" > "$rename_file"
-    "${VISUAL:-${EDITOR:-vi}}" "$rename_file"
+    "${EDITOR:-vi}" "$rename_file"
 
     # Read the renamed files to an array.
     IFS=$'\n' read -d "" -ra changed_files < "$rename_file"
@@ -403,7 +403,7 @@ bulk_rename() {
 
     # Let the user double-check the commands and execute them.
     ((renamed == 1)) && {
-        "${VISUAL:-${EDITOR:-vi}}" "$rename_file"
+        "${EDITOR:-vi}" "$rename_file"
 
         # shellcheck source=/dev/null
         source "$rename_file" >/dev/null 2>&1
