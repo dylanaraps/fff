@@ -394,9 +394,9 @@ bulk_rename() {
 
     # Construct the rename commands.
     for ((i=0;i<${#marked_files[@]};i++)); {
-        [[ ${marked_files[i]##*/} != "${changed_files[i]}" ]] && {
+        [[ ! -f "${changed_files[i]}" ]] && {
             printf 'mv -- "%s" "%s"\n' \
-                "${marked_files[i]##*/}" "${changed_files[i]}"
+                "${marked_files[i]}" "${PWD}/${changed_files[i]}"
             local renamed=1
         }
     } >> "$rename_file"
