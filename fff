@@ -394,8 +394,8 @@ bulk_rename() {
 
     # Construct the rename commands.
     for ((i=0;i<${#marked_files[@]};i++)); {
-        [[ ! -f ${changed_files[i]} ]] && {
-            printf 'mv -- "%s" "%s"\n' \
+        [[ ${marked_files[i]} != "${changed_files[i]}" ]] && {
+            printf 'mv -i -- "%s" "%s"\n' \
                 "${marked_files[i]}" "${PWD}/${changed_files[i]}"
             local renamed=1
         }
@@ -406,7 +406,7 @@ bulk_rename() {
         "${EDITOR:-vi}" "$rename_file"
 
         # shellcheck source=/dev/null
-        source "$rename_file" >/dev/null 2>&1
+        source "$rename_file"
         rm "$rename_file"
     }
 
