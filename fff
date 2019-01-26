@@ -338,8 +338,8 @@ mark() {
 
     # Find the program to use.
     case "$2" in
-        y) file_program=(cp -R) ;;
-        m) file_program=(mv) ;;
+        y) file_program=(cp -iR) ;;
+        m) file_program=(mv -i) ;;
 
         # These are 'fff' functions.
         d) file_program=(trash) ;;
@@ -695,18 +695,20 @@ key() {
         # Do the file operation.
         "${FFF_KEY_PASTE:=p}")
             [[ ${marked_files[*]} ]] && {
-                if [[ ! -w $PWD ]]; then
+                [[ ! -w $PWD ]] && {
                     cmd_line "warn: no write access to dir."
+                    return
+                }
 
-                elif "${file_program[@]}" "${marked_files[@]}" .; then
-                    redraw full
+                # Clear the screen to make room for a prompt if needed.
+                clear_screen
+                printf '\e[?25h'
 
-                else
-                    cmd_line "warn: '${file_program[0]}' failed."
-                fi
+                "${file_program[@]}" "${marked_files[@]}" .
 
+                printf '\e[?25l'
+                redraw full
                 marked_files=()
-                redraw
             }
         ;;
 
