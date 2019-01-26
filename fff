@@ -523,7 +523,7 @@ cmd_line() {
 key() {
     # Handle special key presses.
     [[ $1 == $'\e' ]] && {
-        read -rsn 2
+        read -rsn 2 -t 1
         local special_key="${1}${REPLY}"
     }
 
