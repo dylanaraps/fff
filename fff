@@ -341,8 +341,9 @@ mark() {
         y) file_program=(cp -R) ;;
         m) file_program=(mv) ;;
 
-        # Trash is an 'fff' function.
+        # These are 'fff' functions.
         d) file_program=(trash) ;;
+        b) file_program=(bulk_rename) ;;
     esac
 
     status_line
@@ -366,6 +367,50 @@ trash() {
         # Go back to where we were.
         cd - &>/dev/null ||:
     fi
+}
+
+bulk_rename() {
+    # Bulk rename files using '$EDITOR'.
+    rename_file="${XDG_CACHE_HOME:=${HOME}/.cache}/fff/bulk_rename"
+    marked_files=("${@:1:$#-1}")
+
+    # Save marked files to a file and open them for editing.
+    printf '%s\n' "${marked_files[@]}" > "$rename_file"
+    "${VISUAL:-${EDITOR:-vi}}" "$rename_file"
+
+    # Read the renamed files to an array.
+    IFS=$'\n' read -d "" -ra changed_files < "$rename_file"
+
+    # If the user deleted a line, stop here.
+    ((${#marked_files[@]} != ${#changed_files[@]})) && {
+        rm "$rename_file"
+        cmd_line "warn: Line mismatch in rename file. Doing nothing."
+        return
+    }
+
+    printf '%s\n%s\n' \
+        "# This file will be executed when the editor is closed." \
+        "# Clear the file to abort." > "$rename_file"
+
+    # Construct the rename commands.
+    for ((i=0;i<${#marked_files[@]};i++)); {
+        [[ ${marked_files[i]} != "${changed_files[i]}" ]] && {
+            printf 'mv -- "%s" "%s"\n' "${marked_files[i]}" "${changed_files[i]}"
+            local renamed=1
+        }
+    } >> "$rename_file"
+
+    # Let the user double-check the commands and execute them.
+    ((renamed == 1)) && {
+        "${VISUAL:-${EDITOR:-vi}}" "$rename_file"
+
+        # shellcheck source=/dev/null
+        source "$rename_file" >/dev/null 2>&1
+        rm "$rename_file"
+    }
+
+    # Fix terminal settings after '$EDITOR'.
+    setup_terminal
 }
 
 open() {
@@ -641,7 +686,8 @@ key() {
         # Mark files for operation.
         "${FFF_KEY_YANK:=y}"|\
         "${FFF_KEY_MOVE:=m}"|\
-        "${FFF_KEY_TRASH:=d}")
+        "${FFF_KEY_TRASH:=d}"|\
+        "${FFF_KEY_BULK_RENAME:=b}")
             mark "$scroll" "$1"
         ;;
 
