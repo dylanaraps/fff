@@ -566,7 +566,7 @@ key() {
         ;;
 
         # Scroll up.
-        # 'A' is what bash sees when the down arrow is pressed ('\e[A').
+        # 'A' is what bash sees when the up arrow is pressed ('\e[A').
         "${FFF_KEY_SCROLL_UP1:=k}"|\
         "${FFF_KEY_SCROLL_UP2:=A}")
             # '\e[1L': Insert a line above the cursor.
