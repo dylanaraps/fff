@@ -28,7 +28,6 @@ setup_terminal() {
     # '\e[1;Nr':   Limit scrolling to scrolling area.
     #              Also sets cursor to (0,0).
     printf '\e[?1049h\e[?6h\e[?7l\e[?25l\e[2J\e[1;%sr' "$max_items"
-    printf '\e[?1000h\e[?1006h'
 }
 
 reset_terminal() {
