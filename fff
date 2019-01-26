@@ -193,6 +193,9 @@ read_dir() {
             files+=("$item")
         fi
     done
+    if ((max_len >= COLUMNS+8)); then
+        ((max_len=COLUMNS+8))
+    fi
 
     list=("${dirs[@]}" "${files[@]}")
 
