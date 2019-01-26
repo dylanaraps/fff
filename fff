@@ -340,6 +340,7 @@ mark() {
     case "$2" in
         y) file_program=(cp -R) ;;
         m) file_program=(mv) ;;
+        Y) file_program=(duplicate) ;;
 
         # Trash is an 'fff' function.
         d) file_program=(trash) ;;
@@ -366,6 +367,21 @@ trash() {
         # Go back to where we were.
         cd - &>/dev/null ||:
     fi
+}
+
+duplicate() {
+    cmd_line "duplicate [${#marked_files[@]}] items? [y/n]: " y n
+
+    [[ $cmd_reply != y ]] &&
+        return
+
+    for file in "${marked_files[@]}"; do
+        if [[ ! -e "$file" ]]; then
+            continue;
+        else
+            cp "$file" "${mark_dir}/copy_${file##*/}"
+        fi
+    done
 }
 
 open() {
@@ -641,6 +657,7 @@ key() {
         # Mark files for operation.
         "${FFF_KEY_YANK:=y}"|\
         "${FFF_KEY_MOVE:=m}"|\
+        "${FFF_KEY_DUPLICATE:=Y}"|\
         "${FFF_KEY_TRASH:=d}")
             mark "$scroll" "$1"
         ;;
