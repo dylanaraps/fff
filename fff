@@ -620,7 +620,7 @@ key() {
             cmd_line "/" "search"
 
             # If the search came up empty, redraw the current dir.
-            if [[ -z ${list[*]} || -z $cmd_reply ]]; then
+            if [[ -z ${list[*]} ]]; then
                 list=("${cur_list[@]}")
                 ((list_total=${#list[@]}-1))
                 redraw
