@@ -38,11 +38,10 @@ A new and **original** file manager written in `bash`.
 ## Dependencies
 
 - `bash 3.2+`
-- program handling (non-text): `xdg-utils`
+- program handling (non-text) (optional): `xdg-utils`
     - *Not needed on macos and Haiku.*
     - *Customizable (if not using `xdg-open`): `$FFF_OPENER`.*
 - file operations: `coreutils`
-- mime types: `file`
 
 
 ## Installation
