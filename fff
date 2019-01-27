@@ -643,7 +643,6 @@ key() {
 
                 print_line "$scroll"
                 status_line
-
             }
         ;;
 
