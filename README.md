@@ -12,6 +12,7 @@ A new and **original** file manager written in `bash`.
 - Instant as you type search
 - Tab completion for all commands!
 - Automatic CD on exit (*see [setup](#cd-on-exit)*)
+- [**vim/nvim plugin**](https://github.com/dylanaraps/fff.vim)!
 
 
 ## Table of Contents
@@ -28,6 +29,7 @@ A new and **original** file manager written in `bash`.
     * [Disabling keybindings.](#disabling-keybindings)
     * [Dealing with conflicting keybindings.](#dealing-with-conflicting-keybindings)
     * [How to figure out special keys.](#how-to-figure-out-special-keys)
+* [Using `fff` in vim/neovim as a file picker](#using-fff-in-vimneovim-as-a-file-picker)
 * [Why?](#why)
 
 <!-- vim-markdown-toc -->
@@ -306,6 +308,11 @@ key() {
 
 read -srn 1 && key "$REPLY"
 ```
+
+## Using `fff` in vim/neovim as a file picker
+
+See: [**`fff.vim`**](https://github.com/dylanaraps/fff.vim)
+
 
 ## Why?
 
