@@ -431,6 +431,12 @@ open() {
         # Everything else goes through 'xdg-open'/'open'.
         case "$mime_type" in
             text/*|*x-empty*|*json*)
+                ((file_picker == 1)) && {
+                    printf '%s\n' "$1" > \
+                        "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/opened_file"
+                    exit
+                }
+
                 "${VISUAL:-${EDITOR:-vi}}" "$1"
 
                 # Re-set TUI settings to make sure '$EDITOR' doesn't
@@ -831,7 +837,7 @@ main() {
     # It handles relative paths as well as '../../../'.
     #
     # '||:': Do nothing if 'pushd' fails. We don't care.
-    pushd "$1" &>/dev/null ||:
+    pushd "${2:-$1}" &>/dev/null ||:
 
     # Handle version as the first argument.
     # TODO: Add full argument passing if I decide to add '-h' etc.
@@ -839,6 +845,11 @@ main() {
         printf '%s\n' "fff 1.6"
         exit
     }
+
+    # Store file name in a file on open instead of using 'FFF_OPENER'.
+    # Used in 'fff.vim'.
+    [[ $1 == -p ]] &&
+        file_picker=1
 
     # bash 5 and some versions of bash 4 don't allow SIGWINCH to interrupt
     # a 'read' command and instead wait for it to complete. In this case it
