@@ -28,6 +28,9 @@ setup_terminal() {
     # '\e[1;Nr':   Limit scrolling to scrolling area.
     #              Also sets cursor to (0,0).
     printf '\e[?1049h\e[?6h\e[?7l\e[?25l\e[2J\e[1;%sr' "$max_items"
+
+    # Hide echoing of user input
+    stty -echo
 }
 
 reset_terminal() {
@@ -39,6 +42,9 @@ reset_terminal() {
     # '\e[;r':   Set the scroll region to its default value.
     #            Also sets cursor to (0,0).
     printf '\e[?6l\e[?7h\e[?25h\e[2J\e[;r'
+
+    # Show user input.
+    stty echo
 }
 
 clear_screen() {
