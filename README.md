@@ -12,7 +12,7 @@ A new and **original** file manager written in `bash`.
 - Instant as you type search
 - Tab completion for all commands!
 - Automatic CD on exit (*see [setup](#cd-on-exit)*)
-- [**vim/nvim plugin**](https://github.com/dylanaraps/fff.vim)!
+- Works as a **file picker** in `vim`/`neovim` ([**link**](https://github.com/dylanaraps/fff.vim))!
 
 
 ## Table of Contents
