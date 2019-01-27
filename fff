@@ -716,7 +716,9 @@ key() {
                 clear_screen
                 printf '\e[?25h'
 
+                stty echo
                 "${file_program[@]}" "${marked_files[@]}" .
+                stty -echo
 
                 printf '\e[?25l'
                 marked_files=()
