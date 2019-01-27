@@ -20,7 +20,7 @@ A new and **original** file manager written in `bash`.
 <!-- vim-markdown-toc GFM -->
 
 * [Dependencies](#dependencies)
-* [Installation.](#installation)
+* [Installation](#installation)
     * [CD on Exit](#cd-on-exit)
 * [Usage](#usage)
 * [Customization](#customization)
@@ -45,7 +45,7 @@ A new and **original** file manager written in `bash`.
 - mime types: `file`
 
 
-## Installation.
+## Installation
 
 **Distros**:
 
