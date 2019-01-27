@@ -47,6 +47,14 @@ A new and **original** file manager written in `bash`.
 
 ## Installation.
 
+**Distros**:
+
+- Arch Linux (based): `pacman -S fff`
+- Void Linux: `xbps-install -S fff`
+- Haiku (port): `haikuporter fff`
+
+**Manual**:
+
 - Download `fff`.
 - Put it somewhere in your `$PATH`.
 - Run it.
