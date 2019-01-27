@@ -234,7 +234,7 @@ read_dir() {
     lens=()
     for ((i=0; i<dirs_total; i++))
     do
-        lens+=(0)
+        lens+=(-1)
     done
     lens+=(${flens[@]})
     # Indicate that the directory is empty.
@@ -374,7 +374,7 @@ print_line() {
     # Remove all non-printable characters.
     file_name="${file_name//[^[:print:]]/^[}"
 
-    if ((details > 0 && fsize != 0 && ${#file_name}+${#suffix} < COLUMNS-6)); then
+    if ((details > 0 && fsize >= 0 && ${#file_name}+${#suffix} < COLUMNS-6)); then
         human_readable "$fsize"
         if ((max_len - ${#file_name} > 0)); then
             printf '\r%b%s%*s%b\e[m\r' "$format" "${file_name}${suffix}" "$((max_len - ${#file_name}))" " " "$hr_size"
