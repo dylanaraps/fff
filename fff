@@ -373,17 +373,16 @@ print_line() {
     # Remove all non-printable characters.
     file_name="${file_name//[^[:print:]]/^[}"
 
-    if [[ $details -gt 0 && $fsize -ne 0 ]]; then
+    if ((details > 0 && fsize != 0 && ${#file_name}+${#suffix} < COLUMNS-6)); then
         human_readable "$fsize"
         if ((max_len - ${#file_name} > 0)); then
-            printf -v out '\r%b%s%*s%b' "$format" "${file_name}${suffix}" "$((max_len - ${#file_name}))" " " "$hr_size"
+            printf '\r%b%s%*s%b\e[m\r' "$format" "${file_name}${suffix}" "$((max_len - ${#file_name}))" " " "$hr_size"
         else
-            printf -v out '\r%b%s%%b' "$format" "${file_name}${suffix}" "$hr_size"
+            printf '\r%b%s%%b\e[m\r' "$format" "${file_name}${suffix}" "$hr_size"
         fi
     else
-        printf -v out '\r%b%s' "$format" "${file_name}${suffix}"
+        printf '\r%b%s\e[m\r' "$format" "${file_name}${suffix}"
     fi
-    printf "%b" "$(echo "$out" | cut -c 1-$((COLUMNS+10)))\e[m\r"
 }
 
 draw_dir() {
