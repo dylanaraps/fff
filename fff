@@ -183,6 +183,7 @@ read_dir() {
     max_len=1
     while read dr
     do
+        # shellcheck disable=SC2086
         set -- $dr
 
         # Do not proceed first line "total ...."
@@ -194,7 +195,7 @@ read_dir() {
         mode=$1
         size=$5
         shift 8
-        name="$@"
+        name="$*"
 
         # Do not proceed special names
         if [[ "$name" == "." || "$name" == ".." ]]; then
@@ -218,7 +219,7 @@ read_dir() {
             files+=("$PWD/$name")
             flens+=($size)
         fi
-    done < <(LC_COLLATE=C ls -l${ls_opts} "$PWD")
+    done < <(LC_COLLATE=C ls -l"${ls_opts}" --indicator-style=none "$PWD")
 
     # Maximal item length calculation. Shouldn't be greater that COLUMNS
     ((max_len+=2))
