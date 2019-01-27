@@ -707,8 +707,8 @@ key() {
                 "${file_program[@]}" "${marked_files[@]}" .
 
                 printf '\e[?25l'
-                redraw full
                 marked_files=()
+                redraw full
             }
         ;;
 
