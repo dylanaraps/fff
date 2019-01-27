@@ -171,34 +171,71 @@ read_dir() {
     # Read a directory to an array and sort it directories first.
     local dirs=()
     local files=()
+    local mode
+    local size
+    local name
+    local flens
     local item_index
 
     # If '$PWD' is '/', unset it to avoid '//'.
     [[ $PWD == / ]] && PWD=
 
     max_len=1
-    for item in "$PWD"/*; do
-        if [[ ${#item} -gt $max_len ]]; then
-            max_len=${#item}
+    while read dr
+    do
+        set -- $dr
+
+        # Do not proceed first line "total ...."
+        if [[ $# -lt 9 ]]; then
+            continue
         fi
-        if [[ -d $item ]]; then
-            dirs+=("$item")
+
+        # Parse ls output
+        mode=$1
+        size=$5
+        shift 8
+        name="$@"
+
+        # Do not proceed special names
+        if [[ "$name" == "." || "$name" == ".." ]]; then
+            continue
+        fi
+
+        # Maximal item length calculation
+        if [[ ${#name} -gt $max_len ]]; then
+            max_len=${#name}
+        fi
+
+        if [[ "$mode" == d* ]]; then
+            dirs+=("$PWD/$name")
             ((item_index++))
 
             # Find the position of the child directory in the
             # parent directory list.
-            [[ $item == "$previous_dir" ]] &&
+            [[ "$PWD/$name" == "$previous_dir" ]] &&
                 ((previous_index=item_index))
         else
-            files+=("$item")
+            files+=("$PWD/$name")
+            flens+=($size)
         fi
-    done
+    done < <(LC_COLLATE=C ls -l${ls_opts} "$PWD")
+
+    # Maximal item length calculation. Shouldn't be greater that COLUMNS
+    ((max_len+=10))
     if ((max_len >= COLUMNS+8)); then
         ((max_len=COLUMNS+8))
     fi
 
+    # Resulting list
     list=("${dirs[@]}" "${files[@]}")
+    ((dirs_total=${#dirs[@]}))
 
+    lens=()
+    for ((i=0; i<dirs_total; i++))
+    do
+        lens+=(0)
+    done
+    lens+=(${flens[@]})
     # Indicate that the directory is empty.
     [[ -z ${list[0]} ]] &&
         list[0]="empty"
@@ -235,10 +272,30 @@ human_readable_size() {
     fi
 }
 
+# Show file size in a human readable format, only for a regular files
+# Result in hr_size variable
+human_readable() {
+    local s="$1"
+    hr_size=""
+    if ((s < 1024)); then
+        hr_size="$s\\e[33m"
+    elif ((s < 1048576)); then
+        hr_size="$((s / 1024))\\e[32mK"
+    elif ((s < 1048576 * 1024)); then
+        hr_size="$((s / 1048576))\\e[32mM"
+    elif ((s < 1048576 * 1048576)); then
+        hr_size="$((s / (1048576 * 1024)))\\e[32mG"
+    else
+        hr_size="$s"
+    fi
+    hr_size="\\e[33m${hr_size}"
+}
+
 
 print_line() {
     # Format the list item and print it.
     local file_name="${list[$1]##*/}"
+    local fsize="${lens[$1]}"
     local file_ext="${file_name##*.}"
     local format
     local suffix
@@ -316,8 +373,8 @@ print_line() {
     # Remove all non-printable characters.
     file_name="${file_name//[^[:print:]]/^[}"
 
-    if [[ $details -gt 0 ]]; then
-        human_readable_size "${list[$1]}"
+    if [[ $details -gt 0 && $fsize -ne 0 ]]; then
+        human_readable "$fsize"
         printf '\r%b%s%*b\e[m\r' "$format" "${file_name}${suffix}" "$((max_len - ${#file_name}))" "$hr_size"
     else
         printf '\r%b%s\e[m\r' "$format" "${file_name}${suffix}"
@@ -858,13 +915,14 @@ key() {
 
         # Show hidden files.
         "${FFF_KEY_HIDDEN:=.}")
-            # 'a=a>0?0:++a': Toggle between both values of 'shopt_flags'.
-            #                This also works for '3' or more values with
-            #                some modification.
-            shopt_flags=(u s)
-            shopt -"${shopt_flags[((a=a>0?0:++a))]}" dotglob
+            ((hidden=-hidden))
+            if ((hidden > 0)); then
+                ls_opts=""
+            else
+                ls_opts="a"
+            fi
             redraw full
-        ;;
+       ;;
 
         # Search.
         "${FFF_KEY_SEARCH:=/}")
@@ -1122,6 +1180,10 @@ main() {
     # Show file size mode
     FFF_SHOW_FSIZE=${FFF_SHOW_FSIZE:=1}
     details=$((FFF_SHOW_FSIZE>0?1:-1))
+
+    # Show hidden files
+    hidden=-1
+    ls_opts="a"
 
     redraw full
 
