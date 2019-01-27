@@ -145,7 +145,11 @@ read_dir() {
     # If '$PWD' is '/', unset it to avoid '//'.
     [[ $PWD == / ]] && PWD=
 
+    max_len=1
     for item in "$PWD"/*; do
+        if [[ ${#item} -gt $max_len ]]; then
+            max_len=${#item}
+        fi
         if [[ -d $item ]]; then
             dirs+=("$item")
             ((item_index++))
@@ -158,6 +162,9 @@ read_dir() {
             files+=("$item")
         fi
     done
+    if ((max_len >= COLUMNS+8)); then
+        ((max_len=COLUMNS+8))
+    fi
 
     list=("${dirs[@]}" "${files[@]}")
 
@@ -170,6 +177,33 @@ read_dir() {
     # Save the original dir in a second list as a backup.
     cur_list=("${list[@]}")
 }
+
+# Show file size in a human readable format, only for a regular files
+# Result in hr_size variable
+human_readable_size() {
+    local f="$1"
+    local ls_output
+    local s
+    hr_size=""
+    if [[ ! -L $f && -f $f ]]; then
+        read -a ls_output <<< $(ls -ld "$f")
+        s=${ls_output[4]}
+
+        if ((s < 1024)); then
+            hr_size="$s\\e[33m"
+        elif ((s < 1048576)); then
+            hr_size="$((s / 1024))\\e[32mK"
+        elif ((s < 1048576 * 1024)); then
+            hr_size="$((s / 1048576))\\e[32mM"
+        elif ((s < 1048576 * 1048576)); then
+            hr_size="$((s / (1048576 * 1024)))\\e[32mG"
+        else
+            hr_size="$s"
+        fi
+        hr_size="\\e[33m${hr_size}"
+    fi
+}
+
 
 print_line() {
     # Format the list item and print it.
@@ -251,7 +285,12 @@ print_line() {
     # Remove all non-printable characters.
     file_name="${file_name//[^[:print:]]/^[}"
 
-    printf '\r%b%s\e[m\r' "$format" "${file_name}${suffix}"
+    if [[ $details -gt 0 ]]; then
+        human_readable_size "${list[$1]}"
+        printf '\r%b%s%*b\e[m\r' "$format" "${file_name}${suffix}" "$((max_len - ${#file_name}))" "$hr_size"
+    else
+        printf '\r%b%s\e[m\r' "$format" "${file_name}${suffix}"
+    fi
 }
 
 draw_dir() {
@@ -574,6 +613,12 @@ cmd_line() {
 
 key() {
     case "$1" in
+        # toggle details mode
+        "${FFF_KEY_FSIZE1:=z}")
+            details=$((-details))
+            redraw
+        ;;
+
         # Open list item.
         # 'C' is what bash sees when the right arrow is pressed ('\e[C').
         # '' is what bash sees when the enter/return key is pressed.
@@ -889,6 +934,10 @@ main() {
 
     # Trap the window resize signal (handle window resize events).
     trap 'get_term_size; redraw' WINCH
+
+    # Show file size mode
+    FFF_SHOW_FSIZE=${FFF_SHOW_FSIZE:=1}
+    details=$((FFF_SHOW_FSIZE>0?1:-1))
 
     redraw full
 
