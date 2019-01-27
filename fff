@@ -202,7 +202,7 @@ read_dir() {
         fi
 
         # Maximal item length calculation
-        if [[ ${#name} -gt $max_len ]]; then
+        if [[ "${#name}" -gt $max_len ]]; then
             max_len=${#name}
         fi
 
@@ -221,9 +221,9 @@ read_dir() {
     done < <(LC_COLLATE=C ls -l${ls_opts} "$PWD")
 
     # Maximal item length calculation. Shouldn't be greater that COLUMNS
-    ((max_len+=10))
-    if ((max_len >= COLUMNS+8)); then
-        ((max_len=COLUMNS+8))
+    ((max_len+=2))
+    if ((max_len >= COLUMNS-6)); then
+        ((max_len=COLUMNS-6))
     fi
 
     # Resulting list
@@ -375,10 +375,15 @@ print_line() {
 
     if [[ $details -gt 0 && $fsize -ne 0 ]]; then
         human_readable "$fsize"
-        printf '\r%b%s%*b\e[m\r' "$format" "${file_name}${suffix}" "$((max_len - ${#file_name}))" "$hr_size"
+        if ((max_len - ${#file_name} > 0)); then
+            printf -v out '\r%b%s%*s%b' "$format" "${file_name}${suffix}" "$((max_len - ${#file_name}))" " " "$hr_size"
+        else
+            printf -v out '\r%b%s%%b' "$format" "${file_name}${suffix}" "$hr_size"
+        fi
     else
-        printf '\r%b%s\e[m\r' "$format" "${file_name}${suffix}"
+        printf -v out '\r%b%s' "$format" "${file_name}${suffix}"
     fi
+    printf "%b" "$(echo "$out" | cut -c 1-$((COLUMNS+10)))\e[m\r"
 }
 
 draw_dir() {
