@@ -120,11 +120,13 @@ r: rename
 y: mark copy
 m: mark move
 d: mark trash (~/.cache/fff/trash/)
+s: mark symbolic link
 b: mark bulk rename
 
 Y: mark all for copy
 M: mark all for move
 D: mark all for trash (~/.cache/fff/trash/)
+S: mark all for symbolic link
 B: mark all for bulk rename
 
 p: paste/move/delete/bulk_rename
