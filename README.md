@@ -116,7 +116,7 @@ y: mark copy
 m: mark move
 d: mark trash (~/.cache/fff/trash/)
 b: mark bulk rename
-p: paste/move/delete
+p: paste/move/delete/bulk_rename
 c: clear file selections
 
 [1-9]: favourites/bookmarks (see customization)
