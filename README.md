@@ -317,7 +317,7 @@ key() {
 
         # Everything else.
         *)
-            printf '%s\n' "key: $1"
+            printf '%s %q\n' "key:" "$1"
         ;;
     esac
 }
