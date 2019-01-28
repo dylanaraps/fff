@@ -379,7 +379,7 @@ trash() {
         "$FFF_TRASH_CMD" "${@:1:$#-1}"
 
     else
-        cd "$FFF_TRASH" && mv "$@"
+        cd "$FFF_TRASH" && mv -f "$@"
 
         # Go back to where we were.
         cd - &>/dev/null ||:
