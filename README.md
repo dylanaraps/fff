@@ -43,10 +43,12 @@ A simple file manager written in `bash`.
 ## Dependencies
 
 - `bash 3.2+`
-- program handling (non-text) (optional): `xdg-utils`
+- `coreutils`
+    - File operations.
+- `xdg-utils` (*optional*)
+    - Program handling (*non-text*).
     - *Not needed on macos and Haiku.*
     - *Customizable (if not using `xdg-open`): `$FFF_OPENER`.*
-- file operations: `coreutils`
 
 
 ## Installation
