@@ -713,6 +713,11 @@ key() {
         # Spawn a shell.
         "${FFF_KEY_SHELL:=!}")
             reset_terminal
+
+            # Make fff aware of how many times it is nested.
+            export FFF_LEVEL
+            ((FFF_LEVEL++))
+
             cd "$PWD" && "$SHELL"
             setup_terminal
             redraw
