@@ -335,6 +335,7 @@ mark() {
     if [[ $1 == all ]]; then
         if ((select_all == 0)); then
             marked_files=("${list[@]}")
+            select_all=1
             mark_dir="$PWD"
         else
             marked_files=()
