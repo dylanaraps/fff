@@ -121,17 +121,17 @@ For more information see:
 
 # Go to child directory.
 export FFF_KEY_CHILD1="l"
-export FFF_KEY_CHILD2="C" # Right Arrow
-export FFF_KEY_CHILD3=""  # Enter / Return
+export FFF_KEY_CHILD2=$'\e[C' # Right Arrow
+export FFF_KEY_CHILD3=""      # Enter / Return
 
 # Go to parent directory.
 export FFF_KEY_PARENT1="h"
-export FFF_KEY_PARENT2="D"     # Left Arrow
-export FFF_KEY_PARENT3=$'\\177' # Backspace
-export FFF_KEY_PARENT4=$'\\b'   # Backspace (Older terminals)
+export FFF_KEY_PARENT2=$'\e[D' # Left Arrow
+export FFF_KEY_PARENT3=$'\177' # Backspace
+export FFF_KEY_PARENT4=$'\b'   # Backspace (Older terminals)
 
 # Go to previous directory.
-export FFF_KEY_PREVIOUS="\-"
+export FFF_KEY_PREVIOUS="-"
 
 # Search.
 export FFF_KEY_SEARCH="/"
@@ -141,11 +141,11 @@ export FFF_KEY_SHELL="s"
 
 # Scroll down.
 export FFF_KEY_SCROLL_DOWN1="j"
-export FFF_KEY_SCROLL_DOWN2="B" # Down Arrow
+export FFF_KEY_SCROLL_DOWN2=$'\e[B' # Down Arrow
 
 # Scroll up.
 export FFF_KEY_SCROLL_UP1="k"
-export FFF_KEY_SCROLL_UP2="A" # Up Arrow
+export FFF_KEY_SCROLL_UP2=$'\e[A'   # Up Arrow
 
 # Go to top and bottom.
 export FFF_KEY_TO_TOP="g"

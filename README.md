@@ -180,12 +180,12 @@ This is the list of full keybindings along with their default values. You only n
 
 # Go to child directory.
 export FFF_KEY_CHILD1="l"
-export FFF_KEY_CHILD2="C" # Right Arrow
-export FFF_KEY_CHILD3=""  # Enter / Return
+export FFF_KEY_CHILD2=$'\e[C' # Right Arrow
+export FFF_KEY_CHILD3=""      # Enter / Return
 
 # Go to parent directory.
 export FFF_KEY_PARENT1="h"
-export FFF_KEY_PARENT2="D"     # Left Arrow
+export FFF_KEY_PARENT2=$'\e[D' # Left Arrow
 export FFF_KEY_PARENT3=$'\177' # Backspace
 export FFF_KEY_PARENT4=$'\b'   # Backspace (Older terminals)
 
@@ -200,11 +200,11 @@ export FFF_KEY_SHELL="s"
 
 # Scroll down.
 export FFF_KEY_SCROLL_DOWN1="j"
-export FFF_KEY_SCROLL_DOWN2="B" # Down Arrow
+export FFF_KEY_SCROLL_DOWN2=$'\e[B' # Down Arrow
 
 # Scroll up.
 export FFF_KEY_SCROLL_UP1="k"
-export FFF_KEY_SCROLL_UP2="A" # Up Arrow
+export FFF_KEY_SCROLL_UP2=$'\e[A'   # Up Arrow
 
 # Go to top and bottom.
 export FFF_KEY_TO_TOP="g"
@@ -259,19 +259,6 @@ When rebinding a key in `fff` make sure you don't have two bindings with the sam
 
 ### How to figure out special keys.
 
-You can verify the value of a keypress with the following command:
-
-```sh
-# Run this and press the desired key.
-read -rn 1
-
-# Left Arrow was pressed which is an escape sequence ('^[[D' or '\e[D']).
-# 'read -n 1' uses the last character of escape sequences.
-# Therefore the key-binding for the left arrow is 'D'.
-➜ read -rn 1
-^[[D➜ [D
-```
-
 Below is a tiny script I've written which will tell you the exact value to use. It automates the deciphering of special key escape sequences to the exact value `fff` needs. Save this to a file and run it. Give it a key-press and it'll spit out the exact value needed.
 
 ```sh
@@ -287,7 +274,7 @@ key() {
         # Escape Sequences.
         $'\e')
             read -rsn 2
-            printf '%s\n' "key: ${REPLY: -1}"
+            printf '%s %q\n' "key:" "${1}${REPLY}"
         ;;
 
         # Return / Enter.
