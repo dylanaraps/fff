@@ -2,7 +2,7 @@
 
 <a href="https://asciinema.org/a/qvNlrFrGB3xKZXb6GkremjZNp" target="_blank"><img src="https://asciinema.org/a/qvNlrFrGB3xKZXb6GkremjZNp.svg" alt="img" height="300px" align="right"/></a>
 
-A new and **original** file manager written in `bash`.
+A simple file manager written in `bash`.
 
 - It's Fucking Fast 🚀
 - Minimal (*only requires **bash** and coreutils*)
