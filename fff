@@ -357,6 +357,7 @@ mark() {
     case "$2" in
         y|Y) file_program=(cp -iR) ;;
         m|M) file_program=(mv -i) ;;
+        s|S) file_program=(ln -s) ;;
 
         # These are 'fff' functions.
         d|D) file_program=(trash) ;;
@@ -710,7 +711,7 @@ key() {
         ;;
 
         # Spawn a shell.
-        "${FFF_KEY_SHELL:=s}")
+        "${FFF_KEY_SHELL:=!}")
             reset_terminal
             cd "$PWD" && "$SHELL"
             setup_terminal
@@ -721,6 +722,7 @@ key() {
         "${FFF_KEY_YANK:=y}"|\
         "${FFF_KEY_MOVE:=m}"|\
         "${FFF_KEY_TRASH:=d}"|\
+        "${FFF_KEY_LINK:=s}"|\
         "${FFF_KEY_BULK_RENAME:=b}")
             mark "$scroll" "$1"
         ;;
@@ -729,6 +731,7 @@ key() {
         "${FFF_KEY_YANK_ALL:=Y}"|\
         "${FFF_KEY_MOVE_ALL:=M}"|\
         "${FFF_KEY_TRASH_ALL:=D}"|\
+        "${FFF_KEY_LINK_ALL:=S}"|\
         "${FFF_KEY_BULK_RENAME_ALL:=B}")
             mark all "$1"
         ;;
