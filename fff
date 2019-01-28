@@ -330,26 +330,39 @@ mark() {
     [[ $PWD != "$mark_dir" ]] &&
         marked_files=()
 
-    if [[ ${marked_files[$1]} == "${list[$1]}" ]]; then
-        unset 'marked_files[scroll]'
+    if [[ $1 == all ]]; then
+        if ((select_all == 0)); then
+            marked_files=("${list[@]}")
+            mark_dir="$PWD"
+            select_all=1
+        else
+            marked_files=()
+            select_all=0
+        fi
 
+        redraw
     else
-        marked_files[$1]="${list[$1]}"
-        mark_dir="$PWD"
-    fi
+        if [[ ${marked_files[$1]} == "${list[$1]}" ]]; then
+            unset 'marked_files[scroll]'
 
-    # Clear line before changing it.
-    printf '\e[K'
-    print_line "$1"
+        else
+            marked_files[$1]="${list[$1]}"
+            mark_dir="$PWD"
+        fi
+
+        # Clear line before changing it.
+        printf '\e[K'
+        print_line "$1"
+    fi
 
     # Find the program to use.
     case "$2" in
-        y) file_program=(cp -iR) ;;
-        m) file_program=(mv -i) ;;
+        y|Y) file_program=(cp -iR) ;;
+        m|M) file_program=(mv -i) ;;
 
         # These are 'fff' functions.
-        d) file_program=(trash) ;;
-        b) file_program=(bulk_rename) ;;
+        d|D) file_program=(trash) ;;
+        b|B) file_program=(bulk_rename) ;;
     esac
 
     status_line
@@ -368,7 +381,7 @@ trash() {
         "$FFF_TRASH_CMD" "${@:1:$#-1}"
 
     else
-        cd "$FFF_TRASH" && "mv" "$@"
+        cd "$FFF_TRASH" && mv "$@"
 
         # Go back to where we were.
         cd - &>/dev/null ||:
@@ -709,6 +722,14 @@ key() {
             mark "$scroll" "$1"
         ;;
 
+        # Mark all files for operation.
+        "${FFF_KEY_YANK_ALL:=Y}"|\
+        "${FFF_KEY_MOVE_ALL:=M}"|\
+        "${FFF_KEY_TRASH_ALL:=D}"|\
+        "${FFF_KEY_BULK_RENAME_ALL:=B}")
+            mark all "$1"
+        ;;
+
         # Do the file operation.
         "${FFF_KEY_PASTE:=p}")
             [[ ${marked_files[*]} ]] && {
@@ -727,6 +748,7 @@ key() {
 
                 printf '\e[?25l'
                 marked_files=()
+                select_all=0
                 redraw full
             }
         ;;
@@ -734,6 +756,7 @@ key() {
         # Clear all marked files.
         "${FFF_KEY_CLEAR:=c}")
             marked_files=()
+            select_all=0
             redraw
         ;;
 
