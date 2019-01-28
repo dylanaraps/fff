@@ -121,13 +121,13 @@ r: rename
 
 y: mark copy
 m: mark move
-d: mark trash (~/.cache/fff/trash/)
+d: mark trash (~/.local/share/fff/trash/)
 s: mark symbolic link
 b: mark bulk rename
 
 Y: mark all for copy
 M: mark all for move
-D: mark all for trash (~/.cache/fff/trash/)
+D: mark all for trash (~/.local/share/fff/trash/)
 S: mark all for symbolic link
 B: mark all for bulk rename
 
@@ -171,9 +171,9 @@ export FFF_OPENER="xdg-open"
 export FFF_CD_FILE=~/.fff_d
 
 # Trash Directory
-# Default: '${XDG_CACHE_HOME}/fff/trash'
-#          If not using XDG, '${HOME}/.cache/fff/trash' is used.
-export FFF_TRASH=~/.cache/fff/trash
+# Default: '${XDG_DATA_HOME}/fff/trash'
+#          If not using XDG, '${XDG_DATA_HOME}/fff/trash' is used.
+export FFF_TRASH=~/.local/share/fff/trash
 
 # Trash Command
 # Default: 'mv'

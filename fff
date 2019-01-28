@@ -918,7 +918,7 @@ main() {
 
     # Create the trash directory if it doesn't exist.
     # Better to get this done early.
-    mkdir -p "${FFF_TRASH:=${XDG_CACHE_HOME:=${HOME}/.cache}/fff/trash}"
+    mkdir -p "${FFF_TRASH:=${XDG_DATA_HOME:=${HOME}/.local/share}/fff/trash}"
 
     # Trap the exit signal (we need to reset the terminal to a useable state.)
     # '\e[?1049l': Restore saved terminal screen.
