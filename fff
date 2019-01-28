@@ -523,7 +523,7 @@ cmd_line() {
 key() {
     # Handle special key presses.
     [[ $1 == $'\e' ]] && {
-        read -rsn 2 -t 1
+        read "${read_flags:-'-t1'}" -rsn 2
         local special_key="${1}${REPLY}"
     }
 
@@ -806,7 +806,7 @@ main() {
     # anything until a key is pressed.
     # SEE: https://github.com/dylanaraps/fff/issues/48
     ((BASH_VERSINFO[0] > 3)) &&
-        read_flags=(-t 0.05)
+        read_flags="-t0.05"
 
     # Initialize LS_COLORS support if enabled.
     ((${FFF_LS_COLORS:=1} == 1)) &&
@@ -840,7 +840,7 @@ main() {
 
     # Vintage infinite loop.
     for ((;;)); {
-        read "${read_flags[@]}" -srn 1 && key "$REPLY"
+        read "$read_flags" -srn 1 && key "$REPLY"
     }
 }
 
