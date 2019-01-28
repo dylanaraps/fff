@@ -752,8 +752,10 @@ key() {
 
         # Clear all marked files.
         "${FFF_KEY_CLEAR:=c}")
-            marked_files=()
-            redraw
+            [[ ${marked_files[*]} ]] && {
+                marked_files=()
+                redraw
+            }
         ;;
 
         # Rename list item.
