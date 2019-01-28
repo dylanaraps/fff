@@ -327,14 +327,15 @@ mark() {
     # Mark file for operation.
     # If an item is marked in a second directory,
     # clear the marked files.
-    [[ $PWD != "$mark_dir" ]] &&
+    [[ $PWD != "$mark_dir" ]] && {
         marked_files=()
+        select_all=0
+    }
 
     if [[ $1 == all ]]; then
         if ((select_all == 0)); then
             marked_files=("${list[@]}")
             mark_dir="$PWD"
-            select_all=1
         else
             marked_files=()
             select_all=0
