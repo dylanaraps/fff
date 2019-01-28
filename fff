@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash3
 #
 # fff - fucking fast file-manager.
 
@@ -593,6 +593,11 @@ key() {
     # Handle special key presses.
     [[ $1 == $'\e' ]] && {
         read "${read_flags[@]}" -rsn 2
+
+        # Handle a normal escape key press.
+        [[ ${1}${REPLY} == $'\e\e['* ]] &&
+            read "${read_flags[@]}" -rsn 1 _
+
         local special_key="${1}${REPLY}"
     }
 
