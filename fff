@@ -731,13 +731,13 @@ key() {
 
             # Find the program to use.
             case "$1" in
-                y|Y) file_program=(cp -iR) ;;
-                m|M) file_program=(mv -i) ;;
-                s|S) file_program=(ln -s) ;;
+                y) file_program=(cp -iR) ;;
+                m) file_program=(mv -i) ;;
+                s) file_program=(ln -s) ;;
 
                 # These are 'fff' functions.
-                d|D) file_program=(trash) ;;
-                b|B) file_program=(bulk_rename) ;;
+                d) file_program=(trash) ;;
+                b) file_program=(bulk_rename) ;;
             esac
 
             # Toggle the file progam if the same key was pressed.
