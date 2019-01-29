@@ -783,6 +783,9 @@ key() {
 
         # Rename list item.
         "${FFF_KEY_RENAME:=r}")
+            [[ ! -e "${list[scroll]}" ]] &&
+                return
+
             cmd_line "rename ${list[scroll]##*/}: "
 
             [[ $cmd_reply ]] &&
@@ -834,6 +837,9 @@ key() {
 
         # Show file attributes.
         "${FFF_KEY_ATTRIBUTES:=x}")
+            [[ ! -e "${list[scroll]}" ]] &&
+                return
+
             clear_screen
             stat "${list[scroll]}"
             read -rn 1
