@@ -113,7 +113,7 @@ get_ls_colors() {
 
 status_line() {
     # Status_line to print when files are marked for operation.
-    local mark_ui="[${#marked_files[@]}] selected (${file_program[*]}) [p] ->"
+    local mark_ui="[${#marked_files[@]}] selected (${file_program[*]:-[y,m,d,b,s]}) [p] ->"
 
     # Escape the directory string.
     # Remove all non-printable characters.
@@ -138,7 +138,7 @@ status_line() {
            "${FFF_COL2:-1}" \
            "$COLUMNS" "" \
            "($((scroll+1))/$((list_total+1)))" \
-           "${marked_files[*]:+${mark_ui}}" \
+           "${marked_files[*]:+$mark_ui}" \
            "${PWD_escaped:-/}"
 }
 
@@ -352,17 +352,6 @@ mark() {
         printf '\e[K'
         print_line "$1"
     fi
-
-    # Find the program to use.
-    case "$2" in
-        y|Y) file_program=(cp -iR) ;;
-        m|M) file_program=(mv -i) ;;
-        s|S) file_program=(ln -s) ;;
-
-        # These are 'fff' functions.
-        d|D) file_program=(trash) ;;
-        b|B) file_program=(bulk_rename) ;;
-    esac
 
     status_line
 }
@@ -729,15 +718,27 @@ key() {
         "${FFF_KEY_TRASH:=d}"|\
         "${FFF_KEY_LINK:=s}"|\
         "${FFF_KEY_BULK_RENAME:=b}")
+            # Find the program to use.
+            case "$1" in
+                y|Y) file_program=(cp -iR) ;;
+                m|M) file_program=(mv -i) ;;
+                s|S) file_program=(ln -s) ;;
+
+                # These are 'fff' functions.
+                d|D) file_program=(trash) ;;
+                b|B) file_program=(bulk_rename) ;;
+            esac
+
+            status_line
+        ;;
+
+        # Mark files for operation.
+        "${FFF_KEY_MARK:=" "}")
             mark "$scroll" "$1"
         ;;
 
         # Mark all files for operation.
-        "${FFF_KEY_YANK_ALL:=Y}"|\
-        "${FFF_KEY_MOVE_ALL:=M}"|\
-        "${FFF_KEY_TRASH_ALL:=D}"|\
-        "${FFF_KEY_LINK_ALL:=S}"|\
-        "${FFF_KEY_BULK_RENAME_ALL:=B}")
+        "${FFF_KEY_MARK_ALL:=v}")
             mark all "$1"
         ;;
 
