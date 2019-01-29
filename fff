@@ -14,7 +14,10 @@ get_os() {
 
         haiku)
             opener="open"
-            : "${FFF_TRASH_CMD:=trash}"
+            [[ -z $FFF_TRASH_CMD ]] && {
+                FFF_TRASH_CMD="trash"
+                FFF_TRASH="$(finddir B_TRASH_DIRECTORY)"
+            }
         ;;
     esac
 }
