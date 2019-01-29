@@ -336,6 +336,7 @@ mark() {
             mark_dir="$PWD"
         else
             marked_files=()
+            file_program=()
         fi
 
         redraw
@@ -352,6 +353,10 @@ mark() {
         printf '\e[K'
         print_line "$1"
     fi
+
+    # If no programs are marked, clear the type of operation.
+    [[ -z ${marked_files[*]} ]] &&
+        file_program=()
 
     status_line
 }
@@ -718,6 +723,8 @@ key() {
         "${FFF_KEY_TRASH:=d}"|\
         "${FFF_KEY_LINK:=s}"|\
         "${FFF_KEY_BULK_RENAME:=b}")
+            previous_program="${file_program[0]}"
+
             # Find the program to use.
             case "$1" in
                 y|Y) file_program=(cp -iR) ;;
@@ -728,6 +735,10 @@ key() {
                 d|D) file_program=(trash) ;;
                 b|B) file_program=(bulk_rename) ;;
             esac
+
+            # Toggle the file progam if the same key was pressed.
+            [[ $previous_program == "${file_program[0]}" ]] &&
+                file_program=()
 
             status_line
         ;;
@@ -750,6 +761,11 @@ key() {
                     return
                 }
 
+                [[ -z ${file_program[0]} ]] && {
+                    cmd_line "warn: no operation selected [y,m,d,b,s]."
+                    return
+                }
+
                 # Clear the screen to make room for a prompt if needed.
                 clear_screen
                 printf '\e[?25h'
@@ -760,6 +776,7 @@ key() {
 
                 printf '\e[?25l'
                 marked_files=()
+                file_program=()
                 redraw full
             }
         ;;
