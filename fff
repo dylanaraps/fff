@@ -334,6 +334,10 @@ mark() {
     [[ $PWD != "$mark_dir" ]] &&
         marked_files=()
 
+    # Don't allow the user to mark the empty directory list item.
+    [[ ${list[0]} == empty && -z ${list[1]} ]] &&
+        return
+
     if [[ $1 == all ]]; then
         if ((${#marked_files[@]} != ${#list[@]})); then
             marked_files=("${list[@]}")
