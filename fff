@@ -14,6 +14,10 @@ get_os() {
 
         haiku)
             opener="open"
+            [[ -z $FFF_TRASH_CMD ]] && {
+                FFF_TRASH_CMD="trash"
+                FFF_TRASH="$(finddir B_TRASH_DIRECTORY)"
+            }
         ;;
     esac
 }
@@ -376,8 +380,9 @@ trash() {
 
     if [[ $FFF_TRASH_CMD ]]; then
         # Pass all but the last argument to the user's
-        # custom script.
-        "$FFF_TRASH_CMD" "${@:1:$#-1}"
+        # custom script. command is used to prevent this function
+        # from conflicting with commands named "trash".
+        command "$FFF_TRASH_CMD" "${@:1:$#-1}"
 
     else
         cd "$FFF_TRASH" && mv -f "$@"
