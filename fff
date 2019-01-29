@@ -113,7 +113,8 @@ get_ls_colors() {
 
 status_line() {
     # Status_line to print when files are marked for operation.
-    local mark_ui="[${#marked_files[@]}] selected (${file_program[*]:-[y,m,d,b,s]}) [p] ->"
+    local mark_ui="[${#marked_files[@]}] selected "
+    mark_ui+="[${file_program[*]:-y,m,d,b,s}] [p] ->"
 
     # Escape the directory string.
     # Remove all non-printable characters.
@@ -723,6 +724,9 @@ key() {
         "${FFF_KEY_TRASH:=d}"|\
         "${FFF_KEY_LINK:=s}"|\
         "${FFF_KEY_BULK_RENAME:=b}")
+            [[ -z "${marked_files[*]}" ]] &&
+                return
+
             previous_program="${file_program[0]}"
 
             # Find the program to use.
@@ -785,6 +789,7 @@ key() {
         "${FFF_KEY_CLEAR:=c}")
             [[ ${marked_files[*]} ]] && {
                 marked_files=()
+                file_program=()
                 redraw
             }
         ;;
