@@ -107,7 +107,7 @@ G: go to bottom
 /: search
 t: go to trash
 ~: go to home
-s: open shell in current dir
+!: open shell in current dir
 x: view file/dir attributes
 
 down:  scroll down
