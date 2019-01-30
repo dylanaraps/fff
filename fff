@@ -355,8 +355,6 @@ draw_img() {
         return
     }
 
-    clear_screen
-
     # Get terminal window size in pixels.
     # Sets the variables: WIDTH and HEIGHT
     # shellcheck source=/dev/null
@@ -378,13 +376,15 @@ draw_img() {
         ((img_height=HEIGHT))
     }
 
+    clear_screen
+
     # Display the image.
     printf '0;1;%s;%s;%s;%s;;;;;%s\n3;\n4\n' \
         "${FFF_W3M_XOFFSET:-0}" \
         "${FFF_W3M_YOFFSET:-0}" \
         "$img_width" \
         "$img_height" \
-        "${list[scroll]}" | "$w3m" &>/dev/null
+        "${list[scroll]}" | "$w3m" &>/dev/null &
 
     read -rn 1
     redraw
