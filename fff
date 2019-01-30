@@ -1090,7 +1090,8 @@ key() {
         ;;
 
         # Go to '$HOME'.
-        "${FFF_KEY_GO_HOME:=1}")
+        "${FFF_KEY_GO_HOME:=1}"|\
+        "${FFF_KEY_HOME2:=$'\e[1'}")
             open ~
         ;;
 
