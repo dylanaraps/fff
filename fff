@@ -126,6 +126,11 @@ get_w3m_path() {
         w3m="${w3m_paths[0]}"
 }
 
+get_mime_type() {
+    # Get a file's mime_type.
+    mime_type="$(file "-${file_flags:-biL}" "$1")"
+}
+
 status_line() {
     # Status_line to print when files are marked for operation.
     local mark_ui="[${#marked_files[@]}] selected (${file_program[*]}) [p] ->"
@@ -325,6 +330,55 @@ draw_dir() {
     ((y=scroll_new_pos))
 }
 
+draw_img() {
+    # Draw an image file on the screen using w3m-img.
+    # X isn't running, do nothing.
+    [[ -z $DISPLAY ]] &&
+        return
+
+    # File isn't an image file, do nothing.
+    get_mime_type "${list[scroll]}"
+    [[ $mime_type != image/* ]] &&
+        return
+
+    # Find the w3m-img install path.
+    # If it isn't installed, do nothing.
+    get_w3m_path
+    [[ ! -x $w3m ]] && {
+        cmd_line "error: Couldn't find 'w3m-img', is it installed?"
+        return
+    }
+
+    # xdotool isn't installed, do nothing.
+    type -p xdotool &>/dev/null || {
+        cmd_line "error: Couldn't find 'xdotool', is it installed?"
+        return
+    }
+
+    clear_screen
+
+    # Get terminal window size in pixels.
+    # shellcheck source=/dev/null
+    source <(xdotool getactivewindow getwindowgeometry --shell %1)
+
+    # Get the image size in pixels.
+    read -r w h < <(printf '%b' "5;${list[scroll]}" | "$w3m")
+
+    while ((w >= WIDTH || h >= HEIGHT-HEIGHT*4/LINES)); do
+        w="$((w * 10 / 20))"
+        h="$((h * 10 / 20))"
+    done
+
+    ((w > 0 && h > 0)) && {
+        printf '%b%b\n%s;\n%s\n' \
+            "0;1;${FFF_W3M_XOFFSET:-0};${FFF_W3M_YOFFSET:-0};" \
+            "$w;$h;;;;;${list[scroll]}" 3 4 | "$w3m" &>/dev/null
+
+        read -rn 1
+        redraw
+    }
+}
+
 redraw() {
     # Redraw the current window.
     # If 'full' is passed, re-fetch the directory list.
@@ -463,7 +517,7 @@ open() {
 
     elif [[ -f $1 ]]; then
         # Figure out what kind of file we're working with.
-        mime_type="$(file "-${file_flags:-biL}" "$1")"
+        get_mime_type "$1"
 
         # Open all text-based files in '$EDITOR'.
         # Everything else goes through 'xdg-open'/'open'.
@@ -858,32 +912,7 @@ key() {
 
         # Show image in terminal.
         "${FFF_KEY_IMAGE:=i}")
-            get_w3m_path
-            mime_type="$(file "-${file_flags:-biL}" "${list[scroll]}")"
-
-            [[ ! -x $w3m || $mime_type != image/* ]] &&
-                return
-
-            clear_screen
-
-            # shellcheck source=/dev/null
-            source <(xdotool getactivewindow getwindowgeometry --shell %1)
-            read -r w h < <(printf '%b' "5;${list[scroll]}" | "${w3m:-false}")
-
-            while ((w >= WIDTH || h >= HEIGHT-HEIGHT*4/LINES)); do
-                w="$((w * 10 / 20))"
-                h="$((h * 10 / 20))"
-            done
-
-            ((w > 0 && h > 0)) && {
-                printf '%b%b\n%s;\n%s\n' \
-                    "0;1;${FFF_W3M_XOFFSET:-0};${FFF_W3M_YOFFSET:-0};" \
-                    "$w;$h;;;;;${list[scroll]}" 3 4 |\
-                    "${w3m:-false}" &>/dev/null
-
-                read -rn 1
-                redraw
-            }
+            draw_img
         ;;
 
         # Go to dir.
