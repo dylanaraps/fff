@@ -360,10 +360,14 @@ draw_img() {
     # shellcheck source=/dev/null
     source <(xdotool getactivewindow getwindowgeometry --shell %1)
 
-    clear_screen
-
     # Get the image size in pixels.
     read -r img_width img_height < <("$w3m" <<< "5;${list[scroll]}")
+
+    clear_screen
+
+    # Add a small delay to fix issues in VTE terminals.
+    ((BASH_VERSINFO[0] > 3)) &&
+        read "${read_flags[@]}" -srn 1
 
     # Substract the status_line area from the image size.
     ((HEIGHT=HEIGHT-HEIGHT*5/LINES))
