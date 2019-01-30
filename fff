@@ -346,10 +346,8 @@ draw_img() {
     [[ $mime_type != image/* ]] &&
         return
 
-    # Find the w3m-img install path.
-    # If it isn't installed, do nothing.
-    get_w3m_path
-    [[ ! -x $w3m ]] && {
+    # w3m-img isn't installed, do nothing.
+    type -p "$w3m" &>/dev/null || {
         cmd_line "error: Couldn't find 'w3m-img', is it installed?"
         return
     }
@@ -1017,14 +1015,15 @@ main() {
     ((${FFF_LS_COLORS:=1} == 1)) &&
         get_ls_colors
 
-    get_os
-    get_term_size
-    setup_terminal
-
     # Set some bash options.
     # 'nocaseglob': Glob case insensitively (Used for case insensitive search).
     # 'nullglob':   Don't expand non-matching globs to themselves.
     shopt -s nocaseglob nullglob
+
+    get_os
+    get_term_size
+    get_w3m_path
+    setup_terminal
 
     # Create the trash directory if it doesn't exist.
     # Better to get this done early.
