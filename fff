@@ -116,6 +116,16 @@ get_ls_colors() {
     source /dev/stdin <<< "${ls_exts/#;}" >/dev/null 2>&1
 }
 
+get_w3m_path() {
+    # Find the path to the w3m-img library.
+    w3m_paths=(
+        {/usr/{local/,},~/.nix-profile/}{lib,libexec,lib64,libexec64}/w3m/w3mi*
+    )
+
+    [[ -x ${w3m_paths[0]} ]] &&
+        w3m="${w3m_paths[0]}"
+}
+
 status_line() {
     # Status_line to print when files are marked for operation.
     local mark_ui="[${#marked_files[@]}] selected (${file_program[*]}) [p] ->"
@@ -844,6 +854,36 @@ key() {
             stat "${list[scroll]}"
             read -rn 1
             redraw
+        ;;
+
+        # Show image in terminal.
+        "${FFF_KEY_IMAGE:=i}")
+            get_w3m_path
+            mime_type="$(file "-${file_flags:-biL}" "${list[scroll]}")"
+
+            [[ ! -x $w3m || $mime_type != image/* ]] &&
+                return
+
+            clear_screen
+
+            # shellcheck source=/dev/null
+            source <(xdotool getactivewindow getwindowgeometry --shell %1)
+            read -r w h < <(printf '%b' "5;${list[scroll]}" | "${w3m:-false}")
+
+            while ((w >= WIDTH || h >= HEIGHT-HEIGHT*4/LINES)); do
+                w="$((w * 10 / 20))"
+                h="$((h * 10 / 20))"
+            done
+
+            ((w > 0 && h > 0)) && {
+                printf '%b%b\n%s;\n%s\n' \
+                    "0;1;${FFF_W3M_XOFFSET:-0};${FFF_W3M_YOFFSET:-0};" \
+                    "$w;$h;;;;;${list[scroll]}" 3 4 |\
+                    "${w3m:-false}" &>/dev/null
+
+                read -rn 1
+                redraw
+            }
         ;;
 
         # Go to dir.
