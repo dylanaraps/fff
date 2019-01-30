@@ -842,7 +842,7 @@ key() {
 
             clear_screen
             stat "${list[scroll]}"
-            read -rn 1
+            read -ern 1
             redraw
         ;;
 
