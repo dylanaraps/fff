@@ -363,12 +363,6 @@ draw_img() {
     # Get the image size in pixels.
     read -r img_width img_height < <("$w3m" <<< "5;${list[scroll]}")
 
-    clear_screen
-
-    # Add a small delay to fix issues in VTE terminals.
-    ((BASH_VERSINFO[0] > 3)) &&
-        read "${read_flags[@]}" -srn 1
-
     # Substract the status_line area from the image size.
     ((HEIGHT=HEIGHT-HEIGHT*5/LINES))
 
@@ -381,6 +375,12 @@ draw_img() {
         ((img_width=img_width*HEIGHT/img_height))
         ((img_height=HEIGHT))
     }
+
+    clear_screen
+
+    # Add a small delay to fix issues in VTE terminals.
+    ((BASH_VERSINFO[0] > 3)) &&
+        read "${read_flags[@]}" -srn 1
 
     # Display the image.
     printf '0;1;%s;%s;%s;%s;;;;;%s\n3;\n4\n' \
