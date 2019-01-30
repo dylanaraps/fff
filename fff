@@ -358,25 +358,36 @@ draw_img() {
     clear_screen
 
     # Get terminal window size in pixels.
+    # Sets the variables: WIDTH and HEIGHT
     # shellcheck source=/dev/null
     source <(xdotool getactivewindow getwindowgeometry --shell %1)
 
     # Get the image size in pixels.
-    read -r w h < <(printf '%b' "5;${list[scroll]}" | "$w3m")
+    read -r img_width img_height < <("$w3m" <<< "5;${list[scroll]}")
 
-    while ((w >= WIDTH || h >= HEIGHT-HEIGHT*4/LINES)); do
-        w="$((w * 10 / 20))"
-        h="$((h * 10 / 20))"
-    done
+    # Substract the status_line area from the image size.
+    ((HEIGHT=HEIGHT-HEIGHT*5/LINES))
 
-    ((w > 0 && h > 0)) && {
-        printf '%b%b\n%s;\n%s\n' \
-            "0;1;${FFF_W3M_XOFFSET:-0};${FFF_W3M_YOFFSET:-0};" \
-            "$w;$h;;;;;${list[scroll]}" 3 4 | "$w3m" &>/dev/null
-
-        read -rn 1
-        redraw
+    ((img_width > WIDTH)) && {
+        ((img_height=img_height*WIDTH/img_width))
+        ((img_width=WIDTH))
     }
+
+    ((img_height > HEIGHT)) && {
+        ((img_width=img_width*HEIGHT/img_height))
+        ((img_height=HEIGHT))
+    }
+
+    # Display the image.
+    printf '0;1;%s;%s;%s;%s;;;;;%s\n3;\n4\n' \
+        "${FFF_W3M_XOFFSET:-0}" \
+        "${FFF_W3M_YOFFSET:-0}" \
+        "$img_width" \
+        "$img_height" \
+        "${list[scroll]}" | "$w3m" &>/dev/null
+
+    read -rn 1
+    redraw
 }
 
 redraw() {
