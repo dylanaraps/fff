@@ -18,6 +18,7 @@ A simple file manager written in `bash`.
 - Tab completion for all commands!
 - Automatic CD on exit (*see [setup](#cd-on-exit)*)
 - Works as a **file picker** in `vim`/`neovim` ([**link**](https://github.com/dylanaraps/fff.vim))!
+- **Display images with w3m-img!**
 - Supports `$CDPATH`.
 
 
@@ -50,6 +51,11 @@ A simple file manager written in `bash`.
     - Program handling (*non-text*).
     - *Not needed on macos and Haiku.*
     - *Customizable (if not using `xdg-open`): `$FFF_OPENER`.*
+
+**Dependencies for image display**
+
+- `w3m-img`
+- `xdotool`
 
 
 ## Installation
@@ -109,7 +115,9 @@ G: go to bottom
 t: go to trash
 ~: go to home
 !: open shell in current dir
+
 x: view file/dir attributes
+i: display image with w3m-img
 
 down:  scroll down
 up:    scroll up
@@ -193,6 +201,10 @@ export FFF_FAV6=
 export FFF_FAV7=
 export FFF_FAV8=
 export FFF_FAV9=
+
+# w3m-img offsets.
+export FFF_W3M_XOFFSET=0
+export FFF_W3M_YOFFSET=0
 ```
 
 ## Customizing the keybindings.
