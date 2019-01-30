@@ -205,6 +205,18 @@ export FFF_FAV9=
 # w3m-img offsets.
 export FFF_W3M_XOFFSET=0
 export FFF_W3M_YOFFSET=0
+
+# File format.
+# Customize the item string.
+# Format ('%f' is the current file): "str%fstr"
+# Example (Add a tab before files): FFF_FILE_FORMAT="\t%f"
+export FFF_FILE_FORMAT="%f"
+
+# Mark format.
+# Customize the marked item string.
+# Format ('%f' is the current file): "str%fstr"
+# Example (Add a ' >' before files): FFF_MARK_FORMAT="> %f"
+export FFF_MARK_FORMAT=" %f*"
 ```
 
 ## Customizing the keybindings.
