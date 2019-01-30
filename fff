@@ -831,7 +831,8 @@ key() {
         ;;
 
         # Page up
-        "${FFF_KEY_PAGE_DOWN1:=6}")
+        "${FFF_KEY_PAGE_DOWN1:=6}"|\
+        "${FFF_KEY_PAGE_DOWN2:=$'\e[6'}")
             for ((ii=0; ii<scroll_page; ii++)) do
                 ((scroll >= list_total)) && break
                 ((scroll++))
@@ -845,7 +846,8 @@ key() {
         ;;
 
         # Page down
-        "${FFF_KEY_PAGE_UP1:=5}")
+        "${FFF_KEY_PAGE_UP1:=5}"|\
+        "${FFF_KEY_PAGE_UP2:=$'\e[5'}")
             for ((ii=0; ii<scroll_page; ii++)) do
                 ((scroll <= 0)) && break
                 ((scroll--))
