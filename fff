@@ -360,6 +360,8 @@ draw_img() {
     # shellcheck source=/dev/null
     source <(xdotool getactivewindow getwindowgeometry --shell %1)
 
+    clear_screen
+
     # Get the image size in pixels.
     read -r img_width img_height < <("$w3m" <<< "5;${list[scroll]}")
 
@@ -375,8 +377,6 @@ draw_img() {
         ((img_width=img_width*HEIGHT/img_height))
         ((img_height=HEIGHT))
     }
-
-    clear_screen
 
     # Display the image.
     printf '0;1;%s;%s;%s;%s;;;;;%s\n3;\n4\n' \
