@@ -18,6 +18,7 @@ A simple file manager written in `bash`.
 - Tab completion for all commands!
 - Automatic CD on exit (*see [setup](#cd-on-exit)*)
 - Works as a **file picker** in `vim`/`neovim` ([**link**](https://github.com/dylanaraps/fff.vim))!
+- Supports `$CDPATH`.
 
 
 ## Table of Contents
