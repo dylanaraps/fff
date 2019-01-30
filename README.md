@@ -1,5 +1,7 @@
 # fff (*Fucking Fast File-Manager*)
 
+<a href="https://asciinema.org/a/qvNlrFrGB3xKZXb6GkremjZNp" target="_blank"><img src="https://asciinema.org/a/qvNlrFrGB3xKZXb6GkremjZNp.svg" alt="img" height="210px" align="right"/></a>
+
 A simple file manager written in `bash`.
 
 <a href="https://discord.gg/BtnTPFF"><img src="https://img.shields.io/discord/440354555197128704.svg"></a>
@@ -7,17 +9,16 @@ A simple file manager written in `bash`.
 <a href="https://github.com/dylanaraps/fff/releases"><img src="https://img.shields.io/github/release/dylanaraps/fff.svg"></a>
 <a href="https://repology.org/metapackage/fff"><img src="https://repology.org/badge/tiny-repos/fff.svg" alt="Packaging status"></a>
 
-<a href="https://asciinema.org/a/qvNlrFrGB3xKZXb6GkremjZNp" target="_blank"><img src="https://asciinema.org/a/qvNlrFrGB3xKZXb6GkremjZNp.svg" alt="img" height="300px" align="right"/></a>
-
 - It's Fucking Fast 🚀
 - Minimal (*only requires **bash** and coreutils*)
 - Smooth Scrolling (*using **vim** keybindings*)
 - Supports `LS_COLORS`!
-- File Operations (*copy, paste, cut, **ranger style bulk rename**, etc*)
+- File Operations (*copy, paste, cut, **ranger style bulk rename**, etc*) <img src="https://i.imgur.com/tjIWUjf.jpg" alt="img" height="213px" align="right"/>
 - Instant as you type search
 - Tab completion for all commands!
 - Automatic CD on exit (*see [setup](#cd-on-exit)*)
 - Works as a **file picker** in `vim`/`neovim` ([**link**](https://github.com/dylanaraps/fff.vim))!
+- **Display images with w3m-img (in master)!**
 - Supports `$CDPATH`.
 
 
@@ -50,6 +51,11 @@ A simple file manager written in `bash`.
     - Program handling (*non-text*).
     - *Not needed on macos and Haiku.*
     - *Customizable (if not using `xdg-open`): `$FFF_OPENER`.*
+
+**Dependencies for image display (in master)**
+
+- `w3m-img`
+- `xdotool`
 
 
 ## Installation
@@ -109,7 +115,9 @@ G: go to bottom
 t: go to trash
 ~: go to home
 !: open shell in current dir
+
 x: view file/dir attributes
+i: display image with w3m-img
 
 down:  scroll down
 up:    scroll up
@@ -193,6 +201,10 @@ export FFF_FAV6=
 export FFF_FAV7=
 export FFF_FAV8=
 export FFF_FAV9=
+
+# w3m-img offsets.
+export FFF_W3M_XOFFSET=0
+export FFF_W3M_YOFFSET=0
 ```
 
 ## Customizing the keybindings.
