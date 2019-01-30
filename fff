@@ -386,7 +386,7 @@ draw_img() {
         "$img_height" \
         "${list[scroll]}" | "$w3m" &>/dev/null &
 
-    read -rn 1
+    read -ern 1
     redraw
 }
 
