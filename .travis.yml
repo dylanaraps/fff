@@ -12,6 +12,6 @@ install:
   - shellcheck() { "shellcheck-${scversion}/shellcheck" "$@"; }
 
 script:
-    - shellcheck fff -e SC2244 SC1090
+    - shellcheck fff -e SC2244 -e SC1090 -e SC1091
     # Check for lines longer than 80 chars.
     - if grep '.\{81\}' fff; then (exit 1); else (exit 0); fi
