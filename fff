@@ -112,7 +112,6 @@ get_ls_colors() {
 
     # bash 3 compatible method of sourcing a variable.
     # see: https://i.imgur.com/e4tIACE.jpg
-    # shellcheck source=/dev/null
     source /dev/stdin <<< "${ls_exts/#;}" >/dev/null 2>&1
 }
 
@@ -360,7 +359,6 @@ draw_img() {
 
     # Get terminal window size in pixels.
     # Sets the variables: WIDTH and HEIGHT
-    # shellcheck source=/dev/null
     source <(xdotool getactivewindow getwindowgeometry --shell %1)
 
     # Get the image size in pixels.
@@ -515,7 +513,6 @@ bulk_rename() {
     ((renamed == 1)) && {
         "${EDITOR:-vi}" "$rename_file"
 
-        # shellcheck source=/dev/null
         source "$rename_file"
         rm "$rename_file"
     }
@@ -541,6 +538,8 @@ open() {
         # Everything else goes through 'xdg-open'/'open'.
         case "$mime_type" in
             text/*|*x-empty*|*json*)
+                # If 'fff' was opened as a file picker, save the opened
+                # file in a file called 'opened_file'.
                 ((file_picker == 1)) && {
                     printf '%s\n' "$1" > \
                         "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/opened_file"
