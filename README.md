@@ -63,8 +63,9 @@ A simple file manager written in `bash`.
 **Distros**:
 
 - Arch Linux (based): `pacman -S fff`
-- Void Linux: `xbps-install -S fff`
 - Haiku (port): `haikuporter fff`
+- Nix: `nix-env -iA fff`
+- Void Linux: `xbps-install -S fff`
 
 **Manual**:
 

@@ -137,9 +137,14 @@ get_ls_colors() {
 
 get_w3m_path() {
     # Find the path to the w3m-img library.
-    w3m_paths=(
-        {/usr/{local/,},~/.nix-profile/}{lib,libexec,lib64,libexec64}/w3m/w3mi*
-    )
+    # If w3mimgdisplay is already in path, use it.
+    type -p w3mimgdisplay &>/dev/null && {
+        w3m="w3mimgdisplay"
+        return
+    }
+
+    # Use a glob and expansion to find the path.
+    w3m_paths=(/usr/{local/,}{lib,libexec,lib64,libexec64}/w3m/w3mi*)
 
     [[ -x ${w3m_paths[0]} ]] &&
         w3m="${w3m_paths[0]}"
@@ -362,10 +367,8 @@ draw_img() {
     [[ $mime_type != image/* ]] &&
         return
 
-    # Find the w3m-img install path.
-    # If it isn't installed, do nothing.
-    get_w3m_path
-    [[ ! -x $w3m ]] && {
+    # w3m-img isn't installed, do nothing.
+    type -p "$w3m" &>/dev/null || {
         cmd_line "error: Couldn't find 'w3m-img', is it installed?"
         return
     }
@@ -380,8 +383,6 @@ draw_img() {
     # Sets the variables: WIDTH and HEIGHT
     # shellcheck source=/dev/null
     source <(xdotool getactivewindow getwindowgeometry --shell %1)
-
-    clear_screen
 
     # Get the image size in pixels.
     read -r img_width img_height < <("$w3m" <<< "5;${list[scroll]}")
@@ -398,6 +399,12 @@ draw_img() {
         ((img_width=img_width*HEIGHT/img_height))
         ((img_height=HEIGHT))
     }
+
+    clear_screen
+
+    # Add a small delay to fix issues in VTE terminals.
+    ((BASH_VERSINFO[0] > 3)) &&
+        read "${read_flags[@]}" -srn 1
 
     # Display the image.
     printf '0;1;%s;%s;%s;%s;;;;;%s\n3;\n4\n' \
@@ -1029,15 +1036,16 @@ main() {
     ((${FFF_LS_COLORS:=1} == 1)) &&
         get_ls_colors
 
-    get_os
-    get_term_size
-    setup_options
-    setup_terminal
-
     # Set some bash options.
     # 'nocaseglob': Glob case insensitively (Used for case insensitive search).
     # 'nullglob':   Don't expand non-matching globs to themselves.
     shopt -s nocaseglob nullglob
+
+    get_os
+    get_term_size
+    get_w3m_path
+    setup_options
+    setup_terminal
 
     # Create the trash directory if it doesn't exist.
     # Better to get this done early.
