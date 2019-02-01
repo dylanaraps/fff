@@ -26,13 +26,12 @@ get_os() {
 setup_terminal() {
     # Setup the terminal for the TUI.
     # '\e[?1049h': Save current terminal screen.
-    # '\e[?6h':    Restrict cursor to scrolling area.
     # '\e[?7l':    Disable line wrapping.
     # '\e[?25l':   Hide the cursor.
     # '\e[2J':     Clear the screen.
     # '\e[1;Nr':   Limit scrolling to scrolling area.
     #              Also sets cursor to (0,0).
-    printf '\e[?1049h\e[?6h\e[?7l\e[?25l\e[2J\e[1;%sr' "$max_items"
+    printf '\e[?1049h\e[?7l\e[?25l\e[2J\e[1;%sr' "$max_items"
 
     # Hide echoing of user input
     stty -echo
@@ -40,13 +39,12 @@ setup_terminal() {
 
 reset_terminal() {
     # Reset the terminal to a useable state (undo all changes).
-    # '\e[?6l':  Unrestrict cursor movement (full window).
     # '\e[?7h':  Re-enable line wrapping.
     # '\e[?25h': Unhide the cursor.
     # '\e[2J':   Clear the terminal.
     # '\e[;r':   Set the scroll region to its default value.
     #            Also sets cursor to (0,0).
-    printf '\e[?6l\e[?7h\e[?25h\e[2J\e[;r'
+    printf '\e[?7h\e[?25h\e[2J\e[;r'
 
     # Show user input.
     stty echo
@@ -145,7 +143,6 @@ status_line() {
 
     # '\e7':       Save cursor position.
     #              This is more widely supported than '\e[s'.
-    # '\e[?6l':    Unrestrict cursor movement (full window).
     # '\e[%sH':    Move cursor to bottom of the terminal.
     # '\e[30;41m': Set foreground and background colors.
     # '%*s':       Insert enough spaces to fill the screen width.
@@ -153,17 +150,17 @@ status_line() {
     #              and fixes issues in 'screen' where '\e[K' doesn't work.
     # '\r':        Move cursor back to column 0 (was at EOL due to above).
     # '\e[m':      Reset text formatting.
-    # '\n\e[K':    Also clear the line below the status_line.
-    # '\e[?6h':    Restrict cursor to scrolling area.
+    # '\e[H\e[K':  Clear line below status_line.
     # '\e8':       Restore cursor position.
     #              This is more widely supported than '\e[u'.
-    printf '\e7\e[?6l\e[%sH\e[30;4%sm%*s\r%s %s%s\e[m\n\e[K\e[?6h\e8' \
+    printf '\e7\e[%sH\e[30;4%sm%*s\r%s %s%s\e[m\e[%sH\e[K\e8' \
            "$((LINES-1))" \
            "${FFF_COL2:-1}" \
            "$COLUMNS" "" \
            "($((scroll+1))/$((list_total+1)))" \
            "${marked_files[*]:+${mark_ui}}" \
-           "${PWD_escaped:-/}"
+           "${PWD_escaped:-/}" \
+           "$LINES"
 }
 
 read_dir() {
@@ -318,6 +315,9 @@ draw_dir() {
         ((scroll_end=scroll_start+max_items))
         ((scroll_new_pos=max_items/2+1))
     fi
+
+    # Reset cursor position.
+    printf '\e[H'
 
     for ((i=scroll_start;i<scroll_end;i++)); {
         # Don't print one too many newlines.
@@ -570,10 +570,9 @@ cmd_line() {
     cmd_reply=
 
     # '\e7':     Save cursor position.
-    # '\e[?6l':  Unrestrict cursor movement.
     # '\e[?25h': Unhide the cursor.
     # '\e[%sH':  Move cursor to bottom (cmd_line).
-    printf '\e7\e[?6l\e[%sH\e[?25h' "$LINES"
+    printf '\e7\e[%sH\e[?25h' "$LINES"
 
     # '\r\e[K': Redraw the read prompt on every keypress.
     #           This is mimicking what happens normally.
@@ -617,8 +616,8 @@ cmd_line() {
                 # If there's only one search result and its a directory,
                 # enter it on one enter keypress.
                 [[ $2 == search && -d ${list[0]} ]] && ((list_total == 0)) && {
-                    # Hide te cursor and restrict cursor position.
-                    printf '\e[?25l\e[?6h'
+                    # '\e[?25l': Hide the cursor.
+                    printf '\e[?25l'
 
                     open "${list[0]}"
                     search_end_early=1
@@ -654,8 +653,7 @@ cmd_line() {
         # Search on keypress if search passed as an argument.
         [[ $2 == search ]] && {
             # '\e[?25l': Hide the cursor.
-            # '\e[?6h':  Restrict cursor position.
-            printf '\e[?25l\e[?6h'
+            printf '\e[?25l'
 
             # Use a greedy glob to search.
             list=("$PWD"/*"$cmd_reply"*)
@@ -665,9 +663,8 @@ cmd_line() {
             scroll=0
             redraw
 
-            # '\e[?6l':  Unrestrict cursor position.
             # '\e[?25h': Unhide the cursor.
-            printf '\e[?6l\e[%sH\e[?25h' "$LINES"
+            printf '\e[%sH\e[?25h' "$LINES"
         }
     done
 
@@ -675,10 +672,9 @@ cmd_line() {
     unset comp c
 
     # '\e[2K':   Clear the entire cmd_line on finish.
-    # '\e[?6h':  Restrict cursor position.
     # '\e[?25l': Hide the cursor.
     # '\e8':     Restore cursor position.
-    printf '\e[2K\e[?6h\e[?25l\e8'
+    printf '\e[2K\e[?25l\e8'
 }
 
 key() {
@@ -749,7 +745,7 @@ key() {
                 print_line "$((scroll+1))"
 
                 if ((y < 2)); then
-                    printf '\e[1L'
+                    printf '\e[L'
                 else
                     printf '\e[A'
                     ((y--))
