@@ -133,6 +133,17 @@ get_mime_type() {
     mime_type="$(file "-${file_flags:-biL}" "$1")"
 }
 
+cd_file() {
+    # Handle CD on exit based on the user's preference.
+    if [[ $FFF_CD_FILE == stdout ]]; then
+        printf '%s\n' "$PWD"
+
+    else
+        : "${FFF_CD_FILE:=${XDG_CACHE_HOME:=${HOME}/.cache}/fff/.fff_d}"
+        printf '%s\n' "$PWD" > "$FFF_CD_FILE"
+    fi
+}
+
 status_line() {
     # Status_line to print when files are marked for operation.
     local mark_ui="[${#marked_files[@]}] selected (${file_program[*]}) [p] ->"
@@ -968,8 +979,6 @@ key() {
         # Don't allow user to redefine 'q' so a bad keybinding doesn't
         # remove the option to quit.
         q)
-            : "${FFF_CD_FILE:=${XDG_CACHE_HOME:=${HOME}/.cache}/fff/.fff_d}"
-            printf '%s\n' "$PWD" > "$FFF_CD_FILE"
             exit
         ;;
     esac
@@ -1026,7 +1035,7 @@ main() {
 
     # Trap the exit signal (we need to reset the terminal to a useable state.)
     # '\e[?1049l': Restore saved terminal screen.
-    trap 'reset_terminal; printf "\e[?1049l"' EXIT
+    trap 'reset_terminal; printf "\e[?1049l"; cd_file' EXIT
 
     # Trap 'Ctrl+c' and exit by mimicking the 'q' keypress.
     # This allow us to run the same plumbing on exit for both.
