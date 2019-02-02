@@ -1038,7 +1038,6 @@ main() {
     mkdir -p "${FFF_TRASH:=${XDG_DATA_HOME:=${HOME}/.local/share}/fff/trash}"
 
     # Trap the exit signal (we need to reset the terminal to a useable state.)
-    # '\e[?1049l': Restore saved terminal screen.
     trap 'reset_terminal' EXIT
 
     # Trap 'Ctrl+c' and exit by mimicking the 'q' keypress.
@@ -1053,6 +1052,9 @@ main() {
     # Vintage infinite loop.
     for ((;;)); {
         read "${read_flags[@]}" -srn 1 && key "$REPLY"
+
+        # Exit if there is no longer a terminal attached.
+        [[ -t 1 ]] || exit 1
     }
 }
 
