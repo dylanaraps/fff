@@ -354,8 +354,14 @@ draw_img() {
     }
 
     # Get terminal window size in pixels.
+    IFS=$'\n' read -d "" -ra win_info \
+        < <(xdotool getactivewindow getwindowgeometry --shell)
+
     # Sets the variables: WIDTH and HEIGHT
-    source <(xdotool getactivewindow getwindowgeometry --shell %1)
+    export "${win_info[@]}" &>/dev/null || {
+        cmd_line "error: Failed to retrieve window size."
+        return
+    }
 
     # Get the image size in pixels.
     read -r img_width img_height < <("$w3m" <<< "5;${list[scroll]}")
