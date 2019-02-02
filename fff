@@ -105,8 +105,8 @@ get_ls_colors() {
     ls_patterns="${ls_patterns//\*}"
     ls_patterns="${ls_patterns%?}"
 
-    # Declare all LS_COLORS variables.
-    declare -g "${ls_cols[@]}"
+    # Define the ls_ variables.
+    export "${ls_cols[@]}"
 }
 
 get_w3m_path() {
