@@ -71,7 +71,7 @@ get_term_size() {
 }
 
 get_ls_colors() {
-    # Parse the LS_COLORS variable and source each file type
+    # Parse the LS_COLORS variable and declare each file type
     # as a separate variable.
     # Format: ':.ext=0;0:*.jpg=0;0;0:*png=0;0;0;0:'
     [[ -z $LS_COLORS ]] && {
