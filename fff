@@ -179,7 +179,7 @@ read_dir() {
 
             # Find the position of the child directory in the
             # parent directory list.
-            [[ $item == "$previous_dir" ]] &&
+            [[ $item == "$OLDPWD" ]] &&
                 ((previous_index=item_index))
         else
             files+=("$item")
@@ -536,7 +536,6 @@ open() {
     if [[ -d $1/ ]]; then
         search=
         search_end_early=
-        previous_dir="$PWD"
         cd "${1:-/}" ||:
         redraw full
 
@@ -963,7 +962,7 @@ key() {
 
         # Go to previous dir.
         "${FFF_KEY_PREVIOUS:=-}")
-            open "$previous_dir"
+            open "$OLDPWD"
         ;;
 
         # Directory favourites.
