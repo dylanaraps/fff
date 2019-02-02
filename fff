@@ -93,23 +93,20 @@ get_ls_colors() {
             ls_cols[i]="${ls_cols[i]#\*}"
             ls_cols[i]="ls_${ls_cols[i]#.}"
         }
-
-        ls_cols[i]="${ls_cols[i]//;/\\;};"
     }
 
     # Strip non-ascii characters from the string as they're
     # used as a key to color the dir items and variable
     # names in bash must be '[a-zA-z0-9_]'.
-    ls_exts="${ls_cols[*]//[^a-zA-Z0-9=\\;]/_}"
+    ls_cols=("${ls_cols[@]//[^a-zA-Z0-9=\\;]/_}")
 
     # Store the patterns in a '|' separated string
     # for use in a REGEX match later.
     ls_patterns="${ls_patterns//\*}"
     ls_patterns="${ls_patterns%?}"
 
-    # bash 3 compatible method of sourcing a variable.
-    # see: https://i.imgur.com/e4tIACE.jpg
-    source /dev/stdin <<< "${ls_exts/#;}" >/dev/null 2>&1
+    # Declare all LS_COLORS variables.
+    declare -g "${ls_cols[@]}"
 }
 
 get_w3m_path() {
