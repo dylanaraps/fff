@@ -135,7 +135,8 @@ get_mime_type() {
 
 status_line() {
     # Status_line to print when files are marked for operation.
-    local mark_ui="[${#marked_files[@]}] selected (${file_program[*]}) [p] ->"
+    local mark_ui="[${#marked_files[@]}] selected "
+    mark_ui+="[${file_program[*]:-y,m,d,b,s}] [p] ->"
 
     # Escape the directory string.
     # Remove all non-printable characters.
@@ -425,6 +426,7 @@ mark() {
             mark_dir="$PWD"
         else
             marked_files=()
+            file_program=()
         fi
 
         redraw
@@ -442,16 +444,9 @@ mark() {
         print_line "$1"
     fi
 
-    # Find the program to use.
-    case "$2" in
-        y|Y) file_program=(cp -iR) ;;
-        m|M) file_program=(mv -i) ;;
-        s|S) file_program=(ln -s) ;;
-
-        # These are 'fff' functions.
-        d|D) file_program=(trash) ;;
-        b|B) file_program=(bulk_rename) ;;
-    esac
+    # If no programs are marked, clear the type of operation.
+    [[ -z ${marked_files[*]} ]] &&
+        file_program=()
 
     status_line
 }
@@ -816,15 +811,36 @@ key() {
         "${FFF_KEY_TRASH:=d}"|\
         "${FFF_KEY_LINK:=s}"|\
         "${FFF_KEY_BULK_RENAME:=b}")
+            [[ -z "${marked_files[*]}" ]] &&
+                return
+
+            previous_program="${file_program[0]}"
+
+            # Find the program to use.
+            case "$1" in
+                y) file_program=(cp -iR) ;;
+                m) file_program=(mv -i) ;;
+                s) file_program=(ln -s) ;;
+
+                # These are 'fff' functions.
+                d) file_program=(trash) ;;
+                b) file_program=(bulk_rename) ;;
+            esac
+
+            # Toggle the file progam if the same key was pressed.
+            [[ $previous_program == "${file_program[0]}" ]] &&
+                file_program=()
+
+            status_line
+        ;;
+
+        # Mark files for operation.
+        "${FFF_KEY_MARK:=" "}")
             mark "$scroll" "$1"
         ;;
 
         # Mark all files for operation.
-        "${FFF_KEY_YANK_ALL:=Y}"|\
-        "${FFF_KEY_MOVE_ALL:=M}"|\
-        "${FFF_KEY_TRASH_ALL:=D}"|\
-        "${FFF_KEY_LINK_ALL:=S}"|\
-        "${FFF_KEY_BULK_RENAME_ALL:=B}")
+        "${FFF_KEY_MARK_ALL:=v}")
             mark all "$1"
         ;;
 
@@ -833,6 +849,11 @@ key() {
             [[ ${marked_files[*]} ]] && {
                 [[ ! -w $PWD ]] && {
                     cmd_line "warn: no write access to dir."
+                    return
+                }
+
+                [[ -z ${file_program[0]} ]] && {
+                    cmd_line "warn: no operation selected [y,m,d,b,s]."
                     return
                 }
 
@@ -846,6 +867,7 @@ key() {
 
                 printf '\e[?25l'
                 marked_files=()
+                file_program=()
                 redraw full
             }
         ;;
@@ -854,6 +876,7 @@ key() {
         "${FFF_KEY_CLEAR:=c}")
             [[ ${marked_files[*]} ]] && {
                 marked_files=()
+                file_program=()
                 redraw
             }
         ;;
