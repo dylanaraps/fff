@@ -159,7 +159,7 @@ status_line() {
            "$COLUMNS" "" \
            "($((scroll+1))/$((list_total+1)))" \
            "${marked_files[*]:+${mark_ui}}" \
-           "${PWD_escaped:-/}" \
+           "${1:-${PWD_escaped:-/}}" \
            "$LINES"
 }
 
@@ -378,6 +378,7 @@ draw_img() {
     }
 
     clear_screen
+    status_line "${list[scroll]}"
 
     # Add a small delay to fix issues in VTE terminals.
     ((BASH_VERSINFO[0] > 3)) &&
@@ -927,6 +928,7 @@ key() {
                 return
 
             clear_screen
+            status_line "${list[scroll]}"
             stat "${list[scroll]}"
             read -ern 1
             redraw
