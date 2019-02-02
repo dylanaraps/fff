@@ -1020,8 +1020,9 @@ main() {
     get_w3m_path
     setup_terminal
 
-    # Create the trash directory if it doesn't exist.
+    # Create the trash and cache directory if they doesn't exist.
     # Better to get this done early.
+    mkdir -p "${XDG_CACHE_HOME:=${HOME}/.cache}/fff"
     mkdir -p "${FFF_TRASH:=${XDG_DATA_HOME:=${HOME}/.local/share}/fff/trash}"
 
     # Trap the exit signal (we need to reset the terminal to a useable state.)
