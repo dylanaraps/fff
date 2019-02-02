@@ -25,13 +25,12 @@ get_os() {
 
 setup_terminal() {
     # Setup the terminal for the TUI.
-    # '\e[?1049h': Save current terminal screen.
     # '\e[?7l':    Disable line wrapping.
     # '\e[?25l':   Hide the cursor.
     # '\e[2J':     Clear the screen.
     # '\e[1;Nr':   Limit scrolling to scrolling area.
     #              Also sets cursor to (0,0).
-    printf '\e[?1049h\e[?7l\e[?25l\e[2J\e[1;%sr' "$max_items"
+    printf '\e[?7l\e[?25l\e[2J\e[1;%sr' "$max_items"
 
     # Hide echoing of user input
     stty -echo
@@ -987,12 +986,12 @@ key() {
 
 main() {
     # Handle a directory as the first argument.
-    # 'pushd' is a cheap way of finding the full path to a directory.
+    # 'cd' is a cheap way of finding the full path to a directory.
     # It updates the '$PWD' variable on successful execution.
     # It handles relative paths as well as '../../../'.
     #
     # '||:': Do nothing if 'pushd' fails. We don't care.
-    pushd "${2:-$1}" &>/dev/null ||:
+    cd "${2:-$1}" &>/dev/null ||:
 
     # Handle version as the first argument.
     [[ $1 == -v ]] && {
@@ -1037,7 +1036,7 @@ main() {
 
     # Trap the exit signal (we need to reset the terminal to a useable state.)
     # '\e[?1049l': Restore saved terminal screen.
-    trap 'reset_terminal; printf "\e[?1049l"' EXIT
+    trap 'reset_terminal' EXIT
 
     # Trap 'Ctrl+c' and exit by mimicking the 'q' keypress.
     # This allow us to run the same plumbing on exit for both.
