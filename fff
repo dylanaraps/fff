@@ -389,9 +389,18 @@ draw_img() {
         "${FFF_W3M_YOFFSET:-0}" \
         "$img_width" \
         "$img_height" \
-        "${list[scroll]}" | "$w3m" &>/dev/null &
+        "${list[scroll]}" | "$w3m" &>/dev/null
 
+    # Wait for user input.
     read -ern 1
+
+    # Clear the image.
+    printf '6;%s;%s;%s;%s\n3;' \
+        "${FFF_W3M_XOFFSET:-0}" \
+        "${FFF_W3M_YOFFSET:-0}" \
+        "$WIDTH" \
+        "$HEIGHT" | "$w3m" &>/dev/null
+
     redraw
 }
 
