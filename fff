@@ -187,11 +187,15 @@ read_dir() {
 
     list=("${dirs[@]}" "${files[@]}")
 
+    IFS=$'\n' read -d "" -ra file_sizes < <(du -ks "${files[@]}")
+    file_sizes=("${file_sizes[@]//[[:space:]]*}")
+
     # Indicate that the directory is empty.
     [[ -z ${list[0]} ]] &&
         list[0]="empty"
 
     ((list_total=${#list[@]}-1))
+    ((dir_total=${#dirs[@]}))
 
     # Save the original dir in a second list as a backup.
     cur_list=("${list[@]}")
@@ -273,11 +277,14 @@ print_line() {
         suffix+='*'
     }
 
+    [[ ! -d ${list[$1]} ]] &&
+        local file_size="${file_sizes[$1-dir_total]}"
+
     # Escape the directory string.
     # Remove all non-printable characters.
     file_name="${file_name//[^[:print:]]/^[}"
 
-    printf '\r%b%s\e[m\r' "$format" "${file_name}${suffix}"
+    printf '\r%b%s\e[m\r' "$format" "${file_size}${file_name}${suffix}"
 }
 
 draw_dir() {
