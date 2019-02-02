@@ -941,11 +941,11 @@ key() {
         "${FFF_KEY_GO_DIR:=:}")
             cmd_line "go to dir: " "dirs"
 
-            # Let 'pushd' know about the current directory.
-            pushd "$PWD" &>/dev/null ||:
+            # Let 'cd' know about the current directory.
+            cd "$PWD" &>/dev/null ||:
 
             [[ $cmd_reply ]] &&
-                pushd "${cmd_reply/\~/$HOME}" &>/dev/null &&
+                cd "${cmd_reply/\~/$HOME}" &>/dev/null &&
                     open "$PWD"
         ;;
 
@@ -990,7 +990,7 @@ main() {
     # It updates the '$PWD' variable on successful execution.
     # It handles relative paths as well as '../../../'.
     #
-    # '||:': Do nothing if 'pushd' fails. We don't care.
+    # '||:': Do nothing if 'cd' fails. We don't care.
     cd "${2:-$1}" &>/dev/null ||:
 
     # Handle version as the first argument.
