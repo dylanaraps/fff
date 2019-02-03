@@ -981,7 +981,13 @@ key() {
         # remove the option to quit.
         q)
             : "${FFF_CD_FILE:=${XDG_CACHE_HOME:=${HOME}/.cache}/fff/.fff_d}"
-            printf '%s\n' "$PWD" > "$FFF_CD_FILE"
+
+            [[ -w $FFF_CD_FILE ]] &&
+                rm "$FFF_CD_FILE"
+
+            [[ ${FFF_CD_ON_EXIT:=1} == 1 ]] &&
+                printf '%s\n' "$PWD" > "$FFF_CD_FILE"
+
             exit
         ;;
     esac

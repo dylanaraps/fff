@@ -179,6 +179,10 @@ export EDITOR="vim"
 # File Opener
 export FFF_OPENER="xdg-open"
 
+# Enable or disable CD on exit.
+# Default: '1'
+export FFF_CD_ON_EXIT=1
+
 # CD on exit helper file
 # Default: '${XDG_CACHE_HOME}/fff/fff.d'
 #          If not using XDG, '${HOME}/.cache/fff/fff.d' is used.
