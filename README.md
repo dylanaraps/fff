@@ -29,8 +29,7 @@ A simple file manager written in `bash`.
 * [Dependencies](#dependencies)
 * [Installation](#installation)
     * [Distros](#distros)
-    * [Manual (Latest Release)](#manual-latest-release)
-    * [Manual (Bleeding Edge)](#manual-bleeding-edge)
+    * [Manual](#manual)
     * [CD on Exit](#cd-on-exit)
 * [Usage](#usage)
 * [Customization](#customization)
@@ -70,25 +69,14 @@ A simple file manager written in `bash`.
 - Nix: `nix-env -iA fff`
 - Void Linux: `xbps-install -S fff`
 
-### Manual (Latest Release)
+### Manual
 
-1. Download the latest release.
-    - https://github.com/dylanaraps/fff/releases/latest
-2. Run `make install` inside the script directory to install the script.
-    - **El Capitan**: `make PREFIX=/usr/local install`
-    - **Haiku**: `make PREFIX=/boot/home/config/non-packaged install`
-    - **OpenIndiana**: `gmake install`
-    - **MinGW/MSys**: `make -i install`
-    - **NOTE**: You may have to run this as root.
-
-### Manual (Bleeding Edge)
-
-1. Git clone the repo.
-    - `git clone https://github.com/dylanaraps/fff`
+1. Download `fff`.
+    - Release: https://github.com/dylanaraps/fff/releases/latest
+    - Git: `git clone https://github.com/dylanaraps/fff`
 2. Change working directory to `fff`.
     - `cd fff`
-3. Install `fff` using the Makefile.
-    - `make install`
+3. Run `make install` inside the script directory to install the script.
     - **El Capitan**: `make PREFIX=/usr/local install`
     - **Haiku**: `make PREFIX=/boot/home/config/non-packaged install`
     - **OpenIndiana**: `gmake install`
