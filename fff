@@ -1040,9 +1040,14 @@ main() {
     # Trap the exit signal (we need to reset the terminal to a useable state.)
     trap 'reset_terminal' EXIT
 
-    # Trap 'Ctrl+c' and exit by mimicking the 'q' keypress.
-    # This allow us to run the same plumbing on exit for both.
-    trap 'key q' INT
+    # If FFF_ERROR_ON_SIGINT is 1, trap 'Ctrl+c' and exit by
+    # mimicking the 'q' keypress. This allow us to run the same
+    # plumbing on exit for both.
+    if [ "$FFF_ERROR_ON_SIGINT" -eq 1 ]; then
+        trap 'key q' INT
+    else
+        trap 'reset_terminal && exit 1' INT
+    fi
 
     # Trap the window resize signal (handle window resize events).
     trap 'get_term_size; redraw' WINCH

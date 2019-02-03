@@ -97,6 +97,10 @@ export FFF_OPENER="xdg\-open"
 #          If not using XDG, '${HOME}/.cache/fff/fff.d' is used.
 export FFF_CD_FILE=~/.fff_d
 
+# Exit with error without writing to FFF_CD_FILE on SIGINT (C-c)
+# Default: (disabled)
+export FFF_ERROR_ON_SIGINT=1
+
 # Trash Directory
 # Default: '${XDG_DATA_HOME}/fff/trash'
 #          If not using XDG, '${XDG_DATA_HOME}/fff/trash' is used.
