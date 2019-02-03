@@ -557,6 +557,9 @@ open() {
                     exit
                 }
 
+                clear_screen
+                reset_terminal
+
                 "${VISUAL:-${EDITOR:-vi}}" "$1"
 
                 # Re-set TUI settings to make sure '$EDITOR' doesn't
