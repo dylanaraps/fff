@@ -1002,6 +1002,12 @@ main() {
         exit
     }
 
+    # Handle help as first argument.
+    [[ $1 == -h ]] && {
+        man fff
+        exit
+    }
+
     # Store file name in a file on open instead of using 'FFF_OPENER'.
     # Used in 'fff.vim'.
     [[ $1 == -p ]] &&
