@@ -28,6 +28,9 @@ A simple file manager written in `bash`.
 
 * [Dependencies](#dependencies)
 * [Installation](#installation)
+    * [Distros](#distros)
+    * [Manual (Latest Release)](#manual-latest-release)
+    * [Manual (Bleeding Edge)](#manual-bleeding-edge)
     * [CD on Exit](#cd-on-exit)
 * [Usage](#usage)
 * [Customization](#customization)
@@ -60,21 +63,39 @@ A simple file manager written in `bash`.
 
 ## Installation
 
-**Distros**:
+### Distros
 
 - Arch Linux (based): `pacman -S fff`
 - Haiku (port): `haikuporter fff`
 - Nix: `nix-env -iA fff`
 - Void Linux: `xbps-install -S fff`
 
-**Manual**:
+### Manual (Latest Release)
 
-- Download `fff`.
-- Put it somewhere in your `$PATH`.
-- Run it.
-    1. `fff` or `fff path/to/dir`, `fff ../../`, `fff /usr/share/`
-    2. optional: `alias f="fff"`
+1. Download the latest release.
+    - https://github.com/dylanaraps/fff/releases/latest
+2. Run `make install` inside the script directory to install the script.
+    - **El Capitan**: `make PREFIX=/usr/local install`
+    - **Haiku**: `make PREFIX=/boot/home/config/non-packaged install`
+    - **OpenIndiana**: `gmake install`
+    - **MinGW/MSys**: `make -i install`
+    - **NOTE**: You may have to run this as root.
 
+### Manual (Bleeding Edge)
+
+1. Git clone the repo.
+    - `git clone https://github.com/dylanaraps/fff`
+2. Change working directory to `fff`.
+    - `cd fff`
+3. Install fff using the Makefile.
+    - `make install`
+    - **El Capitan**: `make PREFIX=/usr/local install`
+    - **Haiku**: `make PREFIX=/boot/home/config/non-packaged install`
+    - **OpenIndiana**: `gmake install`
+    - **MinGW/MSys**: `make -i install`
+    - **NOTE**: You may have to run this as root.
+
+**NOTE:** fff can be uninstalled easily using `make uninstall`. This removes all of files from your system.
 
 ### CD on Exit
 
