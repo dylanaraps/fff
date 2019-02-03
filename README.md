@@ -87,7 +87,7 @@ A simple file manager written in `bash`.
     - `git clone https://github.com/dylanaraps/fff`
 2. Change working directory to `fff`.
     - `cd fff`
-3. Install fff using the Makefile.
+3. Install `fff` using the Makefile.
     - `make install`
     - **El Capitan**: `make PREFIX=/usr/local install`
     - **Haiku**: `make PREFIX=/boot/home/config/non-packaged install`
@@ -95,7 +95,7 @@ A simple file manager written in `bash`.
     - **MinGW/MSys**: `make -i install`
     - **NOTE**: You may have to run this as root.
 
-**NOTE:** fff can be uninstalled easily using `make uninstall`. This removes all of files from your system.
+**NOTE:** `fff` can be uninstalled easily using `make uninstall`. This removes all of files from your system.
 
 ### CD on Exit
 
