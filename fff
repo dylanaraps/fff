@@ -61,6 +61,25 @@ clear_screen() {
            "$((LINES-2))" "${TMUX:+\e[2J}" "$max_items"
 }
 
+setup_options() {
+    # Some options require some setup.
+    # This function is called once on open to parse
+    # select options so the operation isn't repeated
+    # multiple times in the code.
+
+    # Format for normal files.
+    [[ $FFF_FILE_FORMAT == *%f* ]] && {
+        file_pre="${FFF_FILE_FORMAT/'%f'*}"
+        file_post="${FFF_FILE_FORMAT/*'%f'}"
+    }
+
+    # Format for marked files.
+    [[ $FFF_MARK_FORMAT == *%f* ]] && {
+        mark_pre="${FFF_MARK_FORMAT/'%f'*}"
+        mark_post="${FFF_MARK_FORMAT/*'%f'}"
+    }
+}
+
 get_term_size() {
     # Get terminal size ('stty' is POSIX and always available).
     # This can't be done reliably across all bash versions in pure bash.
@@ -266,15 +285,17 @@ print_line() {
 
     # If the list item is marked for operation.
     [[ ${marked_files[$1]} == "${list[$1]:-null}" ]] && {
-        format+="\\e[3${FFF_COL3:-1}m "
-        suffix+='*'
+        format+="\\e[3${FFF_COL3:-1}m${mark_pre:= }"
+        suffix+="${mark_post:=*}"
     }
 
     # Escape the directory string.
     # Remove all non-printable characters.
     file_name="${file_name//[^[:print:]]/^[}"
 
-    printf '\r%b%s\e[m\r' "$format" "${file_name}${suffix}"
+    printf '\r%b%s\e[m\r' \
+        "${file_pre}${format}" \
+        "${file_name}${suffix}${file_post}"
 }
 
 draw_dir() {
@@ -1045,6 +1066,7 @@ main() {
     get_os
     get_term_size
     get_w3m_path
+    setup_options
     setup_terminal
 
     # Create the trash and cache directory if they doesn't exist.
