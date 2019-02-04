@@ -698,6 +698,7 @@ cmd_line() {
             scroll=0
             redraw
 
+            # '\e[%sH':  Move cursor back to cmd-line.
             # '\e[?25h': Unhide the cursor.
             printf '\e[%sH\e[?25h' "$LINES"
         }
