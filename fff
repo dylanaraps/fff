@@ -735,7 +735,7 @@ key() {
         "${FFF_KEY_SCROLL_DOWN2:=$'\e[B'}")
             ((scroll < list_total)) && {
                 ((scroll++))
-                ((y < max_items )) && ((y++))
+                ((y < max_items)) && ((y++))
 
                 print_line "$((scroll-1))"
                 printf '\n'
