@@ -557,6 +557,9 @@ open() {
                     exit
                 }
 
+                clear_screen
+                reset_terminal
+
                 "${VISUAL:-${EDITOR:-vi}}" "$1"
 
                 # Re-set TUI settings to make sure '$EDITOR' doesn't
@@ -849,14 +852,14 @@ key() {
 
                 # Clear the screen to make room for a prompt if needed.
                 clear_screen
-                printf '\e[?25h'
+                reset_terminal
 
                 stty echo
                 "${file_program[@]}" "${marked_files[@]}" .
                 stty -echo
 
-                printf '\e[?25l'
                 marked_files=()
+                setup_terminal
                 redraw full
             }
         ;;
