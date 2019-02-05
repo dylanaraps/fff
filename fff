@@ -167,6 +167,12 @@ get_file_sizes() {
     IFS=$'\n' read -d "" -ra file_sizes < <(du -ks "${files[@]}")
     file_sizes=("${file_sizes[@]//[[:space:]]*}")
 
+    # Find the longest file size.
+    for size in "${file_sizes[@]}"; do
+        ((${#size} > max_size)) &&
+            ((max_size=${#size}))
+    done
+
     # Convert byte formatted sizes to human-readable.
     for i in "${!file_sizes[@]}"; do
         case "${file_sizes[i]}" in
@@ -290,12 +296,14 @@ print_line() {
         suffix+='*'
     }
 
-    [[ ! -d ${list[$1]} ]] &&
-        local file_size="${file_sizes[$1-dir_total]}"
-
     # Escape the directory string.
     # Remove all non-printable characters.
     file_name="${file_name//[^[:print:]]/^[}"
+
+    ((${FFF_SHOW_SIZE:=1} == 1)) && [[ -f ${list[$1]} ]] && {
+        local file_size="${file_sizes[$1-dir_total]}"
+        file_name="${file_name:0:$((COLUMNS-max_size-1))}"
+    }
 
     printf '\r%b%s\e[m\e[%sC\e[%sD%s\r' \
         "$format" "${file_name}${suffix}" \
