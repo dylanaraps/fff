@@ -12,6 +12,7 @@ A simple file manager written in `bash`.
 - It's Fucking Fast 🚀
 - Minimal (*only requires **bash** and coreutils*)
 - Smooth Scrolling (*using **vim** keybindings*)
+- Works on **Linux**, **BSD**, **macOS**, **Haiku** etc.
 - Supports `LS_COLORS`!
 - File Operations (*copy, paste, cut, **ranger style bulk rename**, etc*) <img src="https://i.imgur.com/tjIWUjf.jpg" alt="img" height="213px" align="right"/>
 - Instant as you type search
