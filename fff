@@ -1059,20 +1059,14 @@ main() {
     ((${FFF_LS_COLORS:=1} == 1)) &&
         get_ls_colors
 
+    # Create the trash and cache directory if they don't exist.
+    mkdir -p "${XDG_CACHE_HOME:=${HOME}/.cache}/fff" \
+             "${FFF_TRASH:=${XDG_DATA_HOME:=${HOME}/.local/share}/fff/trash}"
+
     # Set some bash options.
     # 'nocaseglob': Glob case insensitively (Used for case insensitive search).
     # 'nullglob':   Don't expand non-matching globs to themselves.
     shopt -s nocaseglob nullglob
-
-    get_os
-    get_term_size
-    get_w3m_path
-    setup_options
-    setup_terminal
-
-    # Create the trash and cache directory if they don't exist.
-    mkdir -p "${XDG_CACHE_HOME:=${HOME}/.cache}/fff" \
-             "${FFF_TRASH:=${XDG_DATA_HOME:=${HOME}/.local/share}/fff/trash}"
 
     # Trap the exit signal (we need to reset the terminal to a useable state.)
     trap 'reset_terminal' EXIT
@@ -1080,6 +1074,11 @@ main() {
     # Trap the window resize signal (handle window resize events).
     trap 'get_term_size; redraw' WINCH
 
+    get_os
+    get_term_size
+    get_w3m_path
+    setup_options
+    setup_terminal
     redraw full
 
     # Vintage infinite loop.
