@@ -389,7 +389,7 @@ draw_img() {
         }
     else
         [[ $(fbset --show) =~ .*\"([0-9]+x[0-9]+)\".* ]]
-        IFS=" " read -r WIDTH HEIGHT <<< "${BASH_REMATCH[1]/x/ }"
+        IFS=x read -r WIDTH HEIGHT <<< "${BASH_REMATCH[1]}"
     fi
 
     # Get the image size in pixels.
