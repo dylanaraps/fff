@@ -58,7 +58,8 @@ A simple file manager written in `bash`.
 **Dependencies for image display (in master)**
 
 - `w3m-img`
-- `xdotool`
+- `xdotool` for X
+- `fbset` for the framebuffer
 
 
 ## Installation

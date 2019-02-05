@@ -353,8 +353,11 @@ draw_dir() {
 
 draw_img() {
     # Draw an image file on the screen using w3m-img.
-    # X isn't running, do nothing.
-    [[ -z $DISPLAY ]] &&
+    # We can use the framebuffer; set win_info_cmd as appropriate.
+    [[ $(tty) == /dev/tty[0-9]* && -w /dev/fb0 ]] &&
+        win_info_cmd="fbset"
+    # X isn't running and we can't use the framebuffer, do nothing.
+    [[ -z $DISPLAY && $win_info_cmd != fbset ]] &&
         return
 
     # File isn't an image file, do nothing.
@@ -368,21 +371,25 @@ draw_img() {
         return
     }
 
-    # xdotool isn't installed, do nothing.
-    type -p xdotool &>/dev/null || {
-        cmd_line "error: Couldn't find 'xdotool', is it installed?"
+    # $win_info_cmd isn't installed, do nothing.
+    type -p "${win_info_cmd:=xdotool}" &>/dev/null || {
+        cmd_line "error: Couldn't find '$win_info_cmd', is it installed?"
         return
     }
 
-    # Get terminal window size in pixels.
-    IFS=$'\n' read -d "" -ra win_info \
-        < <(xdotool getactivewindow getwindowgeometry --shell)
+    # Get terminal window size in pixels and set it to WIDTH and HEIGHT.
+    if [[ $win_info_cmd == xdotool ]]; then
+        IFS=$'\n' read -d "" -ra win_info \
+            < <(xdotool getactivewindow getwindowgeometry --shell)
 
-    # Sets the variables: WIDTH and HEIGHT
-    export "${win_info[@]}" &>/dev/null || {
-        cmd_line "error: Failed to retrieve window size."
-        return
-    }
+        declare "${win_info[@]}" &>/dev/null || {
+            cmd_line "error: Failed to retrieve window size."
+            return
+        }
+    else
+        [[ $(fbset --show) =~ .*\"([0-9]+x[0-9]+)\".* ]]
+        IFS=" " read -r WIDTH HEIGHT <<< "${BASH_REMATCH[1]/x/ }"
+    fi
 
     # Get the image size in pixels.
     read -r img_width img_height < <("$w3m" <<< "5;${list[scroll]}")
