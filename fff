@@ -940,7 +940,7 @@ key() {
                     cmd_line "warn: '$cmd_reply' already exists."
 
                 elif [[ -w $PWD ]]; then
-                    > "$cmd_reply"
+                    : > "$cmd_reply"
                     redraw full
 
                 else
