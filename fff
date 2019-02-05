@@ -162,6 +162,20 @@ status_line() {
            "$LINES"
 }
 
+get_file_sizes() {
+    # Get sizes of files.
+    IFS=$'\n' read -d "" -ra file_sizes < <(du -ks "${files[@]}")
+    file_sizes=("${file_sizes[@]//[[:space:]]*}")
+
+    # Convert byte formatted sizes to human-readable.
+    for i in "${!file_sizes[@]}"; do
+        case "${file_sizes[i]}" in
+            ???|??|?) file_sizes[i]+="KB" ;;
+            *) file_sizes[i]="$((file_sizes[i]/1024))MB" ;;
+        esac
+    done
+}
+
 read_dir() {
     # Read a directory to an array and sort it directories first.
     local dirs=()
@@ -187,8 +201,7 @@ read_dir() {
 
     list=("${dirs[@]}" "${files[@]}")
 
-    IFS=$'\n' read -d "" -ra file_sizes < <(du -ks "${files[@]}")
-    file_sizes=("${file_sizes[@]//[[:space:]]*}")
+    get_file_sizes
 
     # Indicate that the directory is empty.
     [[ -z ${list[0]} ]] &&
@@ -284,7 +297,9 @@ print_line() {
     # Remove all non-printable characters.
     file_name="${file_name//[^[:print:]]/^[}"
 
-    printf '\r%b%s\e[m\r' "$format" "${file_size}${file_name}${suffix}"
+    printf '\r%b%s\e[m\e[%sC\e[%sD%s\r' \
+        "$format" "${file_name}${suffix}" \
+        "$COLUMNS" "${#file_size}" "$file_size"
 }
 
 draw_dir() {
