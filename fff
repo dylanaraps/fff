@@ -164,6 +164,9 @@ status_line() {
 
 get_file_sizes() {
     # Get sizes of files.
+    [[ -z ${files[*]} ]] &&
+        return
+
     IFS=$'\n' read -d "" -ra file_sizes < <(du -ks "${files[@]}")
     file_sizes=("${file_sizes[@]//[[:space:]]*}")
 
