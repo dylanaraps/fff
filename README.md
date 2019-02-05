@@ -66,7 +66,7 @@ A simple file manager written in `bash`.
 ### Distros
 
 - Arch Linux (based): `pacman -S fff`
-- Haiku (port): `haikuporter fff`
+- Haiku: `pkgman install fff`
 - Nix: `nix-env -iA fff`
 - Void Linux: `xbps-install -S fff`
 
@@ -79,7 +79,7 @@ A simple file manager written in `bash`.
     - `cd fff`
 3. Run `make install` inside the script directory to install the script.
     - **El Capitan**: `make PREFIX=/usr/local install`
-    - **Haiku**: `make PREFIX=/boot/home/config/non-packaged install`
+    - **Haiku**: `make PREFIX="$(finddir B_USER_NONPACKAGED_DIRECTORY)" MANDIR="$(finddir B_USER_NONPACKAGED_DOCUMENTATION_DIRECTORY)/man" install`
     - **OpenIndiana**: `gmake install`
     - **MinGW/MSys**: `make -i install`
     - **NOTE**: You may have to run this as root.
