@@ -1027,13 +1027,11 @@ main() {
     # '||:': Do nothing if 'cd' fails. We don't care.
     cd "${2:-$1}" &>/dev/null ||:
 
-    # Handle version as the first argument.
     [[ $1 == -v ]] && {
         printf '%s\n' "fff 2.2"
         exit
     }
 
-    # Handle help as first argument.
     [[ $1 == -h ]] && {
         man fff
         exit
@@ -1055,7 +1053,6 @@ main() {
     ((BASH_VERSINFO[0] > 3)) &&
         read_flags=(-t 0.05)
 
-    # Initialize LS_COLORS support if enabled.
     ((${FFF_LS_COLORS:=1} == 1)) &&
         get_ls_colors
 
@@ -1063,7 +1060,6 @@ main() {
     mkdir -p "${XDG_CACHE_HOME:=${HOME}/.cache}/fff" \
              "${FFF_TRASH:=${XDG_DATA_HOME:=${HOME}/.local/share}/fff/trash}"
 
-    # Set some bash options.
     # 'nocaseglob': Glob case insensitively (Used for case insensitive search).
     # 'nullglob':   Don't expand non-matching globs to themselves.
     shopt -s nocaseglob nullglob
