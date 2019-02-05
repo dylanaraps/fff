@@ -1029,7 +1029,7 @@ main() {
 
     # Handle version as the first argument.
     [[ $1 == -v ]] && {
-        printf '%s\n' "fff 2.1"
+        printf '%s\n' "fff 2.2"
         exit
     }
 
