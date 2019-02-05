@@ -940,7 +940,7 @@ key() {
                     cmd_line "warn: '$cmd_reply' already exists."
 
                 elif [[ -w $PWD ]]; then
-                    : > "${PWD}/${cmd_reply}"
+                    > "$cmd_reply"
                     redraw full
 
                 else
@@ -950,14 +950,13 @@ key() {
 
         # Show file attributes.
         "${FFF_KEY_ATTRIBUTES:=x}")
-            [[ ! -e "${list[scroll]}" ]] &&
-                return
-
-            clear_screen
-            status_line "${list[scroll]}"
-            stat "${list[scroll]}"
-            read -ern 1
-            redraw
+            [[ -e "${list[scroll]}" ]] && {
+                clear_screen
+                status_line "${list[scroll]}"
+                stat "${list[scroll]}"
+                read -ern 1
+                redraw
+            }
         ;;
 
         # Show image in terminal.
