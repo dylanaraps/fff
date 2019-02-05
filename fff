@@ -210,7 +210,9 @@ read_dir() {
 
     list=("${dirs[@]}" "${files[@]}")
 
-    get_file_sizes
+    # Retrieve file sizes if enabled.
+    ((${FFF_SHOW_SIZE:=1} == 1)) &&
+        get_file_sizes
 
     # Indicate that the directory is empty.
     [[ -z ${list[0]} ]] &&
