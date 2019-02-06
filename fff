@@ -15,9 +15,12 @@ get_os() {
         haiku)
             opener="open"
 
-            [[ -z $FFF_TRASH_CMD ]] && {
+            [[ -z $FFF_TRASH_CMD ]] &&
                 FFF_TRASH_CMD="trash"
-                FFF_TRASH="$(finddir B_TRASH_DIRECTORY)"
+
+            [[ $FFF_TRASH_CMD == trash ]] && {
+                FFF_TRASH="$(finddir -v "$PWD" B_TRASH_DIRECTORY)"
+                mkdir -p "$FFF_TRASH"
             }
         ;;
     esac
@@ -993,6 +996,7 @@ key() {
 
         # Go to trash.
         "${FFF_KEY_GO_TRASH:=t}")
+            get_os
             open "$FFF_TRASH"
         ;;
 
