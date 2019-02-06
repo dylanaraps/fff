@@ -130,6 +130,9 @@ get_ls_colors() {
     ls_patterns="${ls_patterns%?}"
 
     # Define the ls_ variables.
+    # 'declare' can't be used here as variables are scoped
+    # locally. 'declare -g' is not available in 'bash 3'.
+    # 'export' is a viable alternative.
     export "${ls_cols[@]}" &>/dev/null
 }
 
@@ -185,14 +188,14 @@ status_line() {
 
 read_dir() {
     # Read a directory to an array and sort it directories first.
-    local dirs=()
-    local files=()
+    local dirs
+    local files
     local item_index
 
     # If '$PWD' is '/', unset it to avoid '//'.
     [[ $PWD == / ]] && PWD=
 
-    for item in "$PWD"/*; do
+    for item in "$PWD"/*; {
         if [[ -d $item ]]; then
             dirs+=("$item")
             ((item_index++))
@@ -204,7 +207,7 @@ read_dir() {
         else
             files+=("$item")
         fi
-    done
+    }
 
     list=("${dirs[@]}" "${files[@]}")
 
@@ -519,7 +522,7 @@ trash() {
         cd "$FFF_TRASH" && mv -f "$@"
 
         # Go back to where we were.
-        cd - &>/dev/null ||:
+        cd "$OLDPWD" ||:
     fi
 }
 
@@ -690,7 +693,7 @@ cmd_line() {
             ;;
 
             # Anything else, add it to read reply.
-            " "|*)
+            *)
                 cmd_reply+="$read_reply"
 
                 # Clear tab-completion.
@@ -808,7 +811,7 @@ key() {
         # Go to top.
         "${FFF_KEY_TO_TOP:=g}")
             ((scroll != 0)) && {
-                ((scroll=0))
+                scroll=0
                 redraw
             }
         ;;
