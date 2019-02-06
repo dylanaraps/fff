@@ -80,7 +80,7 @@ A simple file manager written in `bash`.
     - `cd fff`
 3. Run `make install` inside the script directory to install the script.
     - **El Capitan**: `make PREFIX=/usr/local install`
-    - **Haiku**: `make PREFIX="$(finddir B_USER_NONPACKAGED_DIRECTORY)" MANDIR="$(finddir B_USER_NONPACKAGED_DOCUMENTATION_DIRECTORY)/man" install`
+    - **Haiku**: `make PREFIX="$(finddir B_USER_NONPACKAGED_DIRECTORY)" MANDIR='$(PREFIX)/documentation/man' DOCDIR='$(PREFIX)/documentation/fff' install`
     - **OpenIndiana**: `gmake install`
     - **MinGW/MSys**: `make -i install`
     - **NOTE**: You may have to run this as root.
