@@ -195,7 +195,7 @@ read_dir() {
     # If '$PWD' is '/', unset it to avoid '//'.
     [[ $PWD == / ]] && PWD=
 
-    for item in "$PWD"/*; {
+    for item in "$PWD"/*; do
         if [[ -d $item ]]; then
             dirs+=("$item")
             ((item_index++))
@@ -207,7 +207,7 @@ read_dir() {
         else
             files+=("$item")
         fi
-    }
+    done
 
     list=("${dirs[@]}" "${files[@]}")
 
