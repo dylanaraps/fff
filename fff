@@ -28,13 +28,13 @@ get_os() {
 
 setup_terminal() {
     # Setup the terminal for the TUI.
-    # '\e[?1049h\e[22;0;0t': Use alternative screen buffer.
-    # '\e[?7l':  Disable line wrapping.
-    # '\e[?25l': Hide the cursor.
-    # '\e[2J':   Clear the screen.
-    # '\e[1;Nr': Limit scrolling to scrolling area.
-    #            Also sets cursor to (0,0).
-    printf '\e[?1049h\e[22;0;0t\e[?7l\e[?25l\e[2J\e[1;%sr' "$max_items"
+    # '\e[?1049h': Use alternative screen buffer.
+    # '\e[?7l':    Disable line wrapping.
+    # '\e[?25l':   Hide the cursor.
+    # '\e[2J':     Clear the screen.
+    # '\e[1;Nr':   Limit scrolling to scrolling area.
+    #              Also sets cursor to (0,0).
+    printf '\e[?1049h\e[?7l\e[?25l\e[2J\e[1;%sr' "$max_items"
 
     # Hide echoing of user input
     stty -echo
@@ -42,13 +42,13 @@ setup_terminal() {
 
 reset_terminal() {
     # Reset the terminal to a useable state (undo all changes).
-    # '\e[?7h':  Re-enable line wrapping.
-    # '\e[?25h': Unhide the cursor.
-    # '\e[2J':   Clear the terminal.
-    # '\e[;r':   Set the scroll region to its default value.
-    #            Also sets cursor to (0,0).
-    # '\e[?1049l\e[23;0;0t': Restore main screen buffer.
-    printf '\e[?7h\e[?25h\e[2J\e[;r\e[?1049l\e[23;0;0t'
+    # '\e[?7h':   Re-enable line wrapping.
+    # '\e[?25h':  Unhide the cursor.
+    # '\e[2J':    Clear the terminal.
+    # '\e[;r':    Set the scroll region to its default value.
+    #             Also sets cursor to (0,0).
+    # '\e[?1049l: Restore main screen buffer.
+    printf '\e[?7h\e[?25h\e[2J\e[;r\e[?1049l'
 
     # Show user input.
     stty echo
