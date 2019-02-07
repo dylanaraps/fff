@@ -457,6 +457,15 @@ redraw() {
     status_line
 }
 
+run() {
+    # Run a program without disrupting the user-interface.
+    clear_screen
+    reset_terminal
+    "$@"
+    setup_terminal
+    redraw
+}
+
 mark() {
     # Mark file for operation.
     # If an item is marked in a second directory,
@@ -594,23 +603,20 @@ open() {
                     exit
                 }
 
-                clear_screen
-                reset_terminal
-
-                "${VISUAL:-${EDITOR:-vi}}" "$1"
-
-                # Re-set TUI settings to make sure '$EDITOR' doesn't
-                # reset them to defaults.
-                setup_terminal
-                redraw
+                run "${VISUAL:-${EDITOR:-vi}}" "$1"
             ;;
 
             *)
                 # 'nohup':  Make the process immune to hangups.
                 # '&':      Send it to the background.
                 # 'disown': Detach it from the shell.
-                nohup "${FFF_OPENER:-${opener:-xdg-open}}" "$1" &>/dev/null &
-                disown
+                if type -p "$FFF_OPENER" &>/dev/null; then
+                    run "$FFF_OPENER" "$1"
+
+                else
+                    nohup "${FFF_OPENER:-${opener:-xdg-open}}" "$1" &>/dev/null &
+                    disown
+                fi
             ;;
         esac
     fi
