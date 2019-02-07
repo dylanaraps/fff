@@ -614,8 +614,7 @@ open() {
                     run "$FFF_OPENER" "$1"
 
                 else
-                    nohup "${FFF_OPENER:-${opener:-xdg-open}}" "$1" &>/dev/null &
-                    disown
+                    nohup "${opener:-xdg-open}" "$1" &>/dev/null & disown
                 fi
             ;;
         esac
