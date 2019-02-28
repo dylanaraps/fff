@@ -835,7 +835,7 @@ key() {
             #                This also works for '3' or more values with
             #                some modification.
             shopt_flags=(u s)
-            shopt -"${shopt_flags[((a=a>0?0:++a))]}" dotglob
+            shopt -"${shopt_flags[((a=${a:=$FFF_HIDDEN}>0?0:++a))]}" dotglob
             redraw full
         ;;
 
@@ -1076,6 +1076,9 @@ main() {
 
     ((${FFF_LS_COLORS:=1} == 1)) &&
         get_ls_colors
+
+    ((${FFF_HIDDEN:=0} == 1)) &&
+        shopt -s dotglob
 
     # Create the trash and cache directory if they don't exist.
     mkdir -p "${XDG_CACHE_HOME:=${HOME}/.cache}/fff" \

@@ -163,6 +163,10 @@ Ctrl+C: exit without 'cd'.
 # (Ignores FFF_COL1)
 export FFF_LS_COLORS=1
 
+# Show/Hide hidden files on open.
+# (On by default)
+export FFF_HIDDEN=0
+
 # Directory color [0-9]
 export FFF_COL1=2
 
