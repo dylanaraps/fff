@@ -1012,6 +1012,11 @@ key() {
             open "$OLDPWD"
         ;;
 
+        # Refresh current dir.
+        "${FFF_KEY_REFRESH:=e}")
+            open "$PWD"
+        ;;
+
         # Directory favourites.
         [1-9])
             favourite="FFF_FAV${1}"
