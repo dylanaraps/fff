@@ -120,6 +120,7 @@ G: go to bottom
 /: search
 t: go to trash
 ~: go to home
+e: refresh current dir
 !: open shell in current dir
 
 x: view file/dir attributes
@@ -279,6 +280,7 @@ export FFF_KEY_TO_BOTTOM="G"
 export FFF_KEY_GO_DIR=":"
 export FFF_KEY_GO_HOME="~"
 export FFF_KEY_GO_TRASH="t"
+export FFF_KEY_REFRESH="e"
 
 ### File operations.
 
