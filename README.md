@@ -280,7 +280,7 @@ export FFF_KEY_TO_BOTTOM="G"
 export FFF_KEY_GO_DIR=":"
 export FFF_KEY_GO_HOME="~"
 export FFF_KEY_GO_TRASH="t"
-export FFF_KET_REFRESH="e"
+export FFF_KEY_REFRESH="e"
 
 ### File operations.
 
