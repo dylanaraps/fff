@@ -361,12 +361,26 @@ draw_dir() {
 
 draw_img() {
     # Draw an image file on the screen using w3m-img.
+
+    # We are on tmux; set the necessary variables for later use.
+    [[ $TMUX ]] && {
+        type -p tmux &>/dev/null || {
+            cmd_line "error: Couldn't find 'tmux'; is it in your PATH?"
+            return
+        }
+
+        for var in client_width client_height pane_width pane_height \
+            pane_id window_visible_layout client_termname; {
+            declare "$var=$(tmux display-message -p "#{$var}")"
+        }
+    }
+
     # We can use the framebuffer; set win_info_cmd as appropriate.
-    [[ $(tty) == /dev/tty[0-9]* && -w /dev/fb0 ]] &&
+    [[ ${client_termname:-$TERM} == linux && -w /dev/fb0 ]] &&
         win_info_cmd="fbset"
 
     # X isn't running and we can't use the framebuffer, do nothing.
-    [[ -z $DISPLAY && $win_info_cmd != fbset ]] &&
+    [[ -z ${DISPLAY}${win_info_cmd} ]] &&
         return
 
     # File isn't an image file, do nothing.
@@ -400,6 +414,21 @@ draw_img() {
         IFS=x read -r WIDTH HEIGHT <<< "${BASH_REMATCH[1]}"
     fi
 
+    # Adjust the dimensions and offsets to the current tmux pane.
+    [[ $TMUX ]] && {
+        ((col_width=WIDTH/client_width))
+        ((line_height=HEIGHT/client_height))
+
+        ((WIDTH=pane_width*col_width))
+        ((HEIGHT=pane_height*line_height))
+
+        [[ $window_visible_layout =~ .*x[0-9]+,([0-9]+,[0-9]+),${pane_id#%}.* ]]
+        IFS=, read -r tmux_xoffset tmux_yoffset <<< "${BASH_REMATCH[1]}"
+
+        ((tmux_xoffset=tmux_xoffset*col_width))
+        ((tmux_yoffset=tmux_yoffset*line_height))
+    }
+
     # Get the image size in pixels.
     read -r img_width img_height < <("$w3m" <<< "5;${list[scroll]}")
 
@@ -425,8 +454,8 @@ draw_img() {
 
     # Display the image.
     printf '0;1;%s;%s;%s;%s;;;;;%s\n3;\n4\n' \
-        "${FFF_W3M_XOFFSET:-0}" \
-        "${FFF_W3M_YOFFSET:-0}" \
+        $((FFF_W3M_XOFFSET+tmux_xoffset)) \
+        $((FFF_W3M_YOFFSET+tmux_yoffset)) \
         "$img_width" \
         "$img_height" \
         "${list[scroll]}" | "$w3m" &>/dev/null
@@ -436,8 +465,8 @@ draw_img() {
 
     # Clear the image.
     printf '6;%s;%s;%s;%s\n3;' \
-        "${FFF_W3M_XOFFSET:-0}" \
-        "${FFF_W3M_YOFFSET:-0}" \
+        $((FFF_W3M_XOFFSET+tmux_xoffset)) \
+        $((FFF_W3M_YOFFSET+tmux_yoffset)) \
         "$WIDTH" \
         "$HEIGHT" | "$w3m" &>/dev/null
 
