@@ -519,7 +519,8 @@ trash() {
         command "$FFF_TRASH_CMD" "${@:1:$#-1}"
 
     else
-        cd "$FFF_TRASH" && mv -f "$@"
+        cd "$FFF_TRASH" || cmd_line "error: Can't cd to trash directory."
+        cp -alf "$@" && rm -r "${@:1:$#-1}"
 
         # Go back to where we were.
         cd "$OLDPWD" ||:
