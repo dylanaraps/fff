@@ -317,12 +317,12 @@ draw_dir() {
     if ((list_total < max_items || scroll < max_items/2)); then
         ((scroll_start=0))
         ((scroll_end=max_items))
-        ((scroll_new_pos=scroll + 1))
+        ((scroll_new_pos=scroll+1))
 
     # If curent dir is near the end of the list, keep scroll position.
     elif ((list_total - scroll < max_items/2)); then
-        ((scroll_start=list_total - max_items + 1))
-        ((scroll_new_pos=max_items - (list_total-scroll)))
+        ((scroll_start=list_total-max_items+1))
+        ((scroll_new_pos=max_items-(list_total-scroll)))
         ((scroll_end=list_total+1))
 
     # If current dir is somewhere in the middle, center scroll position.
