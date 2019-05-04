@@ -646,6 +646,7 @@ cmd_line() {
 
             # Escape / Custom 'no' value (used as a replacement for '-n 1').
             $'\e'|${3:-null})
+                read "${read_flags[@]}" -rsn 2
                 cmd_reply=
                 break
             ;;
