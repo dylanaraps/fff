@@ -109,7 +109,7 @@ get_ls_colors() {
     for ((i=0;i<${#ls_cols[@]};i++)); {
         # Separate patterns from file types.
         [[ ${ls_cols[i]} =~ ^\*[^\.] ]] &&
-            ls_patterns+=${ls_cols[i]/=*}|
+            ls_patterns+="${ls_cols[i]/=*}|"
 
         # Prepend 'ls_' to all LS_COLORS items
         # if they aren't types of files (symbolic links, block files etc.)
@@ -283,7 +283,7 @@ print_line() {
         format+="\\e[1;3${FFF_COL4:-6};7m"
 
     # If the list item is marked for operation.
-    [[ ${marked_files[$1]} == ${list[$1]:-null} ]] && {
+    [[ ${marked_files[$1]} == "${list[$1]:-null}" ]] && {
         format+=\\e[3${FFF_COL3:-1}m${mark_pre:= }
         suffix+=${mark_post:=*}
     }
@@ -945,7 +945,7 @@ key() {
         ;;
 
         # Create a file.
-        "${FFF_KEY_MKFILE:=f}")
+        ${FFF_KEY_MKFILE:=f})
             cmd_line "mkfile: "
 
             [[ $cmd_reply ]] &&
@@ -990,7 +990,7 @@ key() {
         ;;
 
         # Go to '$HOME'.
-        ${FFF_KEY_GO_HOME:=~})
+        ${FFF_KEY_GO_HOME:='~'})
             open ~
         ;;
 
