@@ -616,7 +616,7 @@ cmd_line() {
     # '\r\e[K': Redraw the read prompt on every keypress.
     #           This is mimicking what happens normally.
     while IFS= read -rsn 1 -p $'\r\e[K'"${1}${cmd_reply}" read_reply; do
-        case "$read_reply" in
+        case $read_reply in
             # Backspace.
             $'\177'|$'\b')
                 cmd_reply=${cmd_reply%?}
