@@ -83,6 +83,9 @@ setup_options() {
         mark_pre=${FFF_MARK_FORMAT/'%f'*}
         mark_post=${FFF_MARK_FORMAT/*'%f'}
     }
+
+    # Find supported 'file' arguments.
+    file -I &>/dev/null || : "${file_flags:=biL}"
 }
 
 get_term_size() {
