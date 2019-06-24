@@ -981,6 +981,19 @@ key() {
             }
         ;;
 
+        # Toggle executable flag.
+        ${FFF_KEY_EXECUTABLE:=X})
+            [[ -f ${list[scroll]} && -w ${list[scroll]} ]] && {
+                if [[ -x ${list[scroll]} ]]; then
+                    chmod -x "${list[scroll]}"
+                    status_line "Unset executable."
+                else
+                    chmod +x "${list[scroll]}"
+                    status_line "Set executable."
+                fi
+            }
+        ;;
+
         # Show image in terminal.
         ${FFF_KEY_IMAGE:=i})
             draw_img

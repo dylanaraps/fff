@@ -302,12 +302,15 @@ export FFF_KEY_CLEAR="c"
 export FFF_KEY_RENAME="r"
 export FFF_KEY_MKDIR="n"
 export FFF_KEY_MKFILE="f"
-export FFF_KEY_IMAGE="i" # display image with w3m-img 
+export FFF_KEY_IMAGE="i" # display image with w3m-img
 
 ### Miscellaneous
 
 # Show file attributes.
 export FFF_KEY_ATTRIBUTES="x"
+
+# Toggle executable flag.
+export FFF_KEY_EXECUTABLE="X"
 
 # Toggle hidden files.
 export FFF_KEY_HIDDEN="."
