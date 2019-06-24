@@ -68,6 +68,7 @@ A simple file manager written in `bash`.
 
 - Arch Linux (based): `pacman -S fff`
 - Haiku: `pkgman install fff`
+- macOS: `brew install fff`
 - Nix: `nix-env -iA fff`
 - Void Linux: `xbps-install -S fff`
 
