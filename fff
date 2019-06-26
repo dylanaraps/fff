@@ -487,13 +487,18 @@ mark() {
 
     # Find the program to use.
     case "$2" in
-        y|Y) file_program=(cp -iR) ;;
-        m|M) file_program=(mv -i) ;;
-        s|S) file_program=(ln -s) ;;
+        ${FFF_KEY_YANK:=y}|${FFF_KEY_YANK_ALL:=Y}) file_program=(cp -iR) ;;
+        ${FFF_KEY_MOVE:=m}|${FFF_KEY_MOVE_ALL:=M}) file_program=(mv -i)  ;;
+        ${FFF_KEY_LINK:=s}|${FFF_KEY_LINK_ALL:=S}) file_program=(ln -s)  ;;
 
         # These are 'fff' functions.
-        d|D) file_program=(trash) ;;
-        b|B) file_program=(bulk_rename) ;;
+        ${FFF_KEY_TRASH:=d}|${FFF_KEY_TRASH_ALL:=D})
+            file_program=(trash)
+        ;;
+
+        ${FFF_KEY_BULK_RENAME:=b}|${FFF_KEY_BULK_RENAME_ALL:=B})
+            file_program=(bulk_rename)
+        ;;
     esac
 
     status_line
