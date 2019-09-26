@@ -172,7 +172,7 @@ export FFF_HIDDEN=0
 # Directory color [0-9]
 export FFF_COL1=2
 
-# Status color [0-9]
+# Status background color [0-9]
 export FFF_COL2=7
 
 # Selection color [0-9] (copied/moved files)
@@ -180,6 +180,9 @@ export FFF_COL3=6
 
 # Cursor color [0-9]
 export FFF_COL4=1
+
+# Status foreground color [0-9]
+export FFF_COL5=0
 
 # Text Editor
 export EDITOR="vim"
