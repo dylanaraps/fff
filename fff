@@ -190,7 +190,7 @@ read_dir() {
     # If '$PWD' is '/', unset it to avoid '//'.
     [[ $PWD == / ]] && PWD=
 
-    for item in "$PWD"/*; do
+    for item in "$PWD"/{.,}*; do
         if [[ -d $item ]]; then
             dirs+=("$item")
             ((item_index++))
