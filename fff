@@ -1047,6 +1047,13 @@ key() {
                 open "$favourite"
         ;;
 
+        "?")
+            clear_screen
+            man fff | grep -A 54 "^Usage" | column
+            read -ern 1
+            open "$PWD"
+        ;;
+?
         # Quit and store current directory in a file for CD on exit.
         # Don't allow user to redefine 'q' so a bad keybinding doesn't
         # remove the option to quit.
