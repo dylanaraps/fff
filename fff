@@ -147,7 +147,11 @@ get_w3m_path() {
 
 get_mime_type() {
     # Get a file's mime_type.
-    mime_type=$(file "-${file_flags:-biL}" "$1" 2>/dev/null)
+    if command -v mimetype &>/dev/null; then
+        mime_type=$(mimetype "-${file_flags:-b}" "$1" 2>/dev/null)
+    else
+        mime_type=$(file "-${file_flags:-biL}" "$1" 2>/dev/null)
+    fi
 }
 
 status_line() {
