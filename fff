@@ -595,7 +595,7 @@ open() {
         # Open all text-based files in '$EDITOR'.
         # Everything else goes through 'xdg-open'/'open'.
         case "$mime_type" in
-            text/*|*x-empty*|*json*)
+            text/*|*x-empty*|*x-shellscript*|*json*)
                 # If 'fff' was opened as a file picker, save the opened
                 # file in a file called 'opened_file'.
                 ((file_picker == 1)) && {
