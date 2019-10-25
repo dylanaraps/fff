@@ -66,6 +66,7 @@ A simple file manager written in `bash`.
 ### Distros
 
 - Arch Linux (based): `pacman -S fff`
+- FreeBSD: `pkg install fff`
 - Haiku: `pkgman install fff`
 - macOS: `brew install fff`
 - Nix: `nix-env -iA fff`
