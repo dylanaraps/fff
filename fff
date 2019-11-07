@@ -188,7 +188,7 @@ read_dir() {
     local item_index
 
     # Set window name.
-    printf '\e]2;fff: %s\e\\' "$PWD"
+    printf '\e]2;fff: %s\e'\\ "$PWD"
 
     # If '$PWD' is '/', unset it to avoid '//'.
     [[ $PWD == / ]] && PWD=
