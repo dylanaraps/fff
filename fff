@@ -581,8 +581,10 @@ open() {
     if [[ -d $1/ ]]; then
         search=
         search_end_early=
-        # set window name
+
+        # Set window name.
         printf '\033]2;fff: %s\007' "$1"
+
         cd "${1:-/}" ||:
         redraw full
 
@@ -1107,7 +1109,7 @@ main() {
     ((${FFF_HIDDEN:=0} == 1)) &&
         shopt -s dotglob
 
-    # set window name
+    # Set window name.
     printf '\033]2;fff: %s\007' "$PWD"
 
     # Create the trash and cache directory if they don't exist.
