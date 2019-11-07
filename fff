@@ -187,6 +187,9 @@ read_dir() {
     local files
     local item_index
 
+    # Set window name.
+    printf '\e]2;fff: %s\e\\' "$PWD"
+
     # If '$PWD' is '/', unset it to avoid '//'.
     [[ $PWD == / ]] && PWD=
 
@@ -581,10 +584,6 @@ open() {
     if [[ -d $1/ ]]; then
         search=
         search_end_early=
-
-        # Set window name.
-        printf '\033]2;fff: %s\007' "$1"
-
         cd "${1:-/}" ||:
         redraw full
 
@@ -1108,9 +1107,6 @@ main() {
 
     ((${FFF_HIDDEN:=0} == 1)) &&
         shopt -s dotglob
-
-    # Set window name.
-    printf '\033]2;fff: %s\007' "$PWD"
 
     # Create the trash and cache directory if they don't exist.
     mkdir -p "${XDG_CACHE_HOME:=${HOME}/.cache}/fff" \
