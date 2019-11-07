@@ -581,6 +581,8 @@ open() {
     if [[ -d $1/ ]]; then
         search=
         search_end_early=
+        # set window name
+        echo -e "\033]2;fff: $1\007"
         cd "${1:-/}" ||:
         redraw full
 
@@ -1104,6 +1106,9 @@ main() {
 
     ((${FFF_HIDDEN:=0} == 1)) &&
         shopt -s dotglob
+
+    # Set window name
+    echo -e "\033]2;fff: $(pwd)\007"
 
     # Create the trash and cache directory if they don't exist.
     mkdir -p "${XDG_CACHE_HOME:=${HOME}/.cache}/fff" \
