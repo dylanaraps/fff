@@ -873,7 +873,7 @@ key() {
 
             cd "$PWD" && "$SHELL"
             setup_terminal
-            redraw
+            redraw full
         ;;
 
         # Mark files for operation.
