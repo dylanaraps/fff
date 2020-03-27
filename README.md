@@ -27,7 +27,7 @@ A simple file manager written in `bash`.
 <!-- vim-markdown-toc GFM -->
 
 * [Dependencies](#dependencies)
-* [(Un)installation](#\(un\)installation)
+* [(Un)installation](#uninstallation)
 * [Usage](#usage)
 * [Customization](#customization)
 * [Customizing the keybindings.](#customizing-the-keybindings)
