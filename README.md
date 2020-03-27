@@ -66,7 +66,7 @@ A simple file manager written in `bash`.
 2. Add to $PATH
     - https://wiki.archlinux.org/index.php/Environment_variables#Per_user
 
-~~**NOTE:** `fff` can be uninstalled easily using `make uninstall`. This removes all of files from your system.~~ Uninstallation coming soon, need to rework storage.
+**NOTE:** `fff` can be uninstalled by - duh - deleting it, and the only other places anything is stored are `.cache/fff` and `.local/share/fff` in your `$HOME` by default, or whatever you've set `XDG_CACHE_HOME` and `XDG_DATA_HOME` to.
 
 ### CD on Exit
 
@@ -119,13 +119,13 @@ X: toggle executable
 
 y: mark copy
 m: mark move
-d: mark trash (~/.local/share/fff/trash/)
+d: mark trash ([~/.local/share/fff or whatever you've set XDG_DATA_HOME to]/trash/)
 s: mark symbolic link
 b: mark bulk rename
 
 Y: mark all for copy
 M: mark all for move
-D: mark all for trash (~/.local/share/fff/trash/)
+D: mark all for trash ([~/.local/share/fff or whatever you've set XDG_DATA_HOME to]/trash/)
 S: mark all for symbolic link
 B: mark all for bulk rename
 
