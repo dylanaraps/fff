@@ -16,6 +16,7 @@
  - Added `f_visual_default` to allow prioritizing `EDITOR` over `VISUAL`
  - Added `f_print_actions` to toggle printing file operations so you can look back at them after exiting
  - Added `f_trash_confirm_ to allow not asking for confirmation when trashing files (I don't know why this wasn't added when the default option isn't to permanently delete)
+ - Added `fkey_img_preview_max` to preview images at maximum size
 
 # fff (*Fucking Fast File-Manager*)
 
@@ -125,6 +126,7 @@ e: refresh current dir
 
 x: view file/dir attributes
 i: display image with w3m-img
+I: display image with w3m-img at maximum size
 
 down:  scroll down
 up:    scroll up
@@ -321,6 +323,8 @@ fkey_mkfile="f"
 
 # Display image with w3m-img
 fkey_image_preview="i"
+# Display image with w3m-img at maximum size
+fkey_image_preview_max="I"
 
 ### Miscellaneous
 
