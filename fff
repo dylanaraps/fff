@@ -405,17 +405,22 @@ draw_img() {
     # Get the image size in pixels.
     read -r img_width img_height < <("$w3m" <<< "5;${list[scroll]}")
 
-    # Substract the status_line area from the image size.
-    ((HEIGHT=HEIGHT-HEIGHT*5/LINES))
+    if [[ $1 -eq 1 ]]; then
+        ((img_width=HEIGHT*img_width/img_height))
+        img_height=$HEIGHT
+    else
+        # Substract the status_line area from the image size.
+        ((HEIGHT=HEIGHT-HEIGHT*5/LINES))
+
+        ((img_height > HEIGHT)) && {
+            ((img_width=img_width*HEIGHT/img_height))
+            ((img_height=HEIGHT))
+        }
+    fi
 
     ((img_width > WIDTH)) && {
         ((img_height=img_height*WIDTH/img_width))
         ((img_width=WIDTH))
-    }
-
-    ((img_height > HEIGHT)) && {
-        ((img_width=img_width*HEIGHT/img_height))
-        ((img_height=HEIGHT))
     }
 
     clear_screen
@@ -1015,6 +1020,11 @@ key() {
         # Show image in terminal.
         ${fkey_image_preview:=i})
             draw_img
+        ;;
+
+        # Show image in terminal at max size.
+        ${fkey_image_preview_max:=I})
+            draw_img 1
         ;;
 
         # Go to dir.
