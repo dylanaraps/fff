@@ -11,7 +11,7 @@
 
 ## What's changed?
 
- - Added a config file (~/.fff) and removed globals
+ - Added a config file (`~/.fff`) and removed globals
  - Made `f_color1` have priority over `di` from `LS_COLORS`
  - Added `f_visual_default` to allow prioritizing `EDITOR` over `VISUAL`
  - Added `f_print_actions` to toggle printing file operations so you can look back at them after exiting
