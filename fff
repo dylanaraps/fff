@@ -2,6 +2,8 @@
 #
 # fff - fucking fast file-manager.
 
+[[ -f ~/.fff ]] && . ~/.fff
+
 get_os() {
     # Figure out the current operating system to set some specific variables.
     # '$OSTYPE' typically stores the name of the OS kernel.
@@ -15,12 +17,12 @@ get_os() {
         haiku)
             opener=open
 
-            [[ -z $FFF_TRASH_CMD ]] &&
-                FFF_TRASH_CMD=trash
+            [[ -z $f_trash_cmd ]] &&
+                f_trash_cmd=trash
 
-            [[ $FFF_TRASH_CMD == trash ]] && {
-                FFF_TRASH=$(finddir -v "$PWD" B_TRASH_DIRECTORY)
-                mkdir -p "$FFF_TRASH"
+            [[ $f_trash_cmd == trash ]] && {
+                f_trash_dir=$(finddir -v "$PWD" B_TRASH_DIRECTORY)
+                mkdir -p "$f_trash_dir"
             }
         ;;
     esac
@@ -73,15 +75,15 @@ setup_options() {
     # multiple times in the code.
 
     # Format for normal files.
-    [[ $FFF_FILE_FORMAT == *%f* ]] && {
-        file_pre=${FFF_FILE_FORMAT/'%f'*}
-        file_post=${FFF_FILE_FORMAT/*'%f'}
+    [[ $f_file_format == *%f* ]] && {
+        file_pre=${f_file_format/'%f'*}
+        file_post=${f_file_format/*'%f'}
     }
 
     # Format for marked files.
-    [[ $FFF_MARK_FORMAT == *%f* ]] && {
-        mark_pre=${FFF_MARK_FORMAT/'%f'*}
-        mark_post=${FFF_MARK_FORMAT/*'%f'}
+    [[ $f_mark_format == *%f* ]] && {
+        mark_pre=${f_mark_format/'%f'*}
+        mark_post=${f_mark_format/*'%f'}
     }
 
     # Find supported 'file' arguments.
@@ -101,8 +103,8 @@ get_ls_colors() {
     # Parse the LS_COLORS variable and declare each file type
     # as a separate variable.
     # Format: ':.ext=0;0:*.jpg=0;0;0:*png=0;0;0;0:'
-    [[ -z $LS_COLORS ]] && {
-        FFF_LS_COLORS=0
+    [[ $LS_COLORS ]] || {
+        f_LS_COLORS=0
         return
     }
 
@@ -172,8 +174,8 @@ status_line() {
     #              This is more widely supported than '\e[u'.
     printf '\e7\e[%sH\e[3%s;4%sm%*s\r%s %s%s\e[m\e[%sH\e[K\e8' \
            "$((LINES-1))" \
-           "${FFF_COL5:-0}" \
-           "${FFF_COL2:-1}" \
+           "${f_color5:-0}" \
+           "${f_color2:-1}" \
            "$COLUMNS" "" \
            "($((scroll+1))/$((list_total+1)))" \
            "${marked_files[*]:+${mark_ui}}" \
@@ -223,7 +225,7 @@ print_line() {
     # Format the list item and print it.
     local file_name=${list[$1]##*/}
     local file_ext=${file_name##*.}
-    local format
+    local format="\\e["
     local suffix
 
     # If the dir item doesn't exist, end here.
@@ -232,66 +234,68 @@ print_line() {
 
     # Directory.
     elif [[ -d ${list[$1]} ]]; then
-        format+=\\e[${di:-1;3${FFF_COL1:-2}}m
+        format+=$([[ -n $f_color1 ]] && echo "1;3${f_color1}" || ([[ -n $di ]] && echo "$di" || echo "1;34"))
         suffix+=/
 
     # Block special file.
     elif [[ -b ${list[$1]} ]]; then
-        format+=\\e[${bd:-40;33;01}m
+        format+=${bd:-40;33;01}
 
     # Character special file.
     elif [[ -c ${list[$1]} ]]; then
-        format+=\\e[${cd:-40;33;01}m
+        format+=${cd:-40;33;01}
 
     # Executable file.
     elif [[ -x ${list[$1]} ]]; then
-        format+=\\e[${ex:-01;32}m
+        format+=${ex:-01;32}
 
     # Symbolic Link (broken).
     elif [[ -h ${list[$1]} && ! -e ${list[$1]} ]]; then
-        format+=\\e[${mi:-01;31;7}m
+        format+=${mi:-01;31;7}
 
     # Symbolic Link.
     elif [[ -h ${list[$1]} ]]; then
-        format+=\\e[${ln:-01;36}m
+        format+=${ln:-01;36}
 
     # Fifo file.
     elif [[ -p ${list[$1]} ]]; then
-        format+=\\e[${pi:-40;33}m
+        format+=${pi:-40;33}
 
     # Socket file.
     elif [[ -S ${list[$1]} ]]; then
-        format+=\\e[${so:-01;35}m
+        format+=${so:-01;35}
 
     # Color files that end in a pattern as defined in LS_COLORS.
     # 'BASH_REMATCH' is an array that stores each REGEX match.
-    elif [[ $FFF_LS_COLORS == 1 &&
+    elif [[ $f_LS_COLORS == 1 &&
             $ls_patterns &&
             $file_name =~ ($ls_patterns)$ ]]; then
         match=${BASH_REMATCH[0]}
         file_ext=ls_${match//[^a-zA-Z0-9=\\;]/_}
-        format+=\\e[${!file_ext:-${fi:-37}}m
+        format+=${!file_ext:-${fi:-37}}
 
     # Color files based on file extension and LS_COLORS.
     # Check if file extension adheres to POSIX naming
     # stardard before checking if it's a variable.
-    elif [[ $FFF_LS_COLORS == 1 &&
+    elif [[ $f_LS_COLORS == 1 &&
             $file_ext != "$file_name" &&
             $file_ext =~ ^[a-zA-Z0-9_]*$ ]]; then
         file_ext=ls_${file_ext}
-        format+=\\e[${!file_ext:-${fi:-37}}m
+        format+=${!file_ext:-${fi:-37}}
 
     else
-        format+=\\e[${fi:-37}m
+        format+=${fi:-37}
     fi
+
+    format+=m
 
     # If the list item is under the cursor.
     (($1 == scroll)) &&
-        format+="\\e[1;3${FFF_COL4:-6};7m"
+        format+="\\e[1;3${f_color4:-6};7m"
 
     # If the list item is marked for operation.
     [[ ${marked_files[$1]} == "${list[$1]:-null}" ]] && {
-        format+=\\e[3${FFF_COL3:-1}m${mark_pre:= }
+        format+=\\e[3${f_color3:-1}m${mark_pre:= }
         suffix+=${mark_post:=*}
     }
 
@@ -423,8 +427,8 @@ draw_img() {
 
     # Display the image.
     printf '0;1;%s;%s;%s;%s;;;;;%s\n3;\n4\n' \
-        "${FFF_W3M_XOFFSET:-0}" \
-        "${FFF_W3M_YOFFSET:-0}" \
+        "${f_w3m_offset_x:-0}" \
+        "${f_w3m_offset_y:-0}" \
         "$img_width" \
         "$img_height" \
         "${list[scroll]}" | "$w3m" &>/dev/null
@@ -434,8 +438,8 @@ draw_img() {
 
     # Clear the image.
     printf '6;%s;%s;%s;%s\n3;' \
-        "${FFF_W3M_XOFFSET:-0}" \
-        "${FFF_W3M_YOFFSET:-0}" \
+        "${f_w3m_offset_x:-0}" \
+        "${f_w3m_offset_y:-0}" \
         "$WIDTH" \
         "$HEIGHT" | "$w3m" &>/dev/null
 
@@ -491,16 +495,16 @@ mark() {
 
     # Find the program to use.
     case "$2" in
-        ${FFF_KEY_YANK:=y}|${FFF_KEY_YANK_ALL:=Y}) file_program=(cp -iR) ;;
-        ${FFF_KEY_MOVE:=m}|${FFF_KEY_MOVE_ALL:=M}) file_program=(mv -i)  ;;
-        ${FFF_KEY_LINK:=s}|${FFF_KEY_LINK_ALL:=S}) file_program=(ln -s)  ;;
+        ${fkey_yank:=y}|${fkey_yank_all:=Y}) file_program=(cp -iR) ;;
+        ${fkey_move:=m}|${fkey_move_all:=M}) file_program=(mv -i)  ;;
+        ${fkey_link:=s}|${fkey_link_all:=S}) file_program=(ln -s)  ;;
 
         # These are 'fff' functions.
-        ${FFF_KEY_TRASH:=d}|${FFF_KEY_TRASH_ALL:=D})
+        ${fkey_trash:=d}|${fkey_trash_all:=D})
             file_program=(trash)
         ;;
 
-        ${FFF_KEY_BULK_RENAME:=b}|${FFF_KEY_BULK_RENAME_ALL:=B})
+        ${fkey_bulk_rename:=b}|${fkey_bulk_rename_all:=B})
             file_program=(bulk_rename)
         ;;
     esac
@@ -510,19 +514,21 @@ mark() {
 
 trash() {
     # Trash a file.
-    cmd_line "trash [${#marked_files[@]}] items? [y/n]: " y n
+    if [[ ${f_trash_confirm:=1} == 1 ]]; then
+        cmd_line "trash [${#marked_files[@]}] item(s)? [y/n]: " y n
 
-    [[ $cmd_reply != y ]] &&
-        return
+        [[ $cmd_reply != y ]] &&
+            return
+    fi
 
-    if [[ $FFF_TRASH_CMD ]]; then
+    if [[ $f_trash_cmd ]]; then
         # Pass all but the last argument to the user's
         # custom script. command is used to prevent this function
         # from conflicting with commands named "trash".
-        command "$FFF_TRASH_CMD" "${@:1:$#-1}"
+        command "$f_trash_cmd" "${@:1:$#-1}"
 
     else
-        cd "$FFF_TRASH" || cmd_line "error: Can't cd to trash directory."
+        cd "$f_trash_dir" || cmd_line "error: Can't cd to trash directory."
 
         if cp -alf "$@" &>/dev/null; then
             rm -r "${@:1:$#-1}"
@@ -605,7 +611,7 @@ open() {
 
                 clear_screen
                 reset_terminal
-                "${VISUAL:-${EDITOR:-vi}}" "$1"
+                [[ ${f_visual_default:=1} -eq 1 ]] && "${VISUAL:-${EDITOR:-vi}}" "$1" || "${EDITOR:-${VISUAL:-vi}}" "$1"
                 setup_terminal
                 redraw
             ;;
@@ -614,7 +620,7 @@ open() {
                 # 'nohup':  Make the process immune to hangups.
                 # '&':      Send it to the background.
                 # 'disown': Detach it from the shell.
-                nohup "${FFF_OPENER:-${opener:-xdg-open}}" "$1" &>/dev/null &
+                nohup "${f_opener:-${opener:-xdg-open}}" "$1" &>/dev/null &
                 disown
             ;;
         esac
@@ -624,6 +630,8 @@ open() {
 cmd_line() {
     # Write to the command_line (under status_line).
     cmd_reply=
+
+    redraw # suddenly needed for trash, unsure why
 
     # '\e7':     Save cursor position.
     # '\e[?25h': Unhide the cursor.
@@ -752,10 +760,10 @@ key() {
         # 'C' is what bash sees when the right arrow is pressed
         # ('\e[C' or '\eOC').
         # '' is what bash sees when the enter/return key is pressed.
-        ${FFF_KEY_CHILD1:=l}|\
-        ${FFF_KEY_CHILD2:=$'\e[C'}|\
-        ${FFF_KEY_CHILD3:=""}|\
-        ${FFF_KEY_CHILD4:=$'\eOC'})
+        ${fkey_child1:=l}|\
+        ${fkey_child2:=$'\e[C'}|\
+        ${fkey_child3:=""}|\
+        ${fkey_child4:=$'\eOC'})
             open "${list[scroll]}"
         ;;
 
@@ -764,11 +772,11 @@ key() {
         # ('\e[D' or '\eOD').
         # '\177' and '\b' are what bash sometimes sees when the backspace
         # key is pressed.
-        ${FFF_KEY_PARENT1:=h}|\
-        ${FFF_KEY_PARENT2:=$'\e[D'}|\
-        ${FFF_KEY_PARENT3:=$'\177'}|\
-        ${FFF_KEY_PARENT4:=$'\b'}|\
-        ${FFF_KEY_PARENT5:=$'\eOD'})
+        ${fkey_parent1:=h}|\
+        ${fkey_parent2:=$'\e[D'}|\
+        ${fkey_parent3:=$'\177'}|\
+        ${fkey_parent4:=$'\b'}|\
+        ${fkey_parent5:=$'\eOD'})
             # If a search was done, clear the results and open the current dir.
             if ((search == 1 && search_end_early != 1)); then
                 open "$PWD"
@@ -783,9 +791,9 @@ key() {
         # Scroll down.
         # 'B' is what bash sees when the down arrow is pressed
         # ('\e[B' or '\eOB').
-        ${FFF_KEY_SCROLL_DOWN1:=j}|\
-        ${FFF_KEY_SCROLL_DOWN2:=$'\e[B'}|\
-        ${FFF_KEY_SCROLL_DOWN3:=$'\eOB'})
+        ${fkey_scroll_down1:=j}|\
+        ${fkey_scroll_down2:=$'\e[B'}|\
+        ${fkey_scroll_down3:=$'\eOB'})
             ((scroll < list_total)) && {
                 ((scroll++))
                 ((y < max_items)) && ((y++))
@@ -800,9 +808,9 @@ key() {
         # Scroll up.
         # 'A' is what bash sees when the up arrow is pressed
         # ('\e[A' or '\eOA').
-        ${FFF_KEY_SCROLL_UP1:=k}|\
-        ${FFF_KEY_SCROLL_UP2:=$'\e[A'}|\
-        ${FFF_KEY_SCROLL_UP3:=$'\eOA'})
+        ${fkey_scroll_up1:=k}|\
+        ${fkey_scroll_up2:=$'\e[A'}|\
+        ${fkey_scroll_up3:=$'\eOA'})
             # '\e[1L': Insert a line above the cursor.
             # '\e[A':  Move cursor up a line.
             ((scroll > 0)) && {
@@ -823,7 +831,7 @@ key() {
         ;;
 
         # Go to top.
-        ${FFF_KEY_TO_TOP:=g})
+        ${fkey_top:=g})
             ((scroll != 0)) && {
                 scroll=0
                 redraw
@@ -831,7 +839,7 @@ key() {
         ;;
 
         # Go to bottom.
-        ${FFF_KEY_TO_BOTTOM:=G})
+        ${fkey_bottom:=G})
             ((scroll != list_total)) && {
                 ((scroll=list_total))
                 redraw
@@ -839,17 +847,17 @@ key() {
         ;;
 
         # Show hidden files.
-        ${FFF_KEY_HIDDEN:=.})
+        ${fkey_toggle_show_hidden:=.})
             # 'a=a>0?0:++a': Toggle between both values of 'shopt_flags'.
             #                This also works for '3' or more values with
             #                some modification.
             shopt_flags=(u s)
-            shopt -"${shopt_flags[((a=${a:=$FFF_HIDDEN}>0?0:++a))]}" dotglob
+            shopt -"${shopt_flags[((a=${a:=$f_show_hidden}>0?0:++a))]}" dotglob
             redraw full
         ;;
 
         # Search.
-        ${FFF_KEY_SEARCH:=/})
+        ${fkey_search:=/})
             cmd_line "/" "search"
 
             # If the search came up empty, redraw the current dir.
@@ -864,7 +872,7 @@ key() {
         ;;
 
         # Spawn a shell.
-        ${FFF_KEY_SHELL:=!})
+        ${fkey_shell:=!})
             reset_terminal
 
             # Make fff aware of how many times it is nested.
@@ -877,25 +885,25 @@ key() {
         ;;
 
         # Mark files for operation.
-        ${FFF_KEY_YANK:=y}|\
-        ${FFF_KEY_MOVE:=m}|\
-        ${FFF_KEY_TRASH:=d}|\
-        ${FFF_KEY_LINK:=s}|\
-        ${FFF_KEY_BULK_RENAME:=b})
+        ${fkey_yank:=y}|\
+        ${fkey_move:=m}|\
+        ${fkey_trash:=d}|\
+        ${fkey_link:=s}|\
+        ${fkey_bulk_rename:=b})
             mark "$scroll" "$1"
         ;;
 
         # Mark all files for operation.
-        ${FFF_KEY_YANK_ALL:=Y}|\
-        ${FFF_KEY_MOVE_ALL:=M}|\
-        ${FFF_KEY_TRASH_ALL:=D}|\
-        ${FFF_KEY_LINK_ALL:=S}|\
-        ${FFF_KEY_BULK_RENAME_ALL:=B})
+        ${fkey_yank_all:=Y}|\
+        ${fkey_move_all:=M}|\
+        ${fkey_trash_all:=D}|\
+        ${fkey_link_all:=S}|\
+        ${fkey_bulk_rename_all:=B})
             mark all "$1"
         ;;
 
         # Do the file operation.
-        ${FFF_KEY_PASTE:=p})
+        ${fkey_paste:=p})
             [[ ${marked_files[*]} ]] && {
                 [[ ! -w $PWD ]] && {
                     cmd_line "warn: no write access to dir."
@@ -907,7 +915,8 @@ key() {
                 reset_terminal
 
                 stty echo
-                printf '\e[1mfff\e[m: %s\n' "Running ${file_program[0]}"
+                [[ ${f_print_actions:=1} == 1 ]] &&
+	                  printf '\e[1mfff\e[m: %s\n' "Running ${file_program[0]}"
                 "${file_program[@]}" "${marked_files[@]}" .
                 stty -echo
 
@@ -918,7 +927,7 @@ key() {
         ;;
 
         # Clear all marked files.
-        ${FFF_KEY_CLEAR:=c})
+        ${fkey_clear:=c})
             [[ ${marked_files[*]} ]] && {
                 marked_files=()
                 redraw
@@ -926,7 +935,7 @@ key() {
         ;;
 
         # Rename list item.
-        ${FFF_KEY_RENAME:=r})
+        ${fkey_rename:=r})
             [[ ! -e ${list[scroll]} ]] &&
                 return
 
@@ -946,7 +955,7 @@ key() {
         ;;
 
         # Create a directory.
-        ${FFF_KEY_MKDIR:=n})
+        ${fkey_mkdir:=n})
             cmd_line "mkdir: " "dirs"
 
             [[ $cmd_reply ]] &&
@@ -963,7 +972,7 @@ key() {
         ;;
 
         # Create a file.
-        ${FFF_KEY_MKFILE:=f})
+        ${fkey_mkfile:=f})
             cmd_line "mkfile: "
 
             [[ $cmd_reply ]] &&
@@ -980,7 +989,7 @@ key() {
         ;;
 
         # Show file attributes.
-        ${FFF_KEY_ATTRIBUTES:=x})
+        ${fkey_view_attributes:=x})
             [[ -e "${list[scroll]}" ]] && {
                 clear_screen
                 status_line "${list[scroll]}"
@@ -991,7 +1000,7 @@ key() {
         ;;
 
         # Toggle executable flag.
-        ${FFF_KEY_EXECUTABLE:=X})
+        ${fkey_toggle_executable:=X})
             [[ -f ${list[scroll]} && -w ${list[scroll]} ]] && {
                 if [[ -x ${list[scroll]} ]]; then
                     chmod -x "${list[scroll]}"
@@ -1004,12 +1013,12 @@ key() {
         ;;
 
         # Show image in terminal.
-        ${FFF_KEY_IMAGE:=i})
+        ${fkey_image_preview:=i})
             draw_img
         ;;
 
         # Go to dir.
-        ${FFF_KEY_GO_DIR:=:})
+        ${fkey_go_dir:=:})
             cmd_line "go to dir: " "dirs"
 
             # Let 'cd' know about the current directory.
@@ -1021,29 +1030,29 @@ key() {
         ;;
 
         # Go to '$HOME'.
-        ${FFF_KEY_GO_HOME:='~'})
+        ${fkey_go_home:='~'})
             open ~
         ;;
 
         # Go to trash.
-        ${FFF_KEY_GO_TRASH:=t})
+        ${fkey_go_trash:=t})
             get_os
-            open "$FFF_TRASH"
+            open "$f_trash_dir"
         ;;
 
         # Go to previous dir.
-        ${FFF_KEY_PREVIOUS:=-})
+        ${fkey_previous:=-})
             open "$OLDPWD"
         ;;
 
         # Refresh current dir.
-        ${FFF_KEY_REFRESH:=e})
+        ${fkey_refresh:=e})
             open "$PWD"
         ;;
 
         # Directory favourites.
         [1-9])
-            favourite="FFF_FAV${1}"
+            favourite="f_fav${1}"
             favourite="${!favourite}"
 
             [[ $favourite ]] &&
@@ -1054,13 +1063,13 @@ key() {
         # Don't allow user to redefine 'q' so a bad keybinding doesn't
         # remove the option to quit.
         q)
-            : "${FFF_CD_FILE:=${XDG_CACHE_HOME:=${HOME}/.cache}/fff/.fff_d}"
+            : "${f_cd_file:=${XDG_CACHE_HOME:=${HOME}/.cache}/fff/.fff_d}"
 
-            [[ -w $FFF_CD_FILE ]] &&
-                rm "$FFF_CD_FILE"
+            [[ -w $f_cd_file ]] &&
+                rm "$f_cd_file"
 
-            [[ ${FFF_CD_ON_EXIT:=1} == 1 ]] &&
-                printf '%s\n' "$PWD" > "$FFF_CD_FILE"
+            [[ ${f_cd_on_exit:=1} == 1 ]] &&
+                printf '%s\n' "$PWD" > "$f_cd_file"
 
             exit
         ;;
@@ -1086,7 +1095,7 @@ main() {
         exit
     }
 
-    # Store file name in a file on open instead of using 'FFF_OPENER'.
+    # Store file name in a file on open instead of using 'f_opener'.
     # Used in 'fff.vim'.
     [[ $1 == -p ]] &&
         file_picker=1
@@ -1102,15 +1111,15 @@ main() {
     ((BASH_VERSINFO[0] > 3)) &&
         read_flags=(-t 0.05)
 
-    ((${FFF_LS_COLORS:=1} == 1)) &&
+    ((${f_LS_COLORS:=1} == 1)) &&
         get_ls_colors
 
-    ((${FFF_HIDDEN:=0} == 1)) &&
+    ((${f_show_hidden:=0} == 1)) &&
         shopt -s dotglob
 
     # Create the trash and cache directory if they don't exist.
     mkdir -p "${XDG_CACHE_HOME:=${HOME}/.cache}/fff" \
-             "${FFF_TRASH:=${XDG_DATA_HOME:=${HOME}/.local/share}/fff/trash}"
+             "${f_trash_dir:=${XDG_DATA_HOME:=${HOME}/.local/share}/fff/trash}"
 
     # 'nocaseglob': Glob case insensitively (Used for case insensitive search).
     # 'nullglob':   Don't expand non-matching globs to themselves.
