@@ -31,6 +31,8 @@ A simple file manager written in `bash`.
     * [Distros](#distros)
     * [Manual](#manual)
     * [CD on Exit](#cd-on-exit)
+      * [Bash](#bash-and-zsh)
+      * [Fish](#fish)
 * [Usage](#usage)
 * [Customization](#customization)
 * [Customizing the keybindings.](#customizing-the-keybindings)
@@ -89,7 +91,7 @@ A simple file manager written in `bash`.
 **NOTE:** `fff` can be uninstalled easily using `make uninstall`. This removes all of files from your system.
 
 ### CD on Exit
-
+#### Bash and Zsh
 ```sh
 # Add this to your .bashrc, .zshrc or equivalent.
 # Run 'fff' with 'f' or whatever you decide to name the function.
@@ -97,6 +99,16 @@ f() {
     fff "$@"
     cd "$(cat "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/.fff_d")"
 }
+```
+#### Fish
+```sh
+# Add this to you config.fish or equivalent.
+# Fish don't support recursive calls so use f function
+function f
+    fff $argv
+    set -q XDG_CACHE_HOME; or set XDG_CACHE_HOME $HOME/.cache
+    cd (cat $XDG_CACHE_HOME/fff/.fff_d)
+end
 ```
 
 ## Usage
