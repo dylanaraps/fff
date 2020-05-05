@@ -31,8 +31,8 @@ A simple file manager written in `bash`.
     * [Distros](#distros)
     * [Manual](#manual)
     * [CD on Exit](#cd-on-exit)
-      * [Bash](#bash-and-zsh)
-      * [Fish](#fish)
+        * [Bash and Zsh](#bash-and-zsh)
+        * [Fish](#fish)
 * [Usage](#usage)
 * [Customization](#customization)
 * [Customizing the keybindings.](#customizing-the-keybindings)
@@ -67,12 +67,13 @@ A simple file manager written in `bash`.
 
 ### Distros
 
-- Arch Linux (based): `pacman -S fff`
+- KISS Linux (based): `kiss b fff`
 - FreeBSD: `pkg install fff`
 - Haiku: `pkgman install fff`
 - macOS: `brew install fff`
 - Nix: `nix-env -iA fff`
 - Void Linux: `xbps-install -S fff`
+- Arch Linux: `pacman -S fff`
 
 ### Manual
 
