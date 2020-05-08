@@ -738,13 +738,48 @@ cmd_line() {
 key() {
     # Handle special key presses.
     [[ $1 == $'\e' ]] && {
-        read "${read_flags[@]}" -rsn 2
+        #       \e  A           | Alt+[char]
+        #       \e  [  A        | Arrow Keys
+        #       \e  O  A        | Arrow Keys
+        #       \e  [  6  ~     | PG(UP/DWN) , Home , End
+        #       \e  [  2  0  ~  | Function keys
+        #       \e  [  1  ;  5~ | Ctrl + PG(UP/DWN) , Home , End
+        #       \e  [  1  ;  5C | Ctrl + Arrow_keys
+        #       --  -  -  -  --
+        # Part   1  2  3  4   5
+        # 
+        # Part-1 is $1
 
-        # Handle a normal escape key press.
-        [[ ${1}${REPLY} == $'\e\e['* ]] &&
-            read "${read_flags[@]}" -rsn 1 _
+        local special_key
+        special_key+=${1}
 
-        local special_key=${1}${REPLY}
+        # Read Part-2
+        read "${read_flags[@]}" -srn 1
+        special_key+=${REPLY}
+
+        [[ $REPLY == '[' || $REPLY == 'O' ]] && {
+            # Read Part-3
+            read "${read_flags[@]}" -srn 1
+            special_key+=${REPLY}
+
+            [[ ${REPLY} == [0-9] ]] && {
+                # Read Part-4
+                read "${read_flags[@]}" -srn 1
+                special_key+=${REPLY}
+                
+                [[ ${REPLY} == [[:digit:]] ]] && {
+                    # Read one char from Part-5 
+                    read "${read_flags[@]}" -srn 1 _
+                    special_key+="~"
+                }
+
+                [[ ${REPLY} == ";" ]] && {
+                    # Read the whole of Part-5
+                    read "${read_flags[@]}" -srn 2
+                    special_key+=${REPLY}
+                }
+            }
+        }
     }
 
     case ${special_key:-$1} in

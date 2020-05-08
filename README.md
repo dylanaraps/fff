@@ -365,16 +365,39 @@ Below is a tiny script I've written which will tell you the exact value to use. 
 #!/usr/bin/env bash
 # Output the key-binding values for 'fff'.
 key() {
-    case "$1" in
+    [[ $1 == $'\e' ]] && {
+        local special_keys
+        special_keys+=${1}
+
+        read "${read_flags[@]}" -srn 1
+        special_keys+=${REPLY}
+
+        [[ $REPLY == $'[' ]] && {
+            read "${read_flags[@]}" -srn 1
+            special_keys+=${REPLY}
+
+            [[ ${REPLY} == [0-9] ]] && {
+                read "${read_flags[@]}" -srn 1
+                special_keys+=${REPLY}
+                
+                [[ ${REPLY} == [[:digit:]] ]] && {
+                    read "${read_flags[@]}" -srn 1 _
+                    special_keys+="~"
+                }
+
+                [[ ${REPLY} == ";" ]] && {
+                    read "${read_flags[@]}" -srn 2
+                    special_keys+=${REPLY}
+                }
+            }
+        }
+        
+    }
+
+    case "${special_keys:-$1}" in
         # Backspace.
         $'\b'|$'\177')
             printf '%s\n' "key: \$'\\b' or \$'\\177'"
-        ;;
-
-        # Escape Sequences.
-        $'\e')
-            read -rsn 2
-            printf '%s %q\n' "key:" "${1}${REPLY}"
         ;;
 
         # Return / Enter.
@@ -384,7 +407,7 @@ key() {
 
         # Everything else.
         *)
-            printf '%s %q\n' "key:" "$1"
+            printf '%s %q\n' "key:" "${special_keys:-$1}"
         ;;
     esac
 }
