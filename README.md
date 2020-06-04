@@ -304,7 +304,7 @@ export FFF_KEY_MARK="p"
 export FFF_KEY_MARK_ALL="P"
 export FFF_KEY_CLEAR="c"
 
-export FFF_KEY_YANK="y"
+export FFF_KEY_COPY="y"
 export FFF_KEY_MOVE="m"
 export FFF_KEY_TRASH="d"
 export FFF_KEY_LINK="s"

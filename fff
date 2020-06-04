@@ -865,7 +865,7 @@ key() {
         ;;
 
         # Do the file copy operation.
-        ${FFF_KEY_YANK:=y})
+        ${FFF_KEY_COPY:=y})
             [[ ${marked_files[*]} ]] && {
                 [[ ! -w $PWD ]] && {
                     cmd_line "warn: no write access to dir."
