@@ -204,6 +204,9 @@ export EDITOR="vim"
 # File Opener
 export FFF_OPENER="xdg-open"
 
+# File Attributes Command
+export FFF_STAT_CMD="stat"
+
 # Enable or disable CD on exit.
 # Default: '1'
 export FFF_CD_ON_EXIT=1
