@@ -150,20 +150,15 @@ n: new dir
 r: rename
 X: toggle executable
 
-y: mark copy
-m: mark move
-d: mark trash (~/.local/share/fff/trash/)
-s: mark symbolic link
-b: mark bulk rename
-
-Y: mark all for copy
-M: mark all for move
-D: mark all for trash (~/.local/share/fff/trash/)
-S: mark all for symbolic link
-B: mark all for bulk rename
-
-p: paste/move/delete/bulk_rename
+p: Select item for copy/move/symlink/delete/bulk_rename
+P: Select all items for copy/move/symlink/delete/bulk_rename
 c: clear file selections
+
+y: copy selection to current directory
+m: move selection to current directory
+d: move selection to trash directory
+s: symlink selection to current directory
+b: bulk rename selection (and move to current dir if different)
 
 [1-9]: favourites/bookmarks (see customization)
 
@@ -305,20 +300,15 @@ export FFF_KEY_REFRESH="e"
 
 ### File operations.
 
+export FFF_KEY_MARK="p"
+export FFF_KEY_MARK_ALL="P"
+export FFF_KEY_CLEAR="c"
+
 export FFF_KEY_YANK="y"
 export FFF_KEY_MOVE="m"
 export FFF_KEY_TRASH="d"
 export FFF_KEY_LINK="s"
 export FFF_KEY_BULK_RENAME="b"
-
-export FFF_KEY_YANK_ALL="Y"
-export FFF_KEY_MOVE_ALL="M"
-export FFF_KEY_TRASH_ALL="D"
-export FFF_KEY_LINK_ALL="S"
-export FFF_KEY_BULK_RENAME_ALL="B"
-
-export FFF_KEY_PASTE="p"
-export FFF_KEY_CLEAR="c"
 
 export FFF_KEY_RENAME="r"
 export FFF_KEY_MKDIR="n"

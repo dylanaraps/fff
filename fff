@@ -152,7 +152,7 @@ get_mime_type() {
 
 status_line() {
     # Status_line to print when files are marked for operation.
-    local mark_ui="[${#marked_files[@]}] selected (${file_program[*]}) [p] ->"
+    local mark_ui="[${#marked_files[@]}] selected ->"
 
     # Escape the directory string.
     # Remove all non-printable characters.
@@ -489,22 +489,6 @@ mark() {
         print_line "$1"
     fi
 
-    # Find the program to use.
-    case "$2" in
-        ${FFF_KEY_YANK:=y}|${FFF_KEY_YANK_ALL:=Y}) file_program=(cp -iR) ;;
-        ${FFF_KEY_MOVE:=m}|${FFF_KEY_MOVE_ALL:=M}) file_program=(mv -i)  ;;
-        ${FFF_KEY_LINK:=s}|${FFF_KEY_LINK_ALL:=S}) file_program=(ln -s)  ;;
-
-        # These are 'fff' functions.
-        ${FFF_KEY_TRASH:=d}|${FFF_KEY_TRASH_ALL:=D})
-            file_program=(trash)
-        ;;
-
-        ${FFF_KEY_BULK_RENAME:=b}|${FFF_KEY_BULK_RENAME_ALL:=B})
-            file_program=(bulk_rename)
-        ;;
-    esac
-
     status_line
 }
 
@@ -516,29 +500,23 @@ trash() {
         return
 
     if [[ $FFF_TRASH_CMD ]]; then
-        # Pass all but the last argument to the user's
+        # Pass all arguments to the user's
         # custom script. command is used to prevent this function
         # from conflicting with commands named "trash".
-        command "$FFF_TRASH_CMD" "${@:1:$#-1}"
+        command "$FFF_TRASH_CMD" "${marked_files[@]}"
 
     else
-        cd "$FFF_TRASH" || cmd_line "error: Can't cd to trash directory."
-
-        if cp -alf "$@" &>/dev/null; then
-            rm -r "${@:1:$#-1}"
+        if cp -alf "${marked_files[@]}" "$FFF_TRASH" &>/dev/null; then
+            rm -r "${marked_files[@]}"
         else
-            mv -f "$@"
+            mv -f "${marked_files[@]}" "$FFF_TRASH"
         fi
-
-        # Go back to where we were.
-        cd "$OLDPWD" ||:
     fi
 }
 
 bulk_rename() {
     # Bulk rename files using '$EDITOR'.
     rename_file=${XDG_CACHE_HOME:=${HOME}/.cache}/fff/bulk_rename
-    marked_files=("${@:1:$#-1}")
 
     # Save marked files to a file and open them for editing.
     printf '%s\n' "${marked_files[@]##*/}" > "$rename_file"
@@ -877,25 +855,17 @@ key() {
         ;;
 
         # Mark files for operation.
-        ${FFF_KEY_YANK:=y}|\
-        ${FFF_KEY_MOVE:=m}|\
-        ${FFF_KEY_TRASH:=d}|\
-        ${FFF_KEY_LINK:=s}|\
-        ${FFF_KEY_BULK_RENAME:=b})
-            mark "$scroll" "$1"
+        ${FFF_KEY_MARK:=p})
+            mark "$scroll"
         ;;
 
         # Mark all files for operation.
-        ${FFF_KEY_YANK_ALL:=Y}|\
-        ${FFF_KEY_MOVE_ALL:=M}|\
-        ${FFF_KEY_TRASH_ALL:=D}|\
-        ${FFF_KEY_LINK_ALL:=S}|\
-        ${FFF_KEY_BULK_RENAME_ALL:=B})
-            mark all "$1"
+        ${FFF_KEY_MARK_ALL:=P})
+            mark all
         ;;
 
-        # Do the file operation.
-        ${FFF_KEY_PASTE:=p})
+        # Do the file copy operation.
+        ${FFF_KEY_YANK:=y})
             [[ ${marked_files[*]} ]] && {
                 [[ ! -w $PWD ]] && {
                     cmd_line "warn: no write access to dir."
@@ -907,8 +877,95 @@ key() {
                 reset_terminal
 
                 stty echo
-                printf '\e[1mfff\e[m: %s\n' "Running ${file_program[0]}"
-                "${file_program[@]}" "${marked_files[@]}" .
+                printf '\e[1mfff\e[m: %s\n' "Running cp"
+                cp -iR "${marked_files[@]}" .
+                stty -echo
+
+                marked_files=()
+                setup_terminal
+                redraw full
+            }
+        ;;
+
+        # Do the file move operation.
+        ${FFF_KEY_MOVE:=m})
+            [[ ${marked_files[*]} ]] && {
+                [[ ! -w $PWD ]] && {
+                    cmd_line "warn: no write access to dir."
+                    return
+                }
+
+                # Clear the screen to make room for a prompt if needed.
+                clear_screen
+                reset_terminal
+
+                stty echo
+                printf '\e[1mfff\e[m: %s\n' "Running mv"
+                mv -i "${marked_files[@]}" .
+                stty -echo
+
+                marked_files=()
+                setup_terminal
+                redraw full
+            }
+        ;;
+
+        # Do the file link operation.
+        ${FFF_KEY_LINK:=s})
+            [[ ${marked_files[*]} ]] && {
+                [[ ! -w $PWD ]] && {
+                    cmd_line "warn: no write access to dir."
+                    return
+                }
+
+                # Clear the screen to make room for a prompt if needed.
+                clear_screen
+                reset_terminal
+
+                stty echo
+                printf '\e[1mfff\e[m: %s\n' "Running ln"
+                ln -s "${marked_files[@]}" .
+                stty -echo
+
+                marked_files=()
+                setup_terminal
+                redraw full
+            }
+        ;;
+
+        # Do the file trash operation.
+        ${FFF_KEY_TRASH:=d})
+            [[ ${marked_files[*]} ]] && {
+                # Clear the screen to make room for a prompt if needed.
+                clear_screen
+                reset_terminal
+
+                stty echo
+                printf '\e[1mfff\e[m: %s\n' "Running trash"
+                trash
+                stty -echo
+
+                marked_files=()
+                setup_terminal
+                redraw full
+            }
+        ;;
+
+        # Do the file bulk rename operation.
+        ${FFF_KEY_BULK_RENAME:=b})
+            [[ ${marked_files[*]} ]] && {
+                [[ ! -w $PWD ]] && {
+                    cmd_line "warn: no write access to dir."
+                    return
+                }
+
+                # Clear the screen to make room for a prompt if needed.
+                clear_screen
+                reset_terminal
+
+                stty echo
+                printf '\e[1mfff\e[m: %s\n' "Running bulk_rename"
+                bulk_rename
                 stty -echo
 
                 marked_files=()
