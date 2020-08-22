@@ -174,14 +174,14 @@ Ctrl+C: exit without 'cd'.
 ## Customization
 
 ```sh
+# Show/Hide hidden files on open.
+# (Off by default)
+export FFF_HIDDEN=1
+
 # Use LS_COLORS to color fff.
 # (On by default if available)
 # (Ignores FFF_COL1)
 export FFF_LS_COLORS=1
-
-# Show/Hide hidden files on open.
-# (On by default)
-export FFF_HIDDEN=0
 
 # Directory color [0-9]
 export FFF_COL1=2
@@ -208,8 +208,8 @@ export FFF_OPENER="xdg-open"
 export FFF_STAT_CMD="stat"
 
 # Enable or disable CD on exit.
-# Default: '1'
-export FFF_CD_ON_EXIT=1
+# (On by default)
+export FFF_CD_ON_EXIT=0
 
 # CD on exit helper file
 # Default: '${XDG_CACHE_HOME}/fff/fff.d'
