@@ -738,15 +738,12 @@ cmd_line() {
 key() {
     # Handle special key presses.
     [[ $1 == $'\e' ]] && {
-        #       \e  A           | Alt+[char]
-        #       \e  [  A        | Arrow Keys
-        #       \e  O  A        | Arrow Keys
-        #       \e  [  6  ~     | PG(UP/DWN) , Home , End
-        #       \e  [  2  0  ~  | Function keys
-        #       \e  [  1  ;  5~ | Ctrl + PG(UP/DWN) , Home , End
-        #       \e  [  1  ;  5C | Ctrl + Arrow_keys
-        #       --  -  -  -  --
-        # Part   1  2  3  4   5
+        #       \e  A        | Alt+[char]
+        #       \e  [  A     | Arrow Keys
+        #       \e  O  A     | Arrow Keys
+        #       \e  [  6  ~  | PG(UP/DWN) , Home , End
+        #       --  -  -  - 
+        # Part   1  2  3  4 
         # 
         # Part-1 is $1
 
@@ -766,18 +763,6 @@ key() {
                 # Read Part-4
                 read "${read_flags[@]}" -srn 1
                 special_key+=${REPLY}
-                
-                [[ ${REPLY} == [[:digit:]] ]] && {
-                    # Read one char from Part-5 
-                    read "${read_flags[@]}" -srn 1 _
-                    special_key+="~"
-                }
-
-                [[ ${REPLY} == ";" ]] && {
-                    # Read the whole of Part-5
-                    read "${read_flags[@]}" -srn 2
-                    special_key+=${REPLY}
-                }
             }
         }
     }
@@ -858,7 +843,7 @@ key() {
         ;;
 
         # Go to top.
-        ${FFF_KEY_TO_TOP:=g})
+        ${FFF_KEY_TO_TOP:=$'\e[1~'})
             ((scroll != 0)) && {
                 scroll=0
                 redraw
@@ -866,7 +851,7 @@ key() {
         ;;
 
         # Go to bottom.
-        ${FFF_KEY_TO_BOTTOM:=G})
+        ${FFF_KEY_TO_BOTTOM:=$'\e[4~'})
             ((scroll != list_total)) && {
                 ((scroll=list_total))
                 redraw
