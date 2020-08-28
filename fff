@@ -79,10 +79,14 @@ setup_options() {
     }
 
     # Format for marked files.
-    [[ $FFF_MARK_FORMAT == *%f* ]] && {
+    # Use affixes provided by the user or use defaults, if necessary.
+    if [[ $FFF_MARK_FORMAT == *%f* ]]; then
         mark_pre=${FFF_MARK_FORMAT/'%f'*}
         mark_post=${FFF_MARK_FORMAT/*'%f'}
-    }
+    else
+        mark_pre=" "
+        mark_post="*"
+    fi
 
     # Find supported 'file' arguments.
     file -I &>/dev/null || : "${file_flags:=biL}"
@@ -291,8 +295,8 @@ print_line() {
 
     # If the list item is marked for operation.
     [[ ${marked_files[$1]} == "${list[$1]:-null}" ]] && {
-        format+=\\e[3${FFF_COL3:-1}m${mark_pre:= }
-        suffix+=${mark_post:=*}
+        format+=\\e[3${FFF_COL3:-1}m${mark_pre}
+        suffix+=${mark_post}
     }
 
     # Escape the directory string.
