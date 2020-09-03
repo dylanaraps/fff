@@ -218,7 +218,7 @@ export FFF_CD_FILE=~/.fff_d
 
 # Trash Directory
 # Default: '${XDG_DATA_HOME}/fff/trash'
-#          If not using XDG, '${XDG_DATA_HOME}/fff/trash' is used.
+#          If not using XDG, '${HOME}/.local/share/fff/trash' is used.
 export FFF_TRASH=~/.local/share/fff/trash
 
 # Trash Command
