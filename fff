@@ -738,13 +738,30 @@ cmd_line() {
 key() {
     # Handle special key presses.
     [[ $1 == $'\e' ]] && {
-        read "${read_flags[@]}" -rsn 2
+        special_keys+=${1}
 
-        # Handle a normal escape key press.
-        [[ ${1}${REPLY} == $'\e\e['* ]] &&
-            read "${read_flags[@]}" -rsn 1 _
+        # \e A
+        # \e [ A
+        # \e [ 6 ~
+        # -- - - -
+        #  1 2 3 4
+        
+        #* read 2
+        read "${read_flags[@]}" -srn 1
+        special_keys+=${REPLY}
 
-        local special_key=${1}${REPLY}
+        [[ $REPLY == $'[' ]] && {
+            #* read 3
+            read "${read_flags[@]}" -srn 1
+            special_keys+=${REPLY}
+
+            [[ ${REPLY} == [0-9] ]] && {
+                #* read 4
+                read "${read_flags[@]}" -srn 1
+                special_keys+=${REPLY}
+            }
+        }
+
     }
 
     case ${special_key:-$1} in
