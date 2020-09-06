@@ -152,14 +152,12 @@ get_mime_type() {
 
 get_icon() {
     # $1 Absolute path to the file
-
-    local file_path="$1"
-    local file_name=${file_path##*/}
-    local file_ext="${file_name##*.}"
-
+    # $2 name of the file/directory
+    # $3 the extracted extension from the file name
+    
     # Icons for directories
-    [[ -d "$file_path" ]] && {
-        case "$file_name" in
+    [[ -d "$1" ]] && {
+        case "$1" in
             # English
                 '.git'            ) printf -- ''; return ;;
                 'Desktop'         ) printf -- ''; return ;;
@@ -222,8 +220,8 @@ get_icon() {
     }
 
     # Icons for files with no extension
-    [[ "$file_path" == *"/$file_ext" ]] && { 
-        case "$file_name" in
+    [[ "$2" == *"/$3" ]] && { 
+        case "$2" in
             '_gvimrc'                      ) printf -- ''; return ;;
             '_vimrc'                       ) printf -- ''; return ;;
             'a.out'                        ) printf -- ''; return ;;
@@ -257,8 +255,8 @@ get_icon() {
 
     # Icon for files with the name starting with '.' 
     # without an extension
-    [[ "$file_name" == ".$file_ext" ]] && {
-        case $file_name in
+    [[ "$2" == ".$3" ]] && {
+        case "$2" in
             '.bash_aliases'                ) printf -- ''; return ;;
             '.bash_history'                ) printf -- ''; return ;;
             '.bash_logout'                 ) printf -- ''; return ;;
@@ -295,8 +293,8 @@ get_icon() {
     }
 
     # Icon for files whose names have an extension
-    [[ "$file_name" == *"."* ]] && {
-        case $file_name in
+    [[ "$2" == *"."* ]] && {
+        case "$2" in
             '.gitlab-ci.yml'                   ) printf -- ''; return ;;
             'cmakelists.txt'                   ) printf -- ''; return ;;
             'a.out'                            ) printf -- ''; return ;;
@@ -330,7 +328,7 @@ get_icon() {
             'webpack.config.js'                ) printf -- ''; return ;;
         esac
 
-        case $file_ext in
+        case "$3" in
             '7z'                               ) printf -- ''; return ;;
             'a'                                ) printf -- ''; return ;;
             'ai'                               ) printf -- ''; return ;;
@@ -681,7 +679,7 @@ print_line() {
     file_name=${file_name//[^[:print:]]/^[}
 
     (( ${FFF_FILE_ICON:=0} == 1 )) && \
-        icon="$(get_icon ${list[$1]}) "
+        icon="$(get_icon "${list[$1]}" "$file_name" "$file_ext") "
     
     printf '\r%b%s\e[m\r' \
         "${file_pre}${format}${icon}"\
@@ -1120,34 +1118,15 @@ cmd_line() {
 }
 
 key() {
-    local special_key
-
     # Handle special key presses.
     [[ $1 == $'\e' ]] && {
-        special_key+=${1}
+        read "${read_flags[@]}" -rsn 2
 
-        # \e A
-        # \e [ A
-        # \e [ 6 ~
-        # -- - - -
-        #  1 2 3 4
-        
-        #* read 2
-        read "${read_flags[@]}" -srn 1
-        special_key+=${REPLY}
+        # Handle a normal escape key press.
+        [[ ${1}${REPLY} == $'\e\e['* ]] &&
+            read "${read_flags[@]}" -rsn 1 _
 
-        [[ $REPLY == $'[' ]] && {
-            #* read 3
-            read "${read_flags[@]}" -srn 1
-            special_key+=${REPLY}
-
-            [[ ${REPLY} == [0-9] ]] && {
-                #* read 4
-                read "${read_flags[@]}" -srn 1
-                special_key+=${REPLY}
-            }
-        }
-
+        local special_key=${1}${REPLY}
     }
 
     case ${special_key:-$1} in
