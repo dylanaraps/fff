@@ -222,34 +222,34 @@ get_icon() {
     # Icons for files with no extension
     [[ "$2" == *"/$3" ]] && { 
         case "$2" in
-            '_gvimrc'                      ) printf -- ''; return ;;
-            '_vimrc'                       ) printf -- ''; return ;;
-            'a.out'                        ) printf -- ''; return ;;
-            'authorized_keys'              ) printf -- ''; return ;;
-            'bspwmrc'                      ) printf -- ''; return ;;
-            'cmakelists.txt'               ) printf -- ''; return ;;
-            'config'                       ) printf -- ''; return ;;
-            'configure'                    ) printf -- ''; return ;;
-            'dockerfile'                   ) printf -- ''; return ;;
-            'Dockerfile'                   ) printf -- ''; return ;;
-            'dropbox'                      ) printf -- ''; return ;;
-            'exact-match-case-sensitive-2' ) printf -- 'X2'; return ;;
-            'gemfile'                      ) printf -- ''; return ;;
-            'ini'                          ) printf -- ''; return ;;
-            'known_hosts'                  ) printf -- ''; return ;;
-            'ledger'                       ) printf -- ''; return ;;
-            'license'                      ) printf -- ''; return ;;
-            'LICENSE'                      ) printf -- ''; return ;;
-            'Makefile'                     ) printf -- ''; return ;;
-            'makefile'                     ) printf -- ''; return ;;
-            'node_modules'                 ) printf -- ''; return ;;
-            'playlists'                    ) printf -- ''; return ;;
-            'procfile'                     ) printf -- ''; return ;;
-            'Rakefile'                     ) printf -- ''; return ;;
-            'rakefile'                     ) printf -- ''; return ;;
-            'README'                       ) printf -- ''; return ;;
-            'sxhkdrc'                      ) printf -- ''; return ;;
-            '*'                            ) printf -- ''; return ;;
+            '_gvimrc'       | '_vimrc'       |\
+            'bspwmrc'       |'cmakelists.txt'|\
+            'config'        | 'Makefile'     |\
+            'makefile'      | 'sxhkdrc'      |\
+            'ini'                            ) printf -- ''; return ;;
+
+            'authorized_keys'                |\
+            'known_hosts'                    |\
+            'license'                        |\
+            'LICENSE'                        ) printf -- ''; return ;;
+
+            'gemfile'                        |\
+            'Rakefile'                       |\
+            'rakefile'                       ) printf -- ''; return ;;
+
+            'a.out'                          |\
+            'configure'                      ) printf -- ''; return ;;
+            
+            'dockerfile'                     ) printf -- ''; return ;;
+            'Dockerfile'                     ) printf -- ''; return ;;
+            'dropbox'                        ) printf -- ''; return ;;
+            'exact-match-case-sensitive-2'   ) printf -- 'X2'; return ;;
+            'ledger'                         ) printf -- ''; return ;;
+            'node_modules'                   ) printf -- ''; return ;;
+            'playlists'                      ) printf -- ''; return ;;
+            'procfile'                       ) printf -- ''; return ;;
+            'README'                         ) printf -- ''; return ;;
+            '*'                              ) printf -- ''; return ;;
         esac
     }
 
@@ -257,37 +257,40 @@ get_icon() {
     # without an extension
     [[ "$2" == ".$3" ]] && {
         case "$2" in
-            '.bash_aliases'                ) printf -- ''; return ;;
-            '.bash_history'                ) printf -- ''; return ;;
-            '.bash_logout'                 ) printf -- ''; return ;;
-            '.bash_profile'                ) printf -- ''; return ;;
-            '.bashprofile'                 ) printf -- ''; return ;;
-            '.bashrc'                      ) printf -- ''; return ;;
-            '.dmrc'                        ) printf -- ''; return ;;
-            '.DS_Store'                    ) printf -- ''; return ;;
-            '.fasd'                        ) printf -- ''; return ;;
-            '.fehbg'                       ) printf -- ''; return ;;
-            '.gitattributes'               ) printf -- ''; return ;;
-            '.gitconfig'                   ) printf -- ''; return ;;
-            '.gitignore'                   ) printf -- ''; return ;;
-            '.gvimrc'                      ) printf -- ''; return ;;
-            '.inputrc'                     ) printf -- ''; return ;;
-            '.jack-settings'               ) printf -- ''; return ;;
-            '.ncmpcpp'                     ) printf -- ''; return ;;
-            '.nvidia-settings-rc'          ) printf -- ''; return ;;
-            '.pam_environment'             ) printf -- ''; return ;;
-            '.profile'                     ) printf -- ''; return ;;
-            '.recently-used'               ) printf -- ''; return ;;
-            '.selected_editor'             ) printf -- ''; return ;;
-            '.vim'                         ) printf -- ''; return ;;
-            '.viminfo'                     ) printf -- ''; return ;;
-            '.vimrc'                       ) printf -- ''; return ;;
-            '.Xauthority'                  ) printf -- ''; return ;;
-            '.Xdefaults'                   ) printf -- ''; return ;;
-            '.xinitrc'                     ) printf -- ''; return ;;
-            '.xinputrc'                    ) printf -- ''; return ;;
-            '.Xresources'                  ) printf -- ''; return ;;
+            '.bash_aliases'                |\
+            '.bash_history'                |\
+            '.bash_logout'                 |\
+            '.bash_profile'                |\
+            '.bashprofile'                 |\
+            '.bashrc'                      |\
+            '.dmrc'                        |\
+            '.DS_Store'                    |\
+            '.fasd'                        |\
+            '.gitattributes'               |\
+            '.gitconfig'                   |\
+            '.gitignore'                   |\
+            '.inputrc'                     |\
+            '.jack-settings'               |\
+            '.nvidia-settings-rc'          |\
+            '.pam_environment'             |\
+            '.profile'                     |\
+            '.recently-used'               |\
+            '.selected_editor'             |\
+            '.Xauthority'                  |\
+            '.Xdefaults'                   |\
+            '.xinitrc'                     |\
+            '.xinputrc'                    |\
+            '.Xresources'                  |\
             '.zshrc'                       ) printf -- ''; return ;;
+
+            '.vim'                         |\
+            '.viminfo'                     |\
+            '.vimrc'                       ) printf -- ''; return ;;
+
+            '.fehbg'                       ) printf -- ''; return ;;
+            '.gvimrc'                      ) printf -- ''; return ;;
+            '.ncmpcpp'                     ) printf -- ''; return ;;
+
             '*'                            ) printf -- ''; return ;;
         esac
     }
@@ -295,231 +298,191 @@ get_icon() {
     # Icon for files whose names have an extension
     [[ "$2" == *"."* ]] && {
         case "$2" in
-            '.gitlab-ci.yml'                   ) printf -- ''; return ;;
-            'cmakelists.txt'                   ) printf -- ''; return ;;
-            'a.out'                            ) printf -- ''; return ;;
-            'config.ac'                        ) printf -- ''; return ;;
-            'config.m4'                        ) printf -- ''; return ;;
+            'cmakelists.txt'                   |\
+            'Makefile.ac'                      |\
+            'Makefile.in'                      |\
+            'mimeapps.list'                    |\
+            'user-dirs.dirs'                   ) printf -- ''; return ;;
+
+            'README.markdown'                  |\
+            'README.md'                        |\
+            'README.rst'                       |\
+            'README.txt'                       ) printf -- ''; return ;;
+
+            'config.ac'                        |\
+            'config.m4'                        |\
             'config.mk'                        ) printf -- ''; return ;;
+            
+            'gruntfile.coffee'                 |\
+            'gruntfile.js'                     |\
+            'gruntfile.ls'                     ) printf -- ''; return ;;
+            
+            'package-lock.json'                |\
+            'package.json'                     |\
+            'webpack.config.js'                ) printf -- ''; return ;;
+            
+            'gulpfile.coffee'                  |\
+            'gulpfile.js'                      |\
+            'gulpfile.ls'                      ) printf -- ''; return ;;
+
+            'LICENSE.txt'                      |\
+            'LICENSE.md'                       ) printf -- ''; return ;;
+            
+            
+            '.gitlab-ci.yml'                   ) printf -- ''; return ;;
             'config.ru'                        ) printf -- ''; return ;;
             'docker-compose.yml'               ) printf -- ''; return ;;
             'exact-match-case-sensitive-1.txt' ) printf -- 'X1'; return ;;
             'favicon.ico'                      ) printf -- ''; return ;;
-            'gruntfile.coffee'                 ) printf -- ''; return ;;
-            'gruntfile.js'                     ) printf -- ''; return ;;
-            'gruntfile.ls'                     ) printf -- ''; return ;;
-            'gulpfile.coffee'                  ) printf -- ''; return ;;
-            'gulpfile.js'                      ) printf -- ''; return ;;
-            'gulpfile.ls'                      ) printf -- ''; return ;;
-            'LICENSE.md'                       ) printf -- ''; return ;;
-            'LICENSE.txt'                      ) printf -- ''; return ;;
-            'Makefile.ac'                      ) printf -- ''; return ;;
-            'Makefile.in'                      ) printf -- ''; return ;;
-            'mimeapps.list'                    ) printf -- ''; return ;;
             'mix.lock'                         ) printf -- ''; return ;;
-            'package-lock.json'                ) printf -- ''; return ;;
-            'package.json'                     ) printf -- ''; return ;;
             'react.jsx'                        ) printf -- ''; return ;;
-            'README.markdown'                  ) printf -- ''; return ;;
-            'README.md'                        ) printf -- ''; return ;;
-            'README.rst'                       ) printf -- ''; return ;;
-            'README.txt'                       ) printf -- ''; return ;;
-            'user-dirs.dirs'                   ) printf -- ''; return ;;
-            'webpack.config.js'                ) printf -- ''; return ;;
         esac
 
         case "$3" in
-            '7z'                               ) printf -- ''; return ;;
-            'a'                                ) printf -- ''; return ;;
-            'ai'                               ) printf -- ''; return ;;
-            'apk'                              ) printf -- ''; return ;;
-            'asm'                              ) printf -- ''; return ;;
-            'asp'                              ) printf -- ''; return ;;
-            'aup'                              ) printf -- ''; return ;;
-            'avi'                              ) printf -- ''; return ;;
-            'awk'                              ) printf -- ''; return ;;
-            'bash'                             ) printf -- ''; return ;;
-            'bat'                              ) printf -- ''; return ;;
-            'bmp'                              ) printf -- ''; return ;;
-            'bz2'                              ) printf -- ''; return ;;
-            'c'                                ) printf -- ''; return ;;
-            'c++'                              ) printf -- ''; return ;;
-            'cab'                              ) printf -- ''; return ;;
-            'cbr'                              ) printf -- ''; return ;;
-            'cbz'                              ) printf -- ''; return ;;
-            'cc'                               ) printf -- ''; return ;;
-            'class'                            ) printf -- ''; return ;;
-            'clj'                              ) printf -- ''; return ;;
-            'cljc'                             ) printf -- ''; return ;;
-            'cljs'                             ) printf -- ''; return ;;
-            'cmake'                            ) printf -- ''; return ;;
-            'coffee'                           ) printf -- ''; return ;;
-            'conf'                             ) printf -- ''; return ;;
-            'cp'                               ) printf -- ''; return ;;
-            'cpio'                             ) printf -- ''; return ;;
-            'cpp'                              ) printf -- ''; return ;;
-            'cs'                               ) printf -- ''; return ;;
-            'csh'                              ) printf -- ''; return ;;
-            'css'                              ) printf -- ''; return ;;
-            'cue'                              ) printf -- ''; return ;;
-            'cvs'                              ) printf -- ''; return ;;
-            'cxx'                              ) printf -- ''; return ;;
-            'd'                                ) printf -- ''; return ;;
-            'dart'                             ) printf -- ''; return ;;
-            'db'                               ) printf -- ''; return ;;
-            'deb'                              ) printf -- ''; return ;;
-            'diff'                             ) printf -- ''; return ;;
-            'dll'                              ) printf -- ''; return ;;
-            'doc'                              ) printf -- ''; return ;;
-            'docx'                             ) printf -- ''; return ;;
-            'dump'                             ) printf -- ''; return ;;
-            'edn'                              ) printf -- ''; return ;;
-            'eex'                              ) printf -- ''; return ;;
-            'efi'                              ) printf -- ''; return ;;
-            'ejs'                              ) printf -- ''; return ;;
-            'elf'                              ) printf -- ''; return ;;
-            'elm'                              ) printf -- ''; return ;;
-            'epub'                             ) printf -- ''; return ;;
-            'erl'                              ) printf -- ''; return ;;
-            'ex'                               ) printf -- ''; return ;;
-            'exe'                              ) printf -- ''; return ;;
-            'exs'                              ) printf -- ''; return ;;
-            'f#'                               ) printf -- ''; return ;;
-            'fi'                               ) printf -- '|'; return ;;
-            'fish'                             ) printf -- ''; return ;;
-            'flac'                             ) printf -- ''; return ;;
-            'flv'                              ) printf -- ''; return ;;
-            'fs'                               ) printf -- ''; return ;;
-            'fsi'                              ) printf -- ''; return ;;
-            'fsscript'                         ) printf -- ''; return ;;
-            'fsx'                              ) printf -- ''; return ;;
-            'gem'                              ) printf -- ''; return ;;
-            'gemspec'                          ) printf -- ''; return ;;
-            'gif'                              ) printf -- ''; return ;;
-            'go'                               ) printf -- ''; return ;;
-            'gz'                               ) printf -- ''; return ;;
-            'gzip'                             ) printf -- ''; return ;;
-            'h'                                ) printf -- ''; return ;;
-            'haml'                             ) printf -- ''; return ;;
-            'hbs'                              ) printf -- ''; return ;;
-            'hh'                               ) printf -- ''; return ;;
-            'hpp'                              ) printf -- ''; return ;;
-            'hrl'                              ) printf -- ''; return ;;
-            'hs'                               ) printf -- ''; return ;;
-            'htaccess'                         ) printf -- ''; return ;;
-            'htm'                              ) printf -- ''; return ;;
-            'html'                             ) printf -- ''; return ;;
-            'htpasswd'                         ) printf -- ''; return ;;
-            'hxx'                              ) printf -- ''; return ;;
-            'ico'                              ) printf -- ''; return ;;
-            'img'                              ) printf -- ''; return ;;
-            'ini'                              ) printf -- ''; return ;;
-            'iso'                              ) printf -- ''; return ;;
-            'jar'                              ) printf -- ''; return ;;
-            'java'                             ) printf -- ''; return ;;
-            'jl'                               ) printf -- ''; return ;;
-            'jpeg'                             ) printf -- ''; return ;;
-            'jpg'                              ) printf -- ''; return ;;
-            'js'                               ) printf -- ''; return ;;
-            'json'                             ) printf -- ''; return ;;
-            'jsx'                              ) printf -- ''; return ;;
-            'key'                              ) printf -- ''; return ;;
-            'ksh'                              ) printf -- ''; return ;;
-            'leex'                             ) printf -- ''; return ;;
-            'less'                             ) printf -- ''; return ;;
-            'lha'                              ) printf -- ''; return ;;
-            'lhs'                              ) printf -- ''; return ;;
-            'log'                              ) printf -- ''; return ;;
-            'lua'                              ) printf -- ''; return ;;
-            'lzh'                              ) printf -- ''; return ;;
-            'lzma'                             ) printf -- ''; return ;;
-            'm4a'                              ) printf -- ''; return ;;
-            'm4v'                              ) printf -- ''; return ;;
-            'markdown'                         ) printf -- ''; return ;;
-            'md'                               ) printf -- ''; return ;;
-            'mdx'                              ) printf -- ''; return ;;
-            'mjs'                              ) printf -- ''; return ;;
-            'mkv'                              ) printf -- ''; return ;;
-            'ml'                               ) printf -- 'λ'; return ;;
-            'mli'                              ) printf -- 'λ'; return ;;
-            'mov'                              ) printf -- ''; return ;;
-            'mp3'                              ) printf -- ''; return ;;
-            'mp4'                              ) printf -- ''; return ;;
-            'mpeg'                             ) printf -- ''; return ;;
-            'mpg'                              ) printf -- ''; return ;;
-            'msi'                              ) printf -- ''; return ;;
-            'mustache'                         ) printf -- ''; return ;;
-            'nix'                              ) printf -- ''; return ;;
-            'o'                                ) printf -- ''; return ;;
-            'ogg'                              ) printf -- ''; return ;;
-            'pdf'                              ) printf -- ''; return ;;
-            'php'                              ) printf -- ''; return ;;
-            'pl'                               ) printf -- ''; return ;;
-            'pm'                               ) printf -- ''; return ;;
-            'png'                              ) printf -- ''; return ;;
-            'pp'                               ) printf -- ''; return ;;
-            'ppt'                              ) printf -- ''; return ;;
-            'pptx'                             ) printf -- ''; return ;;
-            'ps1'                              ) printf -- ''; return ;;
-            'psb'                              ) printf -- ''; return ;;
-            'psd'                              ) printf -- ''; return ;;
-            'pub'                              ) printf -- ''; return ;;
-            'py'                               ) printf -- ''; return ;;
-            'pyc'                              ) printf -- ''; return ;;
-            'pyd'                              ) printf -- ''; return ;;
-            'pyo'                              ) printf -- ''; return ;;
-            'r'                                ) printf -- 'ﳒ'; return ;;
-            'rake'                             ) printf -- ''; return ;;
-            'rar'                              ) printf -- ''; return ;;
-            'rb'                               ) printf -- ''; return ;;
-            'rc'                               ) printf -- ''; return ;;
-            'rlib'                             ) printf -- ''; return ;;
-            'rmd'                              ) printf -- ''; return ;;
-            'rom'                              ) printf -- ''; return ;;
-            'rpm'                              ) printf -- ''; return ;;
-            'rproj'                            ) printf -- '鉶'; return ;;
-            'rs'                               ) printf -- ''; return ;;
-            'rss'                              ) printf -- ''; return ;;
-            'rtf'                              ) printf -- ''; return ;;
-            's'                                ) printf -- ''; return ;;
-            'sass'                             ) printf -- ''; return ;;
-            'scala'                            ) printf -- ''; return ;;
-            'scss'                             ) printf -- ''; return ;;
-            'sh'                               ) printf -- ''; return ;;
-            'slim'                             ) printf -- ''; return ;;
-            'sln'                              ) printf -- ''; return ;;
-            'so'                               ) printf -- ''; return ;;
-            'sql'                              ) printf -- ''; return ;;
-            'styl'                             ) printf -- ''; return ;;
-            'suo'                              ) printf -- ''; return ;;
-            'swift'                            ) printf -- ''; return ;;
-            't'                                ) printf -- ''; return ;;
-            'tar'                              ) printf -- ''; return ;;
-            'tex'                              ) printf -- 'ﭨ'; return ;;
-            'tgz'                              ) printf -- ''; return ;;
-            'toml'                             ) printf -- ''; return ;;
-            'ts'                               ) printf -- ''; return ;;
-            'tsx'                              ) printf -- ''; return ;;
-            'twig'                             ) printf -- ''; return ;;
-            'vim'                              ) printf -- ''; return ;;
-            'vimrc'                            ) printf -- ''; return ;;
-            'vue'                              ) printf -- '﵂'; return ;;
-            'wav'                              ) printf -- ''; return ;;
-            'webm'                             ) printf -- ''; return ;;
-            'webmanifest'                      ) printf -- ''; return ;;
-            'webp'                             ) printf -- ''; return ;;
-            'xbps'                             ) printf -- ''; return ;;
-            'xcplayground'                     ) printf -- ''; return ;;
-            'xhtml'                            ) printf -- ''; return ;;
-            'xls'                              ) printf -- ''; return ;;
-            'xlsx'                             ) printf -- ''; return ;;
-            'xml'                              ) printf -- ''; return ;;
-            'xul'                              ) printf -- ''; return ;;
-            'xz'                               ) printf -- ''; return ;;
-            'yaml'                             ) printf -- ''; return ;;
-            'yml'                              ) printf -- ''; return ;;
-            'zip'                              ) printf -- ''; return ;;
-            'zsh'                              ) printf -- ''; return ;;
+            '7z'  | 'apk'   |\
+            'bz2' | 'cab'   |\
+            'cpio'| 'deb'   |\
+            'gem' | 'gz'    |\
+            'gzip'| 'lha'   |\
+            'lzh' | 'lzma'  |\
+            'rar' | 'rpm'   |\
+            'tar' | 'tgz'   |\
+            'xbps'| 'xz'    |\
+            'zip'           ) printf -- ''; return ;;
+
+            'bat' | 'conf'  |\
+            'cvs'           |\
+            'htaccess'      |\
+            'htpasswd'      |\
+            'ini' | 'rc'    |\
+            'toml'| 'yaml'  |\
+            'yml'           ) printf -- ''; return ;;
+
+            'asp' | 'awk'   |\
+            'bash'| 'csh'   |\
+            'efi' | 'elf'   |\
+            'fish'| 'ksh'   |\
+            'ps1' | 'rom'   |\
+            'zsh'           ) printf -- ''; return ;;
+
+            'avi' | 'flv'   |\
+            'm4v' | 'mkv'   |\
+            'mov' | 'mp4'   |\
+            'mpeg'| 'mpg'   |\
+            'webm'          ) printf -- ''; return ;;
+
+
+            'bmp' | 'gif'   |\
+            'ico' | 'jpeg'  |\
+            'jpg' | 'png'   |\
+            'ppt' | 'pptx'  |\
+            'webp'          ) printf -- ''; return ;;
+
+            'aup' | 'cue'   |\
+            'flac'| 'm4a'   |\
+            'mp3' | 'ogg'   |\
+            'wav'           ) printf -- ''; return ;;
+
+            'c'   | 'c++'   |\
+            'cc'  | 'cp'    |\
+            'cpp' | 'cxx'   |\
+            'h'   | 'hpp'   ) printf -- ''; return ;;
+
+            'docx'| 'doc'   |\
+            'epub'| 'pdf'   |\
+            'rtf' | 'xls'   |\
+            'xlsx'          ) printf -- ''; return ;;
+
+            'ejs' | 'haml'  |\
+            'htm' | 'html'  |\
+            'slim'|  'xhtml'|\
+            'xml'           ) printf -- ''; return ;;
+
+            'a'   | 'cmake' |\
+            'jl'  | 'o'     |\
+            'so'            ) printf -- ''; return ;;
+
+            'asm' | 'css'   |\
+            'less'| 's'     |\
+            'sh'            ) printf -- ''; return ;;
+
+            'db'  | 'dump'  |\
+            'img' | 'iso'   |\
+            'sql'           ) printf -- ''; return ;;
+
+            'f#'  | 'fs'    |\
+            'fsi' | 'fsx'   |\
+            'fsscript'      ) printf -- ''; return ;;
+
+            'markdown'      |\
+            'md'  | 'mdx'   |\
+            'rmd'           ) printf -- ''; return ;;
+
+            'gemspec'       |\
+            'rake'| 'rb'    ) printf -- ''; return ;;
+
+            'dll' | 'exe'   |\
+            'msi'           ) printf -- ''; return ;;
+
+            'eex' | 'ex'    |\
+            'exs' | 'leex'  ) printf -- ''; return ;;
+
+            'class'         |\
+            'jar' | 'java'  ) printf -- ''; return ;;
+
+            'mustache'      |\
+            'hbs'           ) printf -- ''; return ;;
+
+            'json'          |\
+            'webmanifest'   ) printf -- ''; return ;;
+
+            'py'  | 'pyc'   |\
+            'pyd' | 'pyo'   ) printf -- ''; return ;;
+
+            'cbr' | 'cbz'   ) printf -- ''; return ;;
+            'clj' | 'cljc'  ) printf -- ''; return ;;
+            'cljs'| 'edn'   ) printf -- ''; return ;;
+            'hrl' | 'erl'   ) printf -- ''; return ;;
+            'hh'  | 'hxx'   ) printf -- ''; return ;;
+            'hs'  | 'lhs'   ) printf -- ''; return ;;
+            'js'  | 'mjs'   ) printf -- ''; return ;;
+            'jsx' | 'tsx'   ) printf -- ''; return ;;
+            'key' | 'pub'   ) printf -- ''; return ;;
+            'ml'  | 'mli'   ) printf -- 'λ'; return ;;
+            'pl'  | 'pm'    ) printf -- ''; return ;;
+            'vim' | 'vimrc' ) printf -- ''; return ;;
+            'psb' | 'psd'   ) printf -- ''; return ;;
+            'rlib'| 'rs'    ) printf -- ''; return ;;
+            'sass'| 'scss'  ) printf -- ''; return ;;
+            'sln' | 'suo'   ) printf -- ''; return ;;
+
+            'coffee'        ) printf -- ''; return ;;
+            'ai'            ) printf -- ''; return ;;
+            'cs'            ) printf -- ''; return ;;
+            'd'             ) printf -- ''; return ;;
+            'dart'          ) printf -- ''; return ;;
+            'diff'          ) printf -- ''; return ;;
+            'elm'           ) printf -- ''; return ;;
+            'fi'            ) printf -- '|'; return ;;
+            'go'            ) printf -- ''; return ;;
+            'log'           ) printf -- ''; return ;;
+            'lua'           ) printf -- ''; return ;;
+            'nix'           ) printf -- ''; return ;;
+            'php'           ) printf -- ''; return ;;
+            'pp'            ) printf -- ''; return ;;
+            'r'             ) printf -- 'ﳒ'; return ;;
+            'rproj'         ) printf -- '鉶'; return ;;
+            'rss'           ) printf -- ''; return ;;
+            'scala'         ) printf -- ''; return ;;
+            'styl'          ) printf -- ''; return ;;
+            'swift'         ) printf -- ''; return ;;
+            't'             ) printf -- ''; return ;;
+            'tex'           ) printf -- 'ﭨ'; return ;;
+            'ts'            ) printf -- ''; return ;;
+            'twig'          ) printf -- ''; return ;;
+            'vue'           ) printf -- '﵂'; return ;;
+            'xcplayground'  ) printf -- ''; return ;;
+            'xul'           ) printf -- ''; return ;;
         esac
     }
 
