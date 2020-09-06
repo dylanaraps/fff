@@ -249,8 +249,8 @@ get_icon() {
             'rakefile'                     ) printf -- ''; return ;;
             'README'                       ) printf -- ''; return ;;
             'sxhkdrc'                      ) printf -- ''; return ;;
+            '*'                            ) printf -- ''; return ;;
         esac
-        printf -- ''; return
     }
 
     # Icon for files with the name starting with '.' 
@@ -288,8 +288,8 @@ get_icon() {
             '.xinputrc'                    ) printf -- ''; return ;;
             '.Xresources'                  ) printf -- ''; return ;;
             '.zshrc'                       ) printf -- ''; return ;;
+            '*'                            ) printf -- ''; return ;;
         esac
-        printf -- ''; return
     }
 
     # Icon for files whose names have an extension
@@ -521,7 +521,6 @@ get_icon() {
             'zip'                              ) printf -- ''; return ;;
             'zsh'                              ) printf -- ''; return ;;
         esac
-        printf -- ''; return
     }
 
 
