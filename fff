@@ -150,6 +150,154 @@ get_mime_type() {
     mime_type=$(file "-${file_flags:-biL}" "$1" 2>/dev/null)
 }
 
+get_icon() {
+    # $1 Absolute path to the file
+
+    local file_path="$1"
+    local file_name=${file_path##*/}
+    local file_ext="${file_name##*.}"
+
+    printf "%s\n" "$file_path|$file_name|$file_ext" >> /home/sidd_dino/Documents/PROJECTS/IN_GIT/fff/fff_log
+
+    # Directories
+    [[ -d "$file_path" ]] && {
+        case "$file_name" in
+            # English
+                '.git'            ) printf -- ''; return ;;
+                'Desktop'         ) printf -- ''; return ;;
+                'Documents'       ) printf -- ''; return ;;
+                'Downloads'       ) printf -- ''; return ;;
+                'Dotfiles'        ) printf -- ''; return ;;
+                'Dropbox'         ) printf -- ''; return ;;
+                'Music'           ) printf -- ''; return ;;
+                'Pictures'        ) printf -- ''; return ;;
+                'Public'          ) printf -- ''; return ;;
+                'Templates'       ) printf -- ''; return ;;
+                'Videos'          ) printf -- ''; return ;;
+
+            # Spanish
+                'Escritorio'      ) printf -- ''; return ;; 
+                'Documentos'      ) printf -- ''; return ;; 
+                'Descargas'       ) printf -- ''; return ;; 
+                'Música'          ) printf -- ''; return ;; 
+                'Imágenes'        ) printf -- ''; return ;; 
+                'Público'         ) printf -- ''; return ;; 
+                'Plantillas'      ) printf -- ''; return ;; 
+                'Vídeos'          ) printf -- ''; return ;; 
+            # French
+                'Bureau'          ) printf -- ''; return ;;
+                'Images'          ) printf -- ''; return ;;
+                'Musique'         ) printf -- ''; return ;;
+                'Publique'        ) printf -- ''; return ;;
+                'Téléchargements' ) printf -- ''; return ;;
+                'Vidéos'          ) printf -- ''; return ;;
+            # Portuguese
+                'Imagens'         ) printf -- ''; return ;;
+                'Modelos'         ) printf -- ''; return ;;
+                'Área de trabalho') printf -- ''; return ;;
+            # Italian
+                'Documenti'       ) printf -- ''; return ;;
+                'Immagini'        ) printf -- ''; return ;;
+                'Modelli'         ) printf -- ''; return ;;
+                'Musica'          ) printf -- ''; return ;;
+                'Pubblici'        ) printf -- ''; return ;;
+                'Scaricati'       ) printf -- ''; return ;;
+                'Scrivania'       ) printf -- ''; return ;;
+                'Video'           ) printf -- ''; return ;;
+            # German
+                'Bilder'          ) printf -- ''; return ;;
+                'Dokumente'       ) printf -- ''; return ;;
+                'Musik'           ) printf -- ''; return ;;
+                'Schreibtisch'    ) printf -- ''; return ;;
+                'Vorlagen'        ) printf -- ''; return ;;
+                'Öffentlich'      ) printf -- ''; return ;;
+            # Hungarian
+                'Dokumentumok'    ) printf -- ''; return ;;
+                'Képek'           ) printf -- ''; return ;;
+                'Zene'            ) printf -- ''; return ;;
+                'Letöltések'      ) printf -- ''; return ;;
+                'Videók'          ) printf -- ''; return ;;
+                'Számítógép'      ) printf -- ''; return ;;
+
+                *                 ) printf -- ''; return ;;
+        esac
+    }
+
+    # Files with no extension
+    [[ "$file_path" == *"/$file_ext" ]] && { 
+        case "$file_name" in
+            '_gvimrc'                      ) printf -- ''; return ;;
+            '_vimrc'                       ) printf -- ''; return ;;
+            'a.out'                        ) printf -- ''; return ;;
+            'authorized_keys'              ) printf -- ''; return ;;
+            'bspwmrc'                      ) printf -- ''; return ;;
+            'cmakelists.txt'               ) printf -- ''; return ;;
+            'config'                       ) printf -- ''; return ;;
+            'configure'                    ) printf -- ''; return ;;
+            'dockerfile'                   ) printf -- ''; return ;;
+            'Dockerfile'                   ) printf -- ''; return ;;
+            'dropbox'                      ) printf -- ''; return ;;
+            'exact-match-case-sensitive-2' ) printf -- 'X2'; return ;;
+            'gemfile'                      ) printf -- ''; return ;;
+            'ini'                          ) printf -- ''; return ;;
+            'known_hosts'                  ) printf -- ''; return ;;
+            'ledger'                       ) printf -- ''; return ;;
+            'license'                      ) printf -- ''; return ;;
+            'LICENSE'                      ) printf -- ''; return ;;
+            'Makefile'                     ) printf -- ''; return ;;
+            'makefile'                     ) printf -- ''; return ;;
+            'node_modules'                 ) printf -- ''; return ;;
+            'playlists'                    ) printf -- ''; return ;;
+            'procfile'                     ) printf -- ''; return ;;
+            'Rakefile'                     ) printf -- ''; return ;;
+            'rakefile'                     ) printf -- ''; return ;;
+            'README'                       ) printf -- ''; return ;;
+            'sxhkdrc'                      ) printf -- ''; return ;;
+        esac
+        printf -- ''; return 
+    }
+
+    # Hidden files with no extension
+    [[ "$file_name" == ".$file_ext" ]] && {
+        case $file_name in
+                '.bash_aliases'                ) printf -- ''; return ;;
+                '.bash_history'                ) printf -- ''; return ;;
+                '.bash_logout'                 ) printf -- ''; return ;;
+                '.bash_profile'                ) printf -- ''; return ;;
+                '.bashprofile'                 ) printf -- ''; return ;;
+                '.bashrc'                      ) printf -- ''; return ;;
+                '.dmrc'                        ) printf -- ''; return ;;
+                '.DS_Store'                    ) printf -- ''; return ;;
+                '.fasd'                        ) printf -- ''; return ;;
+                '.fehbg'                       ) printf -- ''; return ;;
+                '.gitattributes'               ) printf -- ''; return ;;
+                '.gitconfig'                   ) printf -- ''; return ;;
+                '.gitignore'                   ) printf -- ''; return ;;
+                '.gvimrc'                      ) printf -- ''; return ;;
+                '.inputrc'                     ) printf -- ''; return ;;
+                '.jack-settings'               ) printf -- ''; return ;;
+                '.ncmpcpp'                     ) printf -- ''; return ;;
+                '.nvidia-settings-rc'          ) printf -- ''; return ;;
+                '.pam_environment'             ) printf -- ''; return ;;
+                '.profile'                     ) printf -- ''; return ;;
+                '.recently-used'               ) printf -- ''; return ;;
+                '.selected_editor'             ) printf -- ''; return ;;
+                '.vim'                         ) printf -- ''; return ;;
+                '.viminfo'                     ) printf -- ''; return ;;
+                '.vimrc'                       ) printf -- ''; return ;;
+                '.Xauthority'                  ) printf -- ''; return ;;
+                '.Xdefaults'                   ) printf -- ''; return ;;
+                '.xinitrc'                     ) printf -- ''; return ;;
+                '.xinputrc'                    ) printf -- ''; return ;;
+                '.Xresources'                  ) printf -- ''; return ;;
+                '.zshrc'                       ) printf -- ''; return ;;
+        esac
+    }
+
+    printf -- ''; return 
+
+}
+
 status_line() {
     # Status_line to print when files are marked for operation.
     local mark_ui="[${#marked_files[@]}] selected (${file_program[*]}) [p] ->"
@@ -225,6 +373,7 @@ print_line() {
     local file_ext=${file_name##*.}
     local format
     local suffix
+    local icon
 
     # If the dir item doesn't exist, end here.
     if [[ -z ${list[$1]} ]]; then
@@ -299,8 +448,12 @@ print_line() {
     # Remove all non-printable characters.
     file_name=${file_name//[^[:print:]]/^[}
 
+    icon=$(get_icon "${list[$1]}" )
+
+    printf "${icon}\n" >> /home/sidd_dino/Documents/PROJECTS/IN_GIT/fff/fff_log
+
     printf '\r%b%s\e[m\r' \
-        "${file_pre}${format}" \
+        "${file_pre}${format}${icon} " \
         "${file_name}${suffix}${file_post}"
 }
 
@@ -736,9 +889,11 @@ cmd_line() {
 }
 
 key() {
+    local special_key
+
     # Handle special key presses.
     [[ $1 == $'\e' ]] && {
-        special_keys+=${1}
+        special_key+=${1}
 
         # \e A
         # \e [ A
@@ -748,17 +903,17 @@ key() {
         
         #* read 2
         read "${read_flags[@]}" -srn 1
-        special_keys+=${REPLY}
+        special_key+=${REPLY}
 
         [[ $REPLY == $'[' ]] && {
             #* read 3
             read "${read_flags[@]}" -srn 1
-            special_keys+=${REPLY}
+            special_key+=${REPLY}
 
             [[ ${REPLY} == [0-9] ]] && {
                 #* read 4
                 read "${read_flags[@]}" -srn 1
-                special_keys+=${REPLY}
+                special_key+=${REPLY}
             }
         }
 
@@ -769,10 +924,10 @@ key() {
         # 'C' is what bash sees when the right arrow is pressed
         # ('\e[C' or '\eOC').
         # '' is what bash sees when the enter/return key is pressed.
-        ${FFF_KEY_CHILD1:=l}|\
-        ${FFF_KEY_CHILD2:=$'\e[C'}|\
-        ${FFF_KEY_CHILD3:=""}|\
-        ${FFF_KEY_CHILD4:=$'\eOC'})
+        "${FFF_KEY_CHILD1:=l}"|\
+        "${FFF_KEY_CHILD2:=$'\e[C'}"|\
+        "${FFF_KEY_CHILD3:=""}"|\
+        "${FFF_KEY_CHILD4:=$'\eOC'}")
             open "${list[scroll]}"
         ;;
 
@@ -781,11 +936,11 @@ key() {
         # ('\e[D' or '\eOD').
         # '\177' and '\b' are what bash sometimes sees when the backspace
         # key is pressed.
-        ${FFF_KEY_PARENT1:=h}|\
-        ${FFF_KEY_PARENT2:=$'\e[D'}|\
-        ${FFF_KEY_PARENT3:=$'\177'}|\
-        ${FFF_KEY_PARENT4:=$'\b'}|\
-        ${FFF_KEY_PARENT5:=$'\eOD'})
+        "${FFF_KEY_PARENT1:=h}"|\
+        "${FFF_KEY_PARENT2:=$'\e[D'}"|\
+        "${FFF_KEY_PARENT3:=$'\177'}"|\
+        "${FFF_KEY_PARENT4:=$'\b'}"|\
+        "${FFF_KEY_PARENT5:=$'\eOD'}")
             # If a search was done, clear the results and open the current dir.
             if ((search == 1 && search_end_early != 1)); then
                 open "$PWD"
@@ -800,9 +955,9 @@ key() {
         # Scroll down.
         # 'B' is what bash sees when the down arrow is pressed
         # ('\e[B' or '\eOB').
-        ${FFF_KEY_SCROLL_DOWN1:=j}|\
-        ${FFF_KEY_SCROLL_DOWN2:=$'\e[B'}|\
-        ${FFF_KEY_SCROLL_DOWN3:=$'\eOB'})
+        "${FFF_KEY_SCROLL_DOWN1:=j}"|\
+        "${FFF_KEY_SCROLL_DOWN2:=$'\e[B'}"|\
+        "${FFF_KEY_SCROLL_DOWN3:=$'\eOB'}")
             ((scroll < list_total)) && {
                 ((scroll++))
                 ((y < max_items)) && ((y++))
@@ -817,9 +972,9 @@ key() {
         # Scroll up.
         # 'A' is what bash sees when the up arrow is pressed
         # ('\e[A' or '\eOA').
-        ${FFF_KEY_SCROLL_UP1:=k}|\
-        ${FFF_KEY_SCROLL_UP2:=$'\e[A'}|\
-        ${FFF_KEY_SCROLL_UP3:=$'\eOA'})
+        "${FFF_KEY_SCROLL_UP1:=k}"|\
+        "${FFF_KEY_SCROLL_UP2:=$'\e[A'}"|\
+        "${FFF_KEY_SCROLL_UP3:=$'\eOA'}")
             # '\e[1L': Insert a line above the cursor.
             # '\e[A':  Move cursor up a line.
             ((scroll > 0)) && {
@@ -840,7 +995,7 @@ key() {
         ;;
 
         # Go to top.
-        ${FFF_KEY_TO_TOP:=g})
+        "${FFF_KEY_TO_TOP:=g}")
             ((scroll != 0)) && {
                 scroll=0
                 redraw
@@ -848,7 +1003,7 @@ key() {
         ;;
 
         # Go to bottom.
-        ${FFF_KEY_TO_BOTTOM:=G})
+        "${FFF_KEY_TO_BOTTOM:=G}")
             ((scroll != list_total)) && {
                 ((scroll=list_total))
                 redraw
@@ -856,7 +1011,7 @@ key() {
         ;;
 
         # Show hidden files.
-        ${FFF_KEY_HIDDEN:=.})
+        "${FFF_KEY_HIDDEN:=.}")
             # 'a=a>0?0:++a': Toggle between both values of 'shopt_flags'.
             #                This also works for '3' or more values with
             #                some modification.
@@ -866,7 +1021,7 @@ key() {
         ;;
 
         # Search.
-        ${FFF_KEY_SEARCH:=/})
+        "${FFF_KEY_SEARCH:=/}")
             cmd_line "/" "search"
 
             # If the search came up empty, redraw the current dir.
@@ -881,7 +1036,7 @@ key() {
         ;;
 
         # Spawn a shell.
-        ${FFF_KEY_SHELL:=!})
+        "${FFF_KEY_SHELL:=!}")
             reset_terminal
 
             # Make fff aware of how many times it is nested.
@@ -894,25 +1049,25 @@ key() {
         ;;
 
         # Mark files for operation.
-        ${FFF_KEY_YANK:=y}|\
-        ${FFF_KEY_MOVE:=m}|\
-        ${FFF_KEY_TRASH:=d}|\
-        ${FFF_KEY_LINK:=s}|\
-        ${FFF_KEY_BULK_RENAME:=b})
+        "${FFF_KEY_YANK:=y}"|\
+        "${FFF_KEY_MOVE:=m}"|\
+        "${FFF_KEY_TRASH:=d}"|\
+        "${FFF_KEY_LINK:=s}"|\
+        "${FFF_KEY_BULK_RENAME:=b}")
             mark "$scroll" "$1"
         ;;
 
         # Mark all files for operation.
-        ${FFF_KEY_YANK_ALL:=Y}|\
-        ${FFF_KEY_MOVE_ALL:=M}|\
-        ${FFF_KEY_TRASH_ALL:=D}|\
-        ${FFF_KEY_LINK_ALL:=S}|\
-        ${FFF_KEY_BULK_RENAME_ALL:=B})
+        "${FFF_KEY_YANK_ALL:=Y}"|\
+        "${FFF_KEY_MOVE_ALL:=M}"|\
+        "${FFF_KEY_TRASH_ALL:=D}"|\
+        "${FFF_KEY_LINK_ALL:=S}"|\
+        "${FFF_KEY_BULK_RENAME_ALL:=B}")
             mark all "$1"
         ;;
 
         # Do the file operation.
-        ${FFF_KEY_PASTE:=p})
+        "${FFF_KEY_PASTE:=p}")
             [[ ${marked_files[*]} ]] && {
                 [[ ! -w $PWD ]] && {
                     cmd_line "warn: no write access to dir."
@@ -935,7 +1090,7 @@ key() {
         ;;
 
         # Clear all marked files.
-        ${FFF_KEY_CLEAR:=c})
+        "${FFF_KEY_CLEAR:=c}")
             [[ ${marked_files[*]} ]] && {
                 marked_files=()
                 redraw
@@ -943,7 +1098,7 @@ key() {
         ;;
 
         # Rename list item.
-        ${FFF_KEY_RENAME:=r})
+        "${FFF_KEY_RENAME:=r}")
             [[ ! -e ${list[scroll]} ]] &&
                 return
 
@@ -963,7 +1118,7 @@ key() {
         ;;
 
         # Create a directory.
-        ${FFF_KEY_MKDIR:=n})
+        "${FFF_KEY_MKDIR:=n}")
             cmd_line "mkdir: " "dirs"
 
             [[ $cmd_reply ]] &&
@@ -980,7 +1135,7 @@ key() {
         ;;
 
         # Create a file.
-        ${FFF_KEY_MKFILE:=f})
+        "${FFF_KEY_MKFILE:=f}")
             cmd_line "mkfile: "
 
             [[ $cmd_reply ]] &&
@@ -997,7 +1152,7 @@ key() {
         ;;
 
         # Show file attributes.
-        ${FFF_KEY_ATTRIBUTES:=x})
+        "${FFF_KEY_ATTRIBUTES:=x}")
             [[ -e "${list[scroll]}" ]] && {
                 clear_screen
                 status_line "${list[scroll]}"
@@ -1008,7 +1163,7 @@ key() {
         ;;
 
         # Toggle executable flag.
-        ${FFF_KEY_EXECUTABLE:=X})
+        "${FFF_KEY_EXECUTABLE:=X}")
             [[ -f ${list[scroll]} && -w ${list[scroll]} ]] && {
                 if [[ -x ${list[scroll]} ]]; then
                     chmod -x "${list[scroll]}"
@@ -1021,12 +1176,12 @@ key() {
         ;;
 
         # Show image in terminal.
-        ${FFF_KEY_IMAGE:=i})
+        "${FFF_KEY_IMAGE:=i}")
             draw_img
         ;;
 
         # Go to dir.
-        ${FFF_KEY_GO_DIR:=:})
+        "${FFF_KEY_GO_DIR:=:}")
             cmd_line "go to dir: " "dirs"
 
             # Let 'cd' know about the current directory.
@@ -1038,23 +1193,23 @@ key() {
         ;;
 
         # Go to '$HOME'.
-        ${FFF_KEY_GO_HOME:='~'})
+        "${FFF_KEY_GO_HOME:='~'}")
             open ~
         ;;
 
         # Go to trash.
-        ${FFF_KEY_GO_TRASH:=t})
+        "${FFF_KEY_GO_TRASH:=t}")
             get_os
             open "$FFF_TRASH"
         ;;
 
         # Go to previous dir.
-        ${FFF_KEY_PREVIOUS:=-})
+        "${FFF_KEY_PREVIOUS:=-}")
             open "$OLDPWD"
         ;;
 
         # Refresh current dir.
-        ${FFF_KEY_REFRESH:=e})
+        "${FFF_KEY_REFRESH:=e}")
             open "$PWD"
         ;;
 
@@ -1070,7 +1225,7 @@ key() {
         # Quit and store current directory in a file for CD on exit.
         # Don't allow user to redefine 'q' so a bad keybinding doesn't
         # remove the option to quit.
-        q)
+        "q")
             : "${FFF_CD_FILE:=${XDG_CACHE_HOME:=${HOME}/.cache}/fff/.fff_d}"
 
             [[ -w $FFF_CD_FILE ]] &&
