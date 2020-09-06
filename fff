@@ -154,10 +154,10 @@ get_icon() {
     # $1 Absolute path to the file
     # $2 name of the file/directory
     # $3 the extracted extension from the file name
-    
+
     # Icons for directories
     [[ -d "$1" ]] && {
-        case "$1" in
+        case "$2" in
             # English
                 '.git'            ) printf -- ''; return ;;
                 'Desktop'         ) printf -- ''; return ;;
