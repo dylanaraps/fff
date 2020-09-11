@@ -1352,6 +1352,12 @@ key() {
             draw_img
         ;;
 
+
+        "${FFF_DISPLAY_ICON:=I}")
+            FFF_FILE_ICON=$(( $((FFF_FILE_ICON + 1)) % 2 ))
+            redraw
+        ;;
+
         # Go to dir.
         "${FFF_KEY_GO_DIR:=:}")
             cmd_line "go to dir: " "dirs"
