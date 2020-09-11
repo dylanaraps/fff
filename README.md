@@ -1,4 +1,5 @@
 # fff (*Fucking Fast File-Manager*)
+## (/◕ヮ◕)/ with devicons/nerd-font support 
 
 <a href="https://asciinema.org/a/qvNlrFrGB3xKZXb6GkremjZNp" target="_blank"><img src="https://asciinema.org/a/qvNlrFrGB3xKZXb6GkremjZNp.svg" alt="img" height="210px" align="right"/></a>
 
@@ -178,6 +179,10 @@ Ctrl+C: exit without 'cd'.
 # (Off by default)
 export FFF_HIDDEN=1
 
+# Show/Hide file icons on open
+# (Off by default)
+export FFF_FILE_ICON=1
+
 # Use LS_COLORS to color fff.
 # (On by default if available)
 # (Ignores FFF_COL1)
@@ -335,6 +340,9 @@ export FFF_KEY_EXECUTABLE="X"
 
 # Toggle hidden files.
 export FFF_KEY_HIDDEN="."
+
+# Toggle file icons
+export FFF_DISPLAY_ICON="I"
 ```
 
 ### Disabling keybindings.
