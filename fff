@@ -984,7 +984,7 @@ key() {
             [[ -e "${list[scroll]}" ]] && {
                 clear_screen
                 status_line "${list[scroll]}"
-                stat "${list[scroll]}"
+                "${FFF_STAT_CMD:-stat}" "${list[scroll]}"
                 read -ern 1
                 redraw
             }
