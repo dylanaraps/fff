@@ -141,8 +141,8 @@ get_ls_colors() {
 
 get_w3m_path() {
     # Find the path to the w3m-img library.
-    w3m_paths=(/usr/{local/,}{lib,libexec,lib64,libexec64}/w3m/w3mi*)
-    read -r w3m _ < <(type -p w3mimgdisplay "${w3m_paths[@]}")
+    w3m_paths=(/usr/{pkg/,}{local/,}{bin,lib,libexec,lib64,libexec64}/w3m/w3mi*)
+    read -r w3m _ < <(type -p "$FFF_W3M_PATH" w3mimgdisplay "${w3m_paths[@]}")
 }
 
 get_mime_type() {
