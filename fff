@@ -196,12 +196,12 @@ read_dir() {
     for item in "$PWD"/*; do
         if [[ -d $item ]]; then
             dirs+=("$item")
-            ((item_index++))
 
             # Find the position of the child directory in the
             # parent directory list.
             [[ $item == "$OLDPWD" ]] &&
                 ((previous_index=item_index))
+            ((item_index++))
         else
             files+=("$item")
         fi
@@ -313,7 +313,7 @@ draw_dir() {
     # When going up the directory tree, place the cursor on the position
     # of the previous directory.
     ((find_previous == 1)) && {
-        ((scroll_start=previous_index-1))
+        ((scroll_start=previous_index))
         ((scroll=scroll_start))
 
         # Clear the directory history. We're here now.
