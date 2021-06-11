@@ -274,7 +274,7 @@ print_line() {
 
     # Color files based on file extension and LS_COLORS.
     # Check if file extension adheres to POSIX naming
-    # stardard before checking if it's a variable.
+    # standard before checking if it's a variable.
     elif [[ $FFF_LS_COLORS == 1 &&
             $file_ext != "$file_name" &&
             $file_ext =~ ^[a-zA-Z0-9_]*$ ]]; then
@@ -326,7 +326,7 @@ draw_dir() {
         ((scroll_end=max_items))
         ((scroll_new_pos=scroll+1))
 
-    # If curent dir is near the end of the list, keep scroll position.
+    # If current dir is near the end of the list, keep scroll position.
     elif ((list_total - scroll < max_items/2)); then
         ((scroll_start=list_total-max_items+1))
         ((scroll_new_pos=max_items-(list_total-scroll)))
@@ -401,7 +401,7 @@ draw_img() {
     # Get the image size in pixels.
     read -r img_width img_height < <("$w3m" <<< "5;${list[scroll]}")
 
-    # Substract the status_line area from the image size.
+    # Subtract the status_line area from the image size.
     ((HEIGHT=HEIGHT-HEIGHT*5/LINES))
 
     ((img_width > WIDTH)) && {
