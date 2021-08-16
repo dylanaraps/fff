@@ -1006,6 +1006,17 @@ key() {
                 fi
             }
         ;;
+         ## run du/ncdu to get sizes
+        u)
+            [[ -e "${list[scroll]}" ]] && {
+                clear_screen
+                reset_terminal
+                status_line "${list[scroll]}"
+                type ncdu &> /dev/null && ncdu "${list[scroll]}" || du "${list[scroll]}"
+                setup_terminal
+                redraw
+            }
+        ;;
 
         # Show image in terminal.
         ${FFF_KEY_IMAGE:=i})
