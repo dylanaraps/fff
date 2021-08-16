@@ -210,6 +210,13 @@ read_dir() {
             files+=("$item")
         fi
     done
+    
+    IFS=$'\n' 
+	if [[ $PWD == ~/Downloads* ]]; then
+		dirs=($(stat -c '%Y=%n' "${dirs[@]}" | sort -nr | cut -d '=' -f2))
+		files=($(stat -c '%Y=%n' "${files[@]}" | sort -nr | cut -d '=' -f2))
+	fi
+    unset IFS
 
     list=("${dirs[@]}" "${files[@]}")
 
