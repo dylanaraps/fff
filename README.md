@@ -162,7 +162,7 @@ D: mark all for trash (~/.local/share/fff/trash/)
 S: mark all for symbolic link
 B: mark all for bulk rename
 
-p: paste/move/delete/bulk_rename
+p: execute paste/move/delete/bulk_rename
 c: clear file selections
 
 [1-9]: favourites/bookmarks (see customization)
