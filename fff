@@ -210,6 +210,13 @@ read_dir() {
             files+=("$item")
         fi
     done
+    
+    IFS=$'\n' 
+	if [[ $PWD == ~/Downloads* ]]; then
+		dirs=($(stat -c '%Y=%n' "${dirs[@]}" | sort -nr | cut -d '=' -f2))
+		files=($(stat -c '%Y=%n' "${files[@]}" | sort -nr | cut -d '=' -f2))
+	fi
+    unset IFS
 
     list=("${dirs[@]}" "${files[@]}")
 
@@ -1004,6 +1011,17 @@ key() {
                     chmod +x "${list[scroll]}"
                     status_line "Set executable."
                 fi
+            }
+        ;;
+         ## run du/ncdu to get sizes
+        u)
+            [[ -e "${list[scroll]}" ]] && {
+                clear_screen
+                reset_terminal
+                status_line "${list[scroll]}"
+                type ncdu &> /dev/null && ncdu "${list[scroll]}" || du "${list[scroll]}"
+                setup_terminal
+                redraw
             }
         ;;
 
