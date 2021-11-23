@@ -154,6 +154,346 @@ get_mime_type() {
     mime_type=$(file "-${file_flags:-biL}" "$1" 2>/dev/null)
 }
 
+get_icon() {
+    # $1 Absolute path to the file
+    # $2 name of the file/directory
+    # $3 the extracted extension from the file name
+
+    # Icons for directories
+    [[ -d "$1" ]] && {
+        case "$2" in
+            # English
+                '.git'            ) printf -- ''; return ;;
+                'Desktop'         ) printf -- ''; return ;;
+                'Documents'       ) printf -- ''; return ;;
+                'Downloads'       ) printf -- ''; return ;;
+                'Dotfiles'        ) printf -- ''; return ;;
+                'Dropbox'         ) printf -- ''; return ;;
+                'Music'           ) printf -- ''; return ;;
+                'Pictures'        ) printf -- ''; return ;;
+                'Public'          ) printf -- ''; return ;;
+                'Templates'       ) printf -- ''; return ;;
+                'Videos'          ) printf -- ''; return ;;
+
+            # Spanish
+                'Escritorio'      ) printf -- ''; return ;; 
+                'Documentos'      ) printf -- ''; return ;; 
+                'Descargas'       ) printf -- ''; return ;; 
+                'Música'          ) printf -- ''; return ;; 
+                'Imágenes'        ) printf -- ''; return ;; 
+                'Público'         ) printf -- ''; return ;; 
+                'Plantillas'      ) printf -- ''; return ;; 
+                'Vídeos'          ) printf -- ''; return ;; 
+            # French
+                'Bureau'          ) printf -- ''; return ;;
+                'Images'          ) printf -- ''; return ;;
+                'Musique'         ) printf -- ''; return ;;
+                'Publique'        ) printf -- ''; return ;;
+                'Téléchargements' ) printf -- ''; return ;;
+                'Vidéos'          ) printf -- ''; return ;;
+            # Portuguese
+                'Imagens'         ) printf -- ''; return ;;
+                'Modelos'         ) printf -- ''; return ;;
+                'Área de trabalho') printf -- ''; return ;;
+            # Italian
+                'Documenti'       ) printf -- ''; return ;;
+                'Immagini'        ) printf -- ''; return ;;
+                'Modelli'         ) printf -- ''; return ;;
+                'Musica'          ) printf -- ''; return ;;
+                'Pubblici'        ) printf -- ''; return ;;
+                'Scaricati'       ) printf -- ''; return ;;
+                'Scrivania'       ) printf -- ''; return ;;
+                'Video'           ) printf -- ''; return ;;
+            # German
+                'Bilder'          ) printf -- ''; return ;;
+                'Dokumente'       ) printf -- ''; return ;;
+                'Musik'           ) printf -- ''; return ;;
+                'Schreibtisch'    ) printf -- ''; return ;;
+                'Vorlagen'        ) printf -- ''; return ;;
+                'Öffentlich'      ) printf -- ''; return ;;
+            # Hungarian
+                'Dokumentumok'    ) printf -- ''; return ;;
+                'Képek'           ) printf -- ''; return ;;
+                'Zene'            ) printf -- ''; return ;;
+                'Letöltések'      ) printf -- ''; return ;;
+                'Videók'          ) printf -- ''; return ;;
+                'Számítógép'      ) printf -- ''; return ;;
+
+                *                 ) printf -- ''; return ;;
+        esac
+    }
+
+    # Icons for files with no extension
+    [[ "$2" == *"/$3" ]] && { 
+        case "$2" in
+            '_gvimrc'       | '_vimrc'       |\
+            'bspwmrc'       |'cmakelists.txt'|\
+            'config'        | 'Makefile'     |\
+            'makefile'      | 'sxhkdrc'      |\
+            'ini'                            ) printf -- ''; return ;;
+
+            'authorized_keys'                |\
+            'known_hosts'                    |\
+            'license'                        |\
+            'LICENSE'                        ) printf -- ''; return ;;
+
+            'gemfile'                        |\
+            'Rakefile'                       |\
+            'rakefile'                       ) printf -- ''; return ;;
+
+            'a.out'                          |\
+            'configure'                      ) printf -- ''; return ;;
+            
+            'dockerfile'                     ) printf -- ''; return ;;
+            'Dockerfile'                     ) printf -- ''; return ;;
+            'dropbox'                        ) printf -- ''; return ;;
+            'exact-match-case-sensitive-2'   ) printf -- 'X2'; return ;;
+            'ledger'                         ) printf -- ''; return ;;
+            'node_modules'                   ) printf -- ''; return ;;
+            'playlists'                      ) printf -- ''; return ;;
+            'procfile'                       ) printf -- ''; return ;;
+            'README'                         ) printf -- ''; return ;;
+            '*'                              ) printf -- ''; return ;;
+        esac
+    }
+
+    # Icon for files with the name starting with '.' 
+    # without an extension
+    [[ "$2" == ".$3" ]] && {
+        case "$2" in
+            '.bash_aliases'                |\
+            '.bash_history'                |\
+            '.bash_logout'                 |\
+            '.bash_profile'                |\
+            '.bashprofile'                 |\
+            '.bashrc'                      |\
+            '.dmrc'                        |\
+            '.DS_Store'                    |\
+            '.fasd'                        |\
+            '.gitattributes'               |\
+            '.gitconfig'                   |\
+            '.gitignore'                   |\
+            '.inputrc'                     |\
+            '.jack-settings'               |\
+            '.nvidia-settings-rc'          |\
+            '.pam_environment'             |\
+            '.profile'                     |\
+            '.recently-used'               |\
+            '.selected_editor'             |\
+            '.Xauthority'                  |\
+            '.Xdefaults'                   |\
+            '.xinitrc'                     |\
+            '.xinputrc'                    |\
+            '.Xresources'                  |\
+            '.zshrc'                       ) printf -- ''; return ;;
+
+            '.vim'                         |\
+            '.viminfo'                     |\
+            '.vimrc'                       ) printf -- ''; return ;;
+
+            '.fehbg'                       ) printf -- ''; return ;;
+            '.gvimrc'                      ) printf -- ''; return ;;
+            '.ncmpcpp'                     ) printf -- ''; return ;;
+
+            '*'                            ) printf -- ''; return ;;
+        esac
+    }
+
+    # Icon for files whose names have an extension
+    [[ "$2" == *"."* ]] && {
+        case "$2" in
+            'cmakelists.txt'                   |\
+            'Makefile.ac'                      |\
+            'Makefile.in'                      |\
+            'mimeapps.list'                    |\
+            'user-dirs.dirs'                   ) printf -- ''; return ;;
+
+            'README.markdown'                  |\
+            'README.md'                        |\
+            'README.rst'                       |\
+            'README.txt'                       ) printf -- ''; return ;;
+
+            'config.ac'                        |\
+            'config.m4'                        |\
+            'config.mk'                        ) printf -- ''; return ;;
+            
+            'gruntfile.coffee'                 |\
+            'gruntfile.js'                     |\
+            'gruntfile.ls'                     ) printf -- ''; return ;;
+            
+            'package-lock.json'                |\
+            'package.json'                     |\
+            'webpack.config.js'                ) printf -- ''; return ;;
+            
+            'gulpfile.coffee'                  |\
+            'gulpfile.js'                      |\
+            'gulpfile.ls'                      ) printf -- ''; return ;;
+
+            'LICENSE.txt'                      |\
+            'LICENSE.md'                       ) printf -- ''; return ;;
+            
+            
+            '.gitlab-ci.yml'                   ) printf -- ''; return ;;
+            'config.ru'                        ) printf -- ''; return ;;
+            'docker-compose.yml'               ) printf -- ''; return ;;
+            'exact-match-case-sensitive-1.txt' ) printf -- 'X1'; return ;;
+            'favicon.ico'                      ) printf -- ''; return ;;
+            'mix.lock'                         ) printf -- ''; return ;;
+            'react.jsx'                        ) printf -- ''; return ;;
+        esac
+
+        case "$3" in
+            '7z'  | 'apk'   |\
+            'bz2' | 'cab'   |\
+            'cpio'| 'deb'   |\
+            'gem' | 'gz'    |\
+            'gzip'| 'lha'   |\
+            'lzh' | 'lzma'  |\
+            'rar' | 'rpm'   |\
+            'tar' | 'tgz'   |\
+            'xbps'| 'xz'    |\
+            'zip'           ) printf -- ''; return ;;
+
+            'bat' | 'conf'  |\
+            'cvs'           |\
+            'htaccess'      |\
+            'htpasswd'      |\
+            'ini' | 'rc'    |\
+            'toml'| 'yaml'  |\
+            'yml'           ) printf -- ''; return ;;
+
+            'asp' | 'awk'   |\
+            'bash'| 'csh'   |\
+            'efi' | 'elf'   |\
+            'fish'| 'ksh'   |\
+            'ps1' | 'rom'   |\
+            'zsh'           ) printf -- ''; return ;;
+
+            'avi' | 'flv'   |\
+            'm4v' | 'mkv'   |\
+            'mov' | 'mp4'   |\
+            'mpeg'| 'mpg'   |\
+            'webm'          ) printf -- ''; return ;;
+
+
+            'bmp' | 'gif'   |\
+            'ico' | 'jpeg'  |\
+            'jpg' | 'png'   |\
+            'ppt' | 'pptx'  |\
+            'webp'          ) printf -- ''; return ;;
+
+            'aup' | 'cue'   |\
+            'flac'| 'm4a'   |\
+            'mp3' | 'ogg'   |\
+            'wav'           ) printf -- ''; return ;;
+
+            'c'   | 'c++'   |\
+            'cc'  | 'cp'    |\
+            'cpp' | 'cxx'   |\
+            'h'   | 'hpp'   ) printf -- ''; return ;;
+
+            'docx'| 'doc'   |\
+            'epub'| 'pdf'   |\
+            'rtf' | 'xls'   |\
+            'xlsx'          ) printf -- ''; return ;;
+
+            'ejs' | 'haml'  |\
+            'htm' | 'html'  |\
+            'slim'|  'xhtml'|\
+            'xml'           ) printf -- ''; return ;;
+
+            'a'   | 'cmake' |\
+            'jl'  | 'o'     |\
+            'so'            ) printf -- ''; return ;;
+
+            'asm' | 'css'   |\
+            'less'| 's'     |\
+            'sh'            ) printf -- ''; return ;;
+
+            'db'  | 'dump'  |\
+            'img' | 'iso'   |\
+            'sql'           ) printf -- ''; return ;;
+
+            'f#'  | 'fs'    |\
+            'fsi' | 'fsx'   |\
+            'fsscript'      ) printf -- ''; return ;;
+
+            'markdown'      |\
+            'md'  | 'mdx'   |\
+            'rmd'           ) printf -- ''; return ;;
+
+            'gemspec'       |\
+            'rake'| 'rb'    ) printf -- ''; return ;;
+
+            'dll' | 'exe'   |\
+            'msi'           ) printf -- ''; return ;;
+
+            'eex' | 'ex'    |\
+            'exs' | 'leex'  ) printf -- ''; return ;;
+
+            'class'         |\
+            'jar' | 'java'  ) printf -- ''; return ;;
+
+            'mustache'      |\
+            'hbs'           ) printf -- ''; return ;;
+
+            'json'          |\
+            'webmanifest'   ) printf -- ''; return ;;
+
+            'py'  | 'pyc'   |\
+            'pyd' | 'pyo'   ) printf -- ''; return ;;
+
+            'cbr' | 'cbz'   ) printf -- ''; return ;;
+            'clj' | 'cljc'  ) printf -- ''; return ;;
+            'cljs'| 'edn'   ) printf -- ''; return ;;
+            'hrl' | 'erl'   ) printf -- ''; return ;;
+            'hh'  | 'hxx'   ) printf -- ''; return ;;
+            'hs'  | 'lhs'   ) printf -- ''; return ;;
+            'js'  | 'mjs'   ) printf -- ''; return ;;
+            'jsx' | 'tsx'   ) printf -- ''; return ;;
+            'key' | 'pub'   ) printf -- ''; return ;;
+            'ml'  | 'mli'   ) printf -- 'λ'; return ;;
+            'pl'  | 'pm'    ) printf -- ''; return ;;
+            'vim' | 'vimrc' ) printf -- ''; return ;;
+            'psb' | 'psd'   ) printf -- ''; return ;;
+            'rlib'| 'rs'    ) printf -- ''; return ;;
+            'sass'| 'scss'  ) printf -- ''; return ;;
+            'sln' | 'suo'   ) printf -- ''; return ;;
+
+            'coffee'        ) printf -- ''; return ;;
+            'ai'            ) printf -- ''; return ;;
+            'cs'            ) printf -- ''; return ;;
+            'd'             ) printf -- ''; return ;;
+            'dart'          ) printf -- ''; return ;;
+            'diff'          ) printf -- ''; return ;;
+            'elm'           ) printf -- ''; return ;;
+            'fi'            ) printf -- '|'; return ;;
+            'go'            ) printf -- ''; return ;;
+            'log'           ) printf -- ''; return ;;
+            'lua'           ) printf -- ''; return ;;
+            'nix'           ) printf -- ''; return ;;
+            'php'           ) printf -- ''; return ;;
+            'pp'            ) printf -- ''; return ;;
+            'r'             ) printf -- 'ﳒ'; return ;;
+            'rproj'         ) printf -- '鉶'; return ;;
+            'rss'           ) printf -- ''; return ;;
+            'scala'         ) printf -- ''; return ;;
+            'styl'          ) printf -- ''; return ;;
+            'swift'         ) printf -- ''; return ;;
+            't'             ) printf -- ''; return ;;
+            'tex'           ) printf -- 'ﭨ'; return ;;
+            'ts'            ) printf -- ''; return ;;
+            'twig'          ) printf -- ''; return ;;
+            'vue'           ) printf -- '﵂'; return ;;
+            'xcplayground'  ) printf -- ''; return ;;
+            'xul'           ) printf -- ''; return ;;
+        esac
+    }
+
+
+    printf -- ''; return
+}
+
 status_line() {
     # Status_line to print when files are marked for operation.
     local mark_ui="[${#marked_files[@]}] selected (${file_program[*]}) [p] ->"
@@ -229,6 +569,7 @@ print_line() {
     local file_ext=${file_name##*.}
     local format
     local suffix
+    local icon
 
     # If the dir item doesn't exist, end here.
     if [[ -z ${list[$1]} ]]; then
@@ -303,8 +644,11 @@ print_line() {
     # Remove all non-printable characters.
     file_name=${file_name//[^[:print:]]/^[}
 
+    (( ${FFF_FILE_ICON:=0} == 1 )) && \
+        icon="$(get_icon "${list[$1]}" "$file_name" "$file_ext") "
+    
     printf '\r%b%s\e[m\r' \
-        "${file_pre}${format}" \
+        "${file_pre}${format}${icon}"\
         "${file_name}${suffix}${file_post}"
 }
 
@@ -756,10 +1100,10 @@ key() {
         # 'C' is what bash sees when the right arrow is pressed
         # ('\e[C' or '\eOC').
         # '' is what bash sees when the enter/return key is pressed.
-        ${FFF_KEY_CHILD1:=l}|\
-        ${FFF_KEY_CHILD2:=$'\e[C'}|\
-        ${FFF_KEY_CHILD3:=""}|\
-        ${FFF_KEY_CHILD4:=$'\eOC'})
+        "${FFF_KEY_CHILD1:=l}"|\
+        "${FFF_KEY_CHILD2:=$'\e[C'}"|\
+        "${FFF_KEY_CHILD3:=""}"|\
+        "${FFF_KEY_CHILD4:=$'\eOC'}")
             open "${list[scroll]}"
         ;;
 
@@ -768,11 +1112,11 @@ key() {
         # ('\e[D' or '\eOD').
         # '\177' and '\b' are what bash sometimes sees when the backspace
         # key is pressed.
-        ${FFF_KEY_PARENT1:=h}|\
-        ${FFF_KEY_PARENT2:=$'\e[D'}|\
-        ${FFF_KEY_PARENT3:=$'\177'}|\
-        ${FFF_KEY_PARENT4:=$'\b'}|\
-        ${FFF_KEY_PARENT5:=$'\eOD'})
+        "${FFF_KEY_PARENT1:=h}"|\
+        "${FFF_KEY_PARENT2:=$'\e[D'}"|\
+        "${FFF_KEY_PARENT3:=$'\177'}"|\
+        "${FFF_KEY_PARENT4:=$'\b'}"|\
+        "${FFF_KEY_PARENT5:=$'\eOD'}")
             # If a search was done, clear the results and open the current dir.
             if ((search == 1 && search_end_early != 1)); then
                 open "$PWD"
@@ -787,9 +1131,9 @@ key() {
         # Scroll down.
         # 'B' is what bash sees when the down arrow is pressed
         # ('\e[B' or '\eOB').
-        ${FFF_KEY_SCROLL_DOWN1:=j}|\
-        ${FFF_KEY_SCROLL_DOWN2:=$'\e[B'}|\
-        ${FFF_KEY_SCROLL_DOWN3:=$'\eOB'})
+        "${FFF_KEY_SCROLL_DOWN1:=j}"|\
+        "${FFF_KEY_SCROLL_DOWN2:=$'\e[B'}"|\
+        "${FFF_KEY_SCROLL_DOWN3:=$'\eOB'}")
             ((scroll < list_total)) && {
                 ((scroll++))
                 ((y < max_items)) && ((y++))
@@ -804,9 +1148,9 @@ key() {
         # Scroll up.
         # 'A' is what bash sees when the up arrow is pressed
         # ('\e[A' or '\eOA').
-        ${FFF_KEY_SCROLL_UP1:=k}|\
-        ${FFF_KEY_SCROLL_UP2:=$'\e[A'}|\
-        ${FFF_KEY_SCROLL_UP3:=$'\eOA'})
+        "${FFF_KEY_SCROLL_UP1:=k}"|\
+        "${FFF_KEY_SCROLL_UP2:=$'\e[A'}"|\
+        "${FFF_KEY_SCROLL_UP3:=$'\eOA'}")
             # '\e[1L': Insert a line above the cursor.
             # '\e[A':  Move cursor up a line.
             ((scroll > 0)) && {
@@ -827,7 +1171,7 @@ key() {
         ;;
 
         # Go to top.
-        ${FFF_KEY_TO_TOP:=g})
+        "${FFF_KEY_TO_TOP:=g}")
             ((scroll != 0)) && {
                 scroll=0
                 redraw
@@ -835,7 +1179,7 @@ key() {
         ;;
 
         # Go to bottom.
-        ${FFF_KEY_TO_BOTTOM:=G})
+        "${FFF_KEY_TO_BOTTOM:=G}")
             ((scroll != list_total)) && {
                 ((scroll=list_total))
                 redraw
@@ -843,7 +1187,7 @@ key() {
         ;;
 
         # Show hidden files.
-        ${FFF_KEY_HIDDEN:=.})
+        "${FFF_KEY_HIDDEN:=.}")
             # 'a=a>0?0:++a': Toggle between both values of 'shopt_flags'.
             #                This also works for '3' or more values with
             #                some modification.
@@ -853,7 +1197,7 @@ key() {
         ;;
 
         # Search.
-        ${FFF_KEY_SEARCH:=/})
+        "${FFF_KEY_SEARCH:=/}")
             cmd_line "/" "search"
 
             # If the search came up empty, redraw the current dir.
@@ -868,7 +1212,7 @@ key() {
         ;;
 
         # Spawn a shell.
-        ${FFF_KEY_SHELL:=!})
+        "${FFF_KEY_SHELL:=!}")
             reset_terminal
 
             # Make fff aware of how many times it is nested.
@@ -881,25 +1225,25 @@ key() {
         ;;
 
         # Mark files for operation.
-        ${FFF_KEY_YANK:=y}|\
-        ${FFF_KEY_MOVE:=m}|\
-        ${FFF_KEY_TRASH:=d}|\
-        ${FFF_KEY_LINK:=s}|\
-        ${FFF_KEY_BULK_RENAME:=b})
+        "${FFF_KEY_YANK:=y}"|\
+        "${FFF_KEY_MOVE:=m}"|\
+        "${FFF_KEY_TRASH:=d}"|\
+        "${FFF_KEY_LINK:=s}"|\
+        "${FFF_KEY_BULK_RENAME:=b}")
             mark "$scroll" "$1"
         ;;
 
         # Mark all files for operation.
-        ${FFF_KEY_YANK_ALL:=Y}|\
-        ${FFF_KEY_MOVE_ALL:=M}|\
-        ${FFF_KEY_TRASH_ALL:=D}|\
-        ${FFF_KEY_LINK_ALL:=S}|\
-        ${FFF_KEY_BULK_RENAME_ALL:=B})
+        "${FFF_KEY_YANK_ALL:=Y}"|\
+        "${FFF_KEY_MOVE_ALL:=M}"|\
+        "${FFF_KEY_TRASH_ALL:=D}"|\
+        "${FFF_KEY_LINK_ALL:=S}"|\
+        "${FFF_KEY_BULK_RENAME_ALL:=B}")
             mark all "$1"
         ;;
 
         # Do the file operation.
-        ${FFF_KEY_PASTE:=p})
+        "${FFF_KEY_PASTE:=p}")
             [[ ${marked_files[*]} ]] && {
                 [[ ! -w $PWD ]] && {
                     cmd_line "warn: no write access to dir."
@@ -922,7 +1266,7 @@ key() {
         ;;
 
         # Clear all marked files.
-        ${FFF_KEY_CLEAR:=c})
+        "${FFF_KEY_CLEAR:=c}")
             [[ ${marked_files[*]} ]] && {
                 marked_files=()
                 redraw
@@ -930,7 +1274,7 @@ key() {
         ;;
 
         # Rename list item.
-        ${FFF_KEY_RENAME:=r})
+        "${FFF_KEY_RENAME:=r}")
             [[ ! -e ${list[scroll]} ]] &&
                 return
 
@@ -950,7 +1294,7 @@ key() {
         ;;
 
         # Create a directory.
-        ${FFF_KEY_MKDIR:=n})
+        "${FFF_KEY_MKDIR:=n}")
             cmd_line "mkdir: " "dirs"
 
             [[ $cmd_reply ]] &&
@@ -967,7 +1311,7 @@ key() {
         ;;
 
         # Create a file.
-        ${FFF_KEY_MKFILE:=f})
+        "${FFF_KEY_MKFILE:=f}")
             cmd_line "mkfile: "
 
             [[ $cmd_reply ]] &&
@@ -984,7 +1328,7 @@ key() {
         ;;
 
         # Show file attributes.
-        ${FFF_KEY_ATTRIBUTES:=x})
+        "${FFF_KEY_ATTRIBUTES:=x}")
             [[ -e "${list[scroll]}" ]] && {
                 clear_screen
                 status_line "${list[scroll]}"
@@ -995,7 +1339,7 @@ key() {
         ;;
 
         # Toggle executable flag.
-        ${FFF_KEY_EXECUTABLE:=X})
+        "${FFF_KEY_EXECUTABLE:=X}")
             [[ -f ${list[scroll]} && -w ${list[scroll]} ]] && {
                 if [[ -x ${list[scroll]} ]]; then
                     chmod -x "${list[scroll]}"
@@ -1008,12 +1352,18 @@ key() {
         ;;
 
         # Show image in terminal.
-        ${FFF_KEY_IMAGE:=i})
+        "${FFF_KEY_IMAGE:=i}")
             draw_img
         ;;
 
+
+        "${FFF_DISPLAY_ICON:=I}")
+            FFF_FILE_ICON=$(( $((FFF_FILE_ICON + 1)) % 2 ))
+            redraw
+        ;;
+
         # Go to dir.
-        ${FFF_KEY_GO_DIR:=:})
+        "${FFF_KEY_GO_DIR:=:}")
             cmd_line "go to dir: " "dirs"
 
             # Let 'cd' know about the current directory.
@@ -1025,23 +1375,23 @@ key() {
         ;;
 
         # Go to '$HOME'.
-        ${FFF_KEY_GO_HOME:='~'})
+        "${FFF_KEY_GO_HOME:='~'}")
             open ~
         ;;
 
         # Go to trash.
-        ${FFF_KEY_GO_TRASH:=t})
+        "${FFF_KEY_GO_TRASH:=t}")
             get_os
             open "$FFF_TRASH"
         ;;
 
         # Go to previous dir.
-        ${FFF_KEY_PREVIOUS:=-})
+        "${FFF_KEY_PREVIOUS:=-}")
             open "$OLDPWD"
         ;;
 
         # Refresh current dir.
-        ${FFF_KEY_REFRESH:=e})
+        "${FFF_KEY_REFRESH:=e}")
             open "$PWD"
         ;;
 
@@ -1057,7 +1407,7 @@ key() {
         # Quit and store current directory in a file for CD on exit.
         # Don't allow user to redefine 'q' so a bad keybinding doesn't
         # remove the option to quit.
-        q)
+        "q")
             : "${FFF_CD_FILE:=${XDG_CACHE_HOME:=${HOME}/.cache}/fff/.fff_d}"
 
             [[ -w $FFF_CD_FILE ]] &&
