@@ -2,6 +2,17 @@
 #
 # fff - fucking fast file-manager.
 
+msg() {
+  echo >&2 -e "${1-}"
+}
+
+die() {
+  local msg=$1
+  local code=${2-1} # default exit status 1
+  msg "$msg"
+  exit "$code"
+}
+
 get_os() {
     # Figure out the current operating system to set some specific variables.
     # '$OSTYPE' typically stores the name of the OS kernel.
@@ -154,9 +165,30 @@ get_mime_type() {
     mime_type=$(file "-${file_flags:-biL}" "$1" 2>/dev/null)
 }
 
+create_marked_files_cache () {
+    touch "$marked_files_cache" || die "Could not touch $marked_files_cache ."
+    test -f "$marked_files_cache" || die "$marked_files_cache is not a file."
+    chmod 600 "$marked_files_cache" || die "Could not set chmod 0600 on $marked_files_cache ."
+    chown "$USER" "$marked_files_cache" || die "Could not set owner of $marked_files_cache ."
+}
+
+save_marked_files () {
+  date >> /tmp/saved
+  if [[ ${#marked_files[@]} -gt 0 ]]; then
+     flock "$marked_files_cache" printf '%s\n' "${marked_files[@]}" > "$marked_files_cache" \
+       || die "Could not write to $marked_files_cache ."
+  else
+     flock "$marked_files_cache" echo -n > "$marked_files_cache" \
+       || die "Could not write to $marked_files_cache ."
+  fi
+  pkill -USR1 -u "$USER" -f "^bash.*./fff"
+}
+
+
+
 status_line() {
     # Status_line to print when files are marked for operation.
-    local mark_ui="[${#marked_files[@]}] selected (${file_program[*]}) [p] ->"
+    local mark_ui="[${#marked_files[@]}] selected (${file_program[*]} ${marked_files[*]})  [p] ->"
 
     # Escape the directory string.
     # Remove all non-printable characters.
@@ -183,6 +215,13 @@ status_line() {
            "${marked_files[*]:+${mark_ui}}" \
            "${1:-${PWD_escaped:-/}}" \
            "$LINES"
+}
+
+load_marked_files() {
+    date >> /tmp/load
+    IFS=$'\r\n' GLOBIGNORE='*' command eval 'marked_files=($(< $marked_files_cache ))' \
+        || die "Could not load from $marked_files_cache ."
+    status_line
 }
 
 read_dir() {
@@ -887,6 +926,7 @@ key() {
         ${FFF_KEY_LINK:=s}|\
         ${FFF_KEY_BULK_RENAME:=b})
             mark "$scroll" "$1"
+            save_marked_files
         ;;
 
         # Mark all files for operation.
@@ -896,6 +936,7 @@ key() {
         ${FFF_KEY_LINK_ALL:=S}|\
         ${FFF_KEY_BULK_RENAME_ALL:=B})
             mark all "$1"
+            save_marked_files
         ;;
 
         # Do the file operation.
@@ -916,6 +957,7 @@ key() {
                 stty -echo
 
                 marked_files=()
+                save_marked_files
                 setup_terminal
                 redraw full
             }
@@ -925,6 +967,7 @@ key() {
         ${FFF_KEY_CLEAR:=c})
             [[ ${marked_files[*]} ]] && {
                 marked_files=()
+                save_marked_files
                 redraw
             }
         ;;
@@ -1116,9 +1159,17 @@ main() {
     mkdir -p "${XDG_CACHE_HOME:=${HOME}/.cache}/fff" \
              "${FFF_TRASH:=${XDG_DATA_HOME:=${HOME}/.local/share}/fff/trash}"
 
+    USER=$(whoami)
+    # Create marked files cache.
+    declare -r marked_files_cache="/tmp/fff_${USER}_marked_files"
+    create_marked_files_cache
+
     # 'nocaseglob': Glob case insensitively (Used for case insensitive search).
     # 'nullglob':   Don't expand non-matching globs to themselves.
     shopt -s nocaseglob nullglob
+
+    # Trap the USR1 signal to update status line.
+    trap load_marked_files USR1
 
     # Trap the exit signal (we need to reset the terminal to a useable state.)
     trap 'reset_terminal' EXIT
