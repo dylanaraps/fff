@@ -92,6 +92,11 @@ A simple file manager written in `bash`.
 **NOTE:** `fff` can be uninstalled easily using `make uninstall`. This removes all of files from your system.
 
 ### CD on Exit
+#### Bash
+```sh
+# Add this to your .bashrc or equivalent.
+. fff
+```
 #### Bash and Zsh
 ```sh
 # Add this to your .bashrc, .zshrc or equivalent.
