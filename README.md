@@ -1,6 +1,6 @@
-# fff (*Fucking Fast File-Manager*)
+# fff (*Fucking Fine File-Manager*)
 
-## This forks adds an option to open a file with specified program and Nerd Fonts devicons suport.
+### This fork is meant to make fff a more feature-rich file manager, but at cost of raw speed.
 
 <a href="https://asciinema.org/a/qvNlrFrGB3xKZXb6GkremjZNp" target="_blank"><img src="https://asciinema.org/a/qvNlrFrGB3xKZXb6GkremjZNp.svg" alt="img" height="210px" align="right"/></a>
 
@@ -10,16 +10,16 @@ A simple file manager written in `bash`.
 <a href="https://github.com/dylanaraps/fff/releases"><img src="https://img.shields.io/github/release/dylanaraps/fff.svg"></a>
 <a href="https://repology.org/metapackage/fff"><img src="https://repology.org/badge/tiny-repos/fff.svg" alt="Packaging status"></a>
 
-- It's Fucking Fast 🚀
+- It's Fucking Fine :)
 - Minimal (*only requires **bash** and coreutils*)
 - Smooth Scrolling (*using **vim** keybindings*)
-- Works on **Linux**, **BSD**, **macOS**, **Haiku** etc.
+- Works on **Linux** (and others?).
+- Supports [Nerd Fonts devicons](https://www.nerdfonts.com/#home).
 - Supports `LS_COLORS`!
 - File Operations (*copy, paste, cut, **ranger style bulk rename**, etc*) <img src="https://i.imgur.com/tjIWUjf.jpg" alt="img" height="213px" align="right"/>
 - Instant as you type search
 - Tab completion for all commands!
 - Automatic CD on exit (*see [setup](#cd-on-exit)*)
-- Works as a **file picker** in `vim`/`neovim` ([**link**](https://github.com/dylanaraps/fff.vim))!
 - **Display images with w3m-img!**
 - Supports `$CDPATH`.
 
@@ -67,20 +67,9 @@ A simple file manager written in `bash`.
 
 ## Installation
 
-### Distros
-
-- KISS Linux (based): `kiss b fff`
-- FreeBSD: `pkg install fff`
-- Haiku: `pkgman install fff`
-- macOS: `brew install fff`
-- Nix: `nix-env -iA fff`
-- Void Linux: `xbps-install -S fff`
-- Arch Linux: `pacman -S fff`
-
 ### Manual
 
 1. Download `fff`.
-    - Release: https://github.com/dylanaraps/fff/releases/latest
     - Git: `git clone https://github.com/dylanaraps/fff`
 2. Change working directory to `fff`.
     - `cd fff`
@@ -89,6 +78,7 @@ A simple file manager written in `bash`.
     - **Haiku**: `make PREFIX="$(finddir B_USER_NONPACKAGED_DIRECTORY)" MANDIR='$(PREFIX)/documentation/man' DOCDIR='$(PREFIX)/documentation/fff' install`
     - **OpenIndiana**: `gmake install`
     - **MinGW/MSys**: `make -i install`
+    - **Others**: `make install`
     - **NOTE**: You may have to run this as root.
 
 **NOTE:** `fff` can be uninstalled easily using `make uninstall`. This removes all of files from your system.
@@ -173,6 +163,8 @@ c: clear file selections
 
 q: exit with 'cd' (if enabled).
 Ctrl+C: exit without 'cd'.
+
+?: show help
 ```
 
 ## Customization

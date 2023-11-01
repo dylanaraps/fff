@@ -90,6 +90,8 @@ setup_options() {
 
     # Find supported 'file' arguments.
     file -I &>/dev/null || : "${file_flags:=biL}"
+
+    helping=0
 }
 
 get_term_size() {
@@ -286,6 +288,7 @@ get_icon() {
             '.xinitrc'                     |\
             '.xinputrc'                    |\
             '.Xresources'                  |\
+            '.zsh_history'                 |\
             '.zshrc'                       ) printf -- ''; return ;;
 
             '.vim'                         |\
@@ -374,7 +377,7 @@ get_icon() {
             'm4v' | 'mkv'   |\
             'mov' | 'mp4'   |\
             'mpeg'| 'mpg'   |\
-            'webm'          ) printf -- ''; return ;;
+            'webm'          ) printf -- ''; return ;;
 
 
             'bmp' | 'gif'   |\
@@ -498,10 +501,18 @@ get_icon() {
 status_line() {
     # Status_line to print when files are marked for operation.
     local mark_ui="[${#marked_files[@]}] selected (${file_program[*]}) [p] ->"
+    mark_ui="${marked_files[*]:+"$mark_ui"}"
 
     # Escape the directory string.
     # Remove all non-printable characters.
-    PWD_escaped=${PWD//[^[:print:]]/^[}
+    if ((helping)); then
+        mark_ui=
+        PWD_escaped=help
+    else
+        # Escape the directory string.
+        # Remove all non-printable characters.
+        PWD_escaped=${PWD//[^[:print:]]/^[}
+    fi
 
     # '\e7':       Save cursor position.
     #              This is more widely supported than '\e[s'.
@@ -521,7 +532,7 @@ status_line() {
            "${FFF_COL2:-1}" \
            "$COLUMNS" "" \
            "($((scroll+1))/$((list_total+1)))" \
-           "${marked_files[*]:+${mark_ui}}" \
+           "$mark_ui" \
            "${1:-${PWD_escaped:-/}}" \
            "$LINES"
 }
@@ -572,8 +583,20 @@ print_line() {
     local suffix
     local icon
 
+    # Help line
+    if ((helping)); then
+        file_name=${list[$1]}
+        if [[ "$file_name" ]]; then
+            # Highlight the key(s), escaping any specials in overrides to a human-readable form
+            format+=\\e[${di:-1;3${FFF_COL1:-2}}m
+            local action="${file_name%: *}"
+            format+="$(cat -A <<<"$action" | head -c -2)\\e[${fi:-37}m: "
+            file_name="${file_name##*: }"
+        fi
+        format+=\\e[${fi:-37}m
+
     # If the dir item doesn't exist, end here.
-    if [[ -z ${list[$1]} ]]; then
+    elif [[ -z ${list[$1]} ]]; then
         return
 
     # Directory.
@@ -636,7 +659,7 @@ print_line() {
         format+="\\e[1;3${FFF_COL4:-6};7m"
 
     # If the list item is marked for operation.
-    [[ ${marked_files[$1]} == "${list[$1]:-null}" ]] && {
+    !((helping)) && [[ ${marked_files[$1]} == "${list[$1]:-null}" ]] && {
         format+=\\e[3${FFF_COL3:-1}m${mark_pre}
         suffix+=${mark_post}
     }
@@ -795,13 +818,99 @@ redraw() {
     # Redraw the current window.
     # If 'full' is passed, re-fetch the directory list.
     [[ $1 == full ]] && {
+        ((helping)) && {
+            helping=0
+            find_previous=1
+        }
         read_dir
+        scroll=0
+    }
+
+    # If 'help' is passed, list help text.
+    [[ $1 == help ]] && {
+        helping=1
+        list_help
         scroll=0
     }
 
     clear_screen
     draw_dir
     status_line
+}
+
+list_help() {
+    # Set window name.
+    printf '\e]2;fff: help\e'\\
+
+    # Turn off icons.
+    icon_value="$(printf '%s\n' "$FFF_FILE_ICON")"
+    FFF_FILE_ICON=0
+
+    list=(
+        "${FFF_KEY_SCROLL_DOWN1:-j}: scroll down"
+        "${FFF_KEY_SCROLL_UP1:-k}: scroll up"
+        "${FFF_KEY_PARENT1:-h}: go to parent dir"
+        "${FFF_KEY_CHILD1:-l}: go to child dir"
+        ''
+        'enter: go to child dir/open file'
+        'backspace: go to parent dir'
+        "${FFF_KEY_OPEN_WITH:=o}: open file with"
+        "${FFF_KEY_OPEN_WITH_DETACHED:=O}: open file with GUI program detached from file manager"
+        ''
+        "${FFF_KEY_PREVIOUS:--}: go to previous dir"
+        ''
+        "${FFF_KEY_TO_TOP:-g}: go to top"
+        "${FFF_KEY_TO_BOTTOM:-G}: go to bottom"
+        ''
+        "${FFF_KEY_GO_DIR:-:}: go to a directory by typing"
+        ''
+        "${FFF_KEY_HIDDEN:-.}: toggle hidden files"
+        "${FFF_KEY_SEARCH:-/}: search"
+        "${FFF_KEY_GO_TRASH:-t}: go to trash"
+        "${FFF_KEY_GO_HOME:-~}: go to home"
+        "${FFF_KEY_REFRESH:-e}: refresh current dir"
+        "${FFF_KEY_SHELL:-!}: open shell in current dir"
+        ''
+        "${FFF_KEY_ATTRIBUTES:-x}: view file/dir attributes"
+        "${FFF_KEY_IMAGE:-i}: display image with w3m-img"
+        ''
+        'down:  scroll down'
+        'up:    scroll up'
+        'left:  go to parent dir'
+        'right: go to child dir'
+        ''
+        "${FFF_KEY_MKFILE:-f}: new file"
+        "${FFF_KEY_MKDIR:-n}: new dir"
+        "${FFF_KEY_RENAME:-r}: rename"
+        "${FFF_KEY_EXECUTABLE:-X}: toggle executable"
+        ''
+        "${FFF_KEY_YANK:-y}: mark copy"
+        "${FFF_KEY_MOVE:-m}: mark move"
+        "${FFF_KEY_TRASH:-d}: mark trash (~/.local/share/fff/trash/)"
+        "${FFF_KEY_LINK:-s}: mark symbolic link"
+        "${FFF_KEY_BULK_RENAME:-b}: mark bulk rename"
+        ''
+        "${FFF_KEY_YANK_ALL:-Y}: mark all for copy"
+        "${FFF_KEY_MOVE_ALL:-M}: mark all for move"
+        "${FFF_KEY_TRASH_ALL:-D}: mark all for trash (~/.local/share/fff/trash/)"
+        "${FFF_KEY_LINK_ALL:-S}: mark all for symbolic link"
+        "${FFF_KEY_BULK_RENAME_ALL:-B}: mark all for bulk rename"
+        ''
+        "${FFF_KEY_PASTE:-p}: paste/move/delete/bulk_rename"
+        "${FFF_KEY_CLEAR:-c}: clear file selections"
+        ''
+        '[1-9]: favourites/bookmarks (see customization in man page)'
+        ''
+        "q: exit with 'cd' (if enabled) or exit this help"
+        "Ctrl+C: exit without 'cd'"
+        ''
+        "${FFF_KEY_HELP:-?}: show this help"
+    )
+
+    ((list_total=${#list[@]}-1))
+
+    # Save the original list in a second list as a backup.
+    cur_list=("${list[@]}")
 }
 
 mark() {
@@ -1017,6 +1126,8 @@ cmd_line() {
 
             # Tab.
             $'\t')
+                ((helping)) && return
+
                 comp_glob="$cmd_reply*"
 
                 # Pass the argument dirs to limit completion to directories.
@@ -1045,7 +1156,7 @@ cmd_line() {
             "")
                 # If there's only one search result and its a directory,
                 # enter it on one enter keypress.
-                [[ $2 == search && -d ${list[0]} ]] && ((list_total == 0)) && {
+                !((helping)) && [[ $2 == search && -d ${list[0]} ]] && ((list_total == 0)) && {
                     # '\e[?25l': Hide the cursor.
                     printf '\e[?25l'
 
@@ -1086,7 +1197,15 @@ cmd_line() {
             printf '\e[?25l'
 
             # Use a greedy glob to search.
-            list=("$PWD"/*"$cmd_reply"*)
+            if ((helping)); then
+                local item
+                list=()
+                for item in "${cur_list[@]}"; do
+                    [[ "$item" == *"$cmd_reply"* ]] && list+=("$item")
+                done
+            else
+                list=("$PWD"/*"$cmd_reply"*)
+            fi
             ((list_total=${#list[@]}-1))
 
             # Draw the search results on screen.
@@ -1121,6 +1240,10 @@ key() {
     }
 
     case ${special_key:-$1} in
+        "${FFF_KEY_HELP:=?}")
+            redraw help
+        ;;
+
         # Open list item.
         # 'C' is what bash sees when the right arrow is pressed
         # ('\e[C' or '\eOC').
@@ -1129,6 +1252,8 @@ key() {
         ${FFF_KEY_CHILD2:=$'\e[C'}|\
         ${FFF_KEY_CHILD3:=""}|\
         ${FFF_KEY_CHILD4:=$'\eOC'})
+            ((helping)) && return
+
             open "${list[scroll]}"
         ;;
 
@@ -1142,6 +1267,8 @@ key() {
         ${FFF_KEY_PARENT3:=$'\177'}|\
         ${FFF_KEY_PARENT4:=$'\b'}|\
         ${FFF_KEY_PARENT5:=$'\eOD'})
+            ((helping)) && return
+
             # If a search was done, clear the results and open the current dir.
             if ((search == 1 && search_end_early != 1)); then
                 open "$PWD"
@@ -1159,7 +1286,7 @@ key() {
         ${FFF_KEY_SCROLL_DOWN1:=j}|\
         ${FFF_KEY_SCROLL_DOWN2:=$'\e[B'}|\
         ${FFF_KEY_SCROLL_DOWN3:=$'\eOB'})
-            ((scroll < list_total)) && {
+            while ((scroll < list_total)); do
                 ((scroll++))
                 ((y < max_items)) && ((y++))
 
@@ -1167,7 +1294,9 @@ key() {
                 printf '\n'
                 print_line "$scroll"
                 status_line
-            }
+
+                [[ "${list[scroll]}" ]] && break
+            done
         ;;
 
         # Scroll up.
@@ -1178,7 +1307,7 @@ key() {
         ${FFF_KEY_SCROLL_UP3:=$'\eOA'})
             # '\e[1L': Insert a line above the cursor.
             # '\e[A':  Move cursor up a line.
-            ((scroll > 0)) && {
+            while ((scroll > 0)); do
                 ((scroll--))
 
                 print_line "$((scroll+1))"
@@ -1192,7 +1321,9 @@ key() {
 
                 print_line "$scroll"
                 status_line
-            }
+
+                [[ "${list[scroll]}" ]] && break
+            done
         ;;
 
         # Go to top.
@@ -1453,6 +1584,11 @@ key() {
         # Don't allow user to redefine 'q' so a bad keybinding doesn't
         # remove the option to quit.
         q)
+            ((helping)) && {
+                FFF_FILE_ICON="$icon_value"     # Set FFF_FILE_ICON to previous state.
+                redraw full
+                return
+            }
             : "${FFF_CD_FILE:=${XDG_CACHE_HOME:=${HOME}/.cache}/fff/.fff_d}"
 
             [[ -w $FFF_CD_FILE ]] &&
