@@ -125,6 +125,7 @@ l: go to child dir
 enter: go to child dir/open file
 backspace: go to parent dir
 o: open file with
+O: open file with GUI program detached from file manager
 
 -: Go to previous dir.
 

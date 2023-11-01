@@ -1058,6 +1058,17 @@ key() {
             }
         ;;
 
+        # Open file with to run background.
+        ${FFF_KEY_OPEN_WITH_DETACHED:=O})
+            [[ -e "${list[scroll]}" ]] && {
+                cmd_line "open with (detached): " "cmd"
+
+                [[ $cmd_reply ]] &&
+                    nohup "${cmd_reply}" "${list[scroll]}" &>/dev/null &
+                    disown
+            }
+        ;;
+
         # Go to '$HOME'.
         ${FFF_KEY_GO_HOME:='~'})
             open ~
