@@ -1,5 +1,7 @@
 # fff (*Fucking Fast File-Manager*)
 
+## This forks adds an option to open a file with specified program.
+
 <a href="https://asciinema.org/a/qvNlrFrGB3xKZXb6GkremjZNp" target="_blank"><img src="https://asciinema.org/a/qvNlrFrGB3xKZXb6GkremjZNp.svg" alt="img" height="210px" align="right"/></a>
 
 A simple file manager written in `bash`.
@@ -120,8 +122,9 @@ k: scroll up
 h: go to parent dir
 l: go to child dir
 
-enter: go to child dir
+enter: go to child dir/open file
 backspace: go to parent dir
+o: open file with
 
 -: Go to previous dir.
 

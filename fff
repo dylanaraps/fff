@@ -592,6 +592,13 @@ open() {
         redraw full
 
     elif [[ -f $1 ]]; then
+        # If 'fff' was opened as a file picker, save the opened
+        # file in a file called 'opened_file'.
+        ((file_picker == 1)) && {
+            printf '%s\n' "$1" > \
+                "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/opened_file"
+            exit
+        }
         # Figure out what kind of file we're working with.
         get_mime_type "$1"
 
@@ -599,14 +606,6 @@ open() {
         # Everything else goes through 'xdg-open'/'open'.
         case "$mime_type" in
             text/*|*x-empty*|*json*)
-                # If 'fff' was opened as a file picker, save the opened
-                # file in a file called 'opened_file'.
-                ((file_picker == 1)) && {
-                    printf '%s\n' "$1" > \
-                        "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/opened_file"
-                    exit
-                }
-
                 clear_screen
                 reset_terminal
                 "${VISUAL:-${EDITOR:-vi}}" "$1"
@@ -622,6 +621,31 @@ open() {
                 disown
             ;;
         esac
+    fi
+}
+
+open_with() {
+    # Open directories and files.
+    if [[ -d $1/ ]]; then
+        search=
+        search_end_early=
+        cd "${1:-/}" ||:
+        redraw full
+
+    elif [[ -f $1 ]]; then
+        # If 'fff' was opened as a file picker, save the opened
+        # file in a file called 'opened_file'.
+        ((file_picker == 1)) && {
+            printf '%s\n' "$1" > \
+                "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/opened_file"
+            exit
+        }
+
+        clear_screen
+        reset_terminal
+        "$2" "$1"
+        setup_terminal
+        redraw
     fi
 }
 
@@ -1022,6 +1046,16 @@ key() {
             [[ $cmd_reply ]] &&
                 cd "${cmd_reply/\~/$HOME}" &>/dev/null &&
                     open "$PWD"
+        ;;
+
+        # Open file with.
+        ${FFF_KEY_OPEN_WITH:=o})
+            [[ -e "${list[scroll]}" ]] && {
+                cmd_line "open with: " "cmd"
+
+                [[ $cmd_reply ]] &&
+                    open_with "${list[scroll]}" "${cmd_reply}"
+            }
         ;;
 
         # Go to '$HOME'.
