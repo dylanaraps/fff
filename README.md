@@ -138,6 +138,7 @@ t: go to trash
 e: refresh current dir
 !: open shell in current dir
 
+N: display file details
 I: sort files
 x: view file/dir attributes
 i: display image with w3m-img
@@ -200,6 +201,10 @@ export FFF_DATE=1
 # 1 - modification time
 # (0 by default)
 export FFF_SORT_METHOD=1
+
+# Show/Hide file details on open
+# (Off by default)
+export FFF_FILE_DETAILS=1
 
 # Use LS_COLORS to color fff.
 # (On by default if available)
