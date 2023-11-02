@@ -33,6 +33,7 @@ A simple file manager written in `bash`.
 - Git branch on status line
 - Recursive git signs for changed files
 - `ncdu` integration
+- Modification date and time
 
 ## Thanks
 
@@ -205,6 +206,10 @@ export FFF_FILE_ICON=1
 # Show/Hide git status signs on open
 # (Off by default)
 export FFF_GIT_CHANGES=1
+
+# Show/Hide modification time of file on open
+# (Off by default)
+export FFF_DATE=1
 
 # Use LS_COLORS to color fff.
 # (On by default if available)

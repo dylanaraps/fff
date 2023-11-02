@@ -383,7 +383,8 @@ get_icon() {
             'ico' | 'jpeg'  |\
             'jpg' | 'png'   |\
             'ppt' | 'pptx'  |\
-            'webp'          ) printf -- ''; return ;;
+            'webp'| 'GIF'   |\
+            'xcf'           ) printf -- ''; return ;;
 
             'aup' | 'cue'   |\
             'flac'| 'm4a'   |\
@@ -687,8 +688,23 @@ print_line() {
             git="$(git_changes "$file_name")"
     fi
 
+    # Display time and date.
+    local line=''
+    (( ${FFF_DATE:=0} == 1 )) && \
+        date="$(date -r ${list[$1]} +"%Y-%m-%d" 2> /dev/null)" \
+        time="$(date -r ${list[$1]} +"%H:%M" 2> /dev/null)"
+
+    # If there is error, then just print spaces.
+    if [ "$?" -ne "0" ]; then
+        (( ${FFF_DATE:=0} == 1 )) && \
+            line='                    '
+    else
+        date=" ${date} "
+        time=" ${time}  "
+    fi
+
     printf '\r%b%s\e[m\r' \
-        "${file_pre}${format}${git} ${icon}"\
+        "${file_pre}${format}${date}${time}${git}${line:${#git}} ${icon}"\
         "${file_name}${suffix}${file_post}"
 }
 
