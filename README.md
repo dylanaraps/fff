@@ -4,28 +4,9 @@
 
 <a href="https://asciinema.org/a/qvNlrFrGB3xKZXb6GkremjZNp" target="_blank"><img src="https://asciinema.org/a/qvNlrFrGB3xKZXb6GkremjZNp.svg" alt="img" height="210px" align="right"/></a>
 
-A simple file manager written in `bash`.
+### Changes to original
 
-<a href="https://travis-ci.org/dylanaraps/fff"><img src="https://travis-ci.org/dylanaraps/fff.svg?branch=master"></a>
-<a href="https://github.com/dylanaraps/fff/releases"><img src="https://img.shields.io/github/release/dylanaraps/fff.svg"></a>
-<a href="https://repology.org/metapackage/fff"><img src="https://repology.org/badge/tiny-repos/fff.svg" alt="Packaging status"></a>
-
-- It's Fucking Fine :)
-- Minimal (*only requires **bash** and coreutils*)
-- Smooth Scrolling (*using **vim** keybindings*)
-- Works on **Linux** (and others?).
-- Supports [Nerd Fonts devicons](https://www.nerdfonts.com/#home).
-- Supports `LS_COLORS`!
-- File Operations (*copy, paste, cut, **ranger style bulk rename**, etc*) <img src="https://i.imgur.com/tjIWUjf.jpg" alt="img" height="213px" align="right"/>
-- Instant as you type search
-- Tab completion for all commands!
-- Automatic CD on exit (*see [setup](#cd-on-exit)*)
-- **Display images with w3m-img!**
-- Supports `$CDPATH`.
-
-#### Changes to original
-
-- Devicons support
+- [Nerd Fonts devicons](https://www.nerdfonts.com/#home) support
 - Help page on `?`
 - Open with commands
 - Human-readable size in stats
@@ -34,15 +15,16 @@ A simple file manager written in `bash`.
 - Recursive git signs for changed files
 - `ncdu` integration
 - Modification date and time
+- Sort files by modification time or alphabetically
 
-## Thanks
+### Thanks
 
-Most of code in there is from people who made PRs and posted issues to fff:
+A big part of code in there is from people who made PRs and posted issues to fff:
 
 - Roy Orbitson (help page)
 - Sidd Dino (devicons)
 - qwool (idea for human-readable size)
-- Docbroke (ncdu integration)
+- Docbroke (ncdu integration, sorting)
 
 
 ## Table of Contents
@@ -138,6 +120,7 @@ l: go to child dir
 
 enter: go to child dir/open file
 backspace: go to parent dir
+
 o: open file with
 O: open file with GUI program detached from file manager
 
@@ -155,6 +138,7 @@ t: go to trash
 e: refresh current dir
 !: open shell in current dir
 
+I: sort files
 x: view file/dir attributes
 i: display image with w3m-img
 u: run ncdu
@@ -210,6 +194,12 @@ export FFF_GIT_CHANGES=1
 # Show/Hide modification time of file on open
 # (Off by default)
 export FFF_DATE=1
+
+# Default method to sort files on open
+# 0 - alphabetically
+# 1 - modification time
+# (0 by default)
+export FFF_SORT_METHOD=1
 
 # Use LS_COLORS to color fff.
 # (On by default if available)
@@ -359,6 +349,9 @@ export FFF_KEY_MKFILE="f"
 export FFF_KEY_IMAGE="i" # display image with w3m-img
 
 ### Miscellaneous
+
+# Sort files.
+export FFF_KEY_SORT="I"
 
 # Show file attributes.
 export FFF_KEY_ATTRIBUTES="x"

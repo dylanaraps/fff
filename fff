@@ -92,6 +92,7 @@ setup_options() {
     file -I &>/dev/null || : "${file_flags:=biL}"
 
     helping=0
+    sort=${FFF_SORT_METHOD:=0}
 }
 
 get_term_size() {
@@ -572,6 +573,10 @@ read_dir() {
         fi
     done
 
+    [ $sort == 1 ] && \
+        dirs=($(stat -c '%Y=%n' "${dirs[@]}" | sort -nr | cut -d '=' -f2)) \
+		files=($(stat -c '%Y=%n' "${files[@]}" | sort -nr | cut -d '=' -f2))
+
     list=("${dirs[@]}" "${files[@]}")
 
     # Indicate that the directory is empty.
@@ -899,6 +904,7 @@ list_help() {
         ''
         'enter: go to child dir/open file'
         'backspace: go to parent dir'
+        ''
         "${FFF_KEY_OPEN_WITH:=o}: open file with"
         "${FFF_KEY_OPEN_WITH_DETACHED:=O}: open file with GUI program detached from file manager"
         ''
@@ -916,6 +922,7 @@ list_help() {
         "${FFF_KEY_REFRESH:-e}: refresh current dir"
         "${FFF_KEY_SHELL:-!}: open shell in current dir"
         ''
+        "${FFF_KEY_SORT:-I} sort files"
         "${FFF_KEY_ATTRIBUTES:-x}: view file/dir attributes"
         "${FFF_KEY_IMAGE:-i}: display image with w3m-img"
         "${FFF_KEY_NCDU:-u}: open ncdu"
@@ -1624,6 +1631,13 @@ key() {
         ${FFF_KEY_GO_TRASH:=t})
             get_os
             open "$FFF_TRASH"
+        ;;
+
+        # Sort by name (0) time (1).
+        ${FFF_KEY_SORT:=I})
+            [ $sort == 0 ] && sort=1 || sort=0
+
+            open "$PWD"
         ;;
 
         # Go to previous dir.
