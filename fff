@@ -536,7 +536,16 @@ status_line() {
     # '\e[H\e[K':  Clear line below status_line.
     # '\e8':       Restore cursor position.
     #              This is more widely supported than '\e[u'.
+    
+    # Display git branch and sorting.
     git_branch=$(git branch 2> /dev/null | sed -n -e 's/^\* \(.*\)/[\1]/p')
+    
+    if [ $sort -eq 0 ]; then
+        sort_help="Sort: alpha"
+    else
+        sort_help="Sort: date"
+    fi
+
     printf '\e7\e[%sH\e[3%s;4%sm%*s\r%s %s%s\e[m\e[%sH\e[K\e8' \
            "$((LINES-1))" \
            "${FFF_COL5:-0}" \
@@ -544,7 +553,7 @@ status_line() {
            "$COLUMNS" "" \
            "($((scroll+1))/$((list_total+1)))" \
            "$mark_ui" \
-           "${1:-${PWD_escaped:-/} $git_branch}" \
+           "${1:-${PWD_escaped:-/} $git_branch $sort_help}" \
            "$LINES"
 }
 

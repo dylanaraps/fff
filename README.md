@@ -14,7 +14,7 @@
 - Git branch on status line
 - Recursive git signs for changed files
 - `ncdu` integration
-- Modification date and time
+- Display file modification date, time and size
 - Sort files by modification time or alphabetically
 
 ### Thanks
@@ -25,6 +25,7 @@ A big part of code in there is from people who made PRs and posted issues to fff
 - Sidd Dino (devicons)
 - qwool (idea for human-readable size)
 - Docbroke (ncdu integration, sorting)
+- yiselieren (file details)
 
 
 ## Table of Contents
