@@ -31,6 +31,7 @@ A simple file manager written in `bash`.
 - Human-readable size in stats
 - Git branch in stats
 - Git branch on status line
+- Recursive git signs for changed files
 
 ## Thanks
 
@@ -194,6 +195,10 @@ export FFF_HIDDEN=1
 # Show/Hide file icons on open
 # (Off by default)
 export FFF_FILE_ICON=1
+
+# Show/Hide file icons on open
+# (Off by default)
+export FFF_GIT_CHANGES=1
 
 # Use LS_COLORS to color fff.
 # (On by default if available)

@@ -498,6 +498,14 @@ get_icon() {
     printf -- ''; return
 }
 
+git_changes() {
+    if [[ " ${changed[@]} " =~ " $1 " ]]; then
+        printf -- '+'; return
+    else
+        printf -- ' '; return
+    fi
+}
+
 status_line() {
     # Status_line to print when files are marked for operation.
     local mark_ui="[${#marked_files[@]}] selected (${file_program[*]}) [p] ->"
@@ -526,7 +534,7 @@ status_line() {
     # '\e[H\e[K':  Clear line below status_line.
     # '\e8':       Restore cursor position.
     #              This is more widely supported than '\e[u'.
-    git_brach=$(git branch 2> /dev/null | sed -n -e 's/^\* \(.*\)/[\1]/p')
+    git_branch=$(git branch 2> /dev/null | sed -n -e 's/^\* \(.*\)/[\1]/p')
     printf '\e7\e[%sH\e[3%s;4%sm%*s\r%s %s%s\e[m\e[%sH\e[K\e8' \
            "$((LINES-1))" \
            "${FFF_COL5:-0}" \
@@ -534,7 +542,7 @@ status_line() {
            "$COLUMNS" "" \
            "($((scroll+1))/$((list_total+1)))" \
            "$mark_ui" \
-           "${1:-${PWD_escaped:-/} $git_brach}" \
+           "${1:-${PWD_escaped:-/} $git_branch}" \
            "$LINES"
 }
 
@@ -583,6 +591,7 @@ print_line() {
     local format
     local suffix
     local icon
+    local git=''
 
     # Help line
     if ((helping)); then
@@ -672,8 +681,15 @@ print_line() {
     (( ${FFF_FILE_ICON:=0} == 1 )) && \
         icon="$(get_icon "${list[$1]}" "$file_name" "$file_ext") "
 
+    # Check if current dir is a git repo and has changes, then
+    # display git signs if is.
+    if [ " $git_branch" != " " ] && [ -n "$git_output" ]; then
+        (( ${FFF_GIT_CHANGES:=0} == 1 )) && \
+            git="$(git_changes "$file_name")"
+    fi
+
     printf '\r%b%s\e[m\r' \
-        "${file_pre}${format}${icon}"\
+        "${file_pre}${format}${git}${icon}"\
         "${file_name}${suffix}${file_post}"
 }
 
@@ -816,6 +832,19 @@ draw_img() {
 }
 
 redraw() {
+    changed=()
+    git_branch=$(git branch 2> /dev/null | sed -n -e 's/^\* \(.*\)/\1/p')
+    # Check if git branch name is not empty, then get changed files.
+    if [ " $git_branch" != " " ]; then
+        git_output=$(git status -s -unormal)
+        while read -r line; do
+            # Get elements.
+            element="${line#* }"
+            element="${line%%/*}"
+            changed+=("$element")
+        done <<< "$git_output"
+    fi
+
     # Redraw the current window.
     # If 'full' is passed, re-fetch the directory list.
     [[ $1 == full ]] && {
@@ -1242,6 +1271,12 @@ key() {
 
     case ${special_key:-$1} in
         "${FFF_KEY_HELP:=?}")
+            ((helping)) && {
+                FFF_FILE_ICON="$icon_value"     # Set FFF_FILE_ICON to previous state.
+                redraw full
+                return
+            }
+
             redraw help
         ;;
 
@@ -1495,9 +1530,7 @@ key() {
                 [[ $size =~ [0-9]$ ]] && printf "B\n" || printf "\n"    # If size is in bytes.
 
                 # Display git branch.
-                git_brach=$(git branch 2> /dev/null | sed -n -e 's/^\* \(.*\)/\1/p')
-                [ -n "$git_brach" ] && printf "  Git branch: $git_brach" || printf ""
-
+                [ -n "$git_branch" ] && printf "  Git branch: $git_branch"
 
                 read -ern 1
                 redraw
@@ -1560,8 +1593,15 @@ key() {
             open ~
         ;;
 
+        # Display icons.
         ${FFF_DISPLAY_ICON:='I'})
             FFF_FILE_ICON=$(( $((FFF_FILE_ICON + 1)) % 2 ))
+            redraw
+        ;;
+
+        # Display git changes.
+        ${FFF_GIT_CHANGES:='I'})
+            FFF_GIT_CHANGES=$(( $((FFF_GIT_CHANGES + 1)) % 2 ))
             redraw
         ;;
 
