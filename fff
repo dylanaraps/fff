@@ -1491,7 +1491,12 @@ key() {
                 printf "  Size (human-readable): "
                 size=$("${FFF_STAT_CMD:-stat}" -c "%s" "${list[scroll]}" | numfmt --to=iec)
                 printf "$size"
-                [[ $size =~ [0-9]$ ]] && printf "B" || printf ""    # If size is in bytes.
+                [[ $size =~ [0-9]$ ]] && printf "B\n" || printf "\n"    # If size is in bytes.
+
+                # Display git branch.
+                git_brach=$(git branch 2> /dev/null | sed -n -e 's/^\* \(.*\)/\1/p')
+                [ -n "$git_brach" ] && printf "  Git branch: $git_brach" || printf ""
+
 
                 read -ern 1
                 redraw
