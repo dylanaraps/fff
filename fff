@@ -2,6 +2,16 @@
 #
 # fff - fucking fast file-manager.
 
+# Enable cd on exit by sourcing fff
+if (return 0 2>/dev/null); then
+    function fff {
+        command fff "$@"
+        [[ ${FFF_CD_ON_EXIT:-1} == 1 ]] &&
+            cd "$(cat "${XDG_CACHE_HOME:-${HOME}/.cache}/fff/.fff_d")"
+    }
+    return
+fi
+
 get_os() {
     # Figure out the current operating system to set some specific variables.
     # '$OSTYPE' typically stores the name of the OS kernel.
