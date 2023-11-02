@@ -160,7 +160,6 @@ get_icon() {
     # $1 Absolute path to the file
     # $2 name of the file/directory
     # $3 the extracted extension from the file name
-    printf ' '
 
     # Icons for directories
     [[ -d "$1" ]] && {
@@ -689,7 +688,7 @@ print_line() {
     fi
 
     printf '\r%b%s\e[m\r' \
-        "${file_pre}${format}${git}${icon}"\
+        "${file_pre}${format}${git} ${icon}"\
         "${file_name}${suffix}${file_post}"
 }
 
@@ -903,6 +902,7 @@ list_help() {
         ''
         "${FFF_KEY_ATTRIBUTES:-x}: view file/dir attributes"
         "${FFF_KEY_IMAGE:-i}: display image with w3m-img"
+        "${FFF_KEY_NCDU:-u}: open ncdu"
         ''
         'down:  scroll down'
         'up:    scroll up'
@@ -1589,7 +1589,7 @@ key() {
         ;;
 
         # Run ncdu to get sizes.
-        ${FFF_NCDU:=u})
+        ${FFF_KEY_NCDU:=u})
             [[ -e "${list[scroll]}" ]] && {
                 clear_screen
                 reset_terminal
@@ -1602,18 +1602,6 @@ key() {
         # Go to '$HOME'.
         ${FFF_KEY_GO_HOME:='~'})
             open ~
-        ;;
-
-        # Display icons.
-        ${FFF_DISPLAY_ICON:='I'})
-            FFF_FILE_ICON=$(( $((FFF_FILE_ICON + 1)) % 2 ))
-            redraw
-        ;;
-
-        # Display git changes.
-        ${FFF_GIT_CHANGES:='I'})
-            FFF_GIT_CHANGES=$(( $((FFF_GIT_CHANGES + 1)) % 2 ))
-            redraw
         ;;
 
         # Go to trash.

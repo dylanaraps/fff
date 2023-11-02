@@ -77,6 +77,9 @@ Most of code in there is from people who made PRs and posted issues to fff:
     - Program handling (*non-text*).
     - *Not needed on macos and Haiku.*
     - *Customizable (if not using `xdg-open`): `$FFF_OPENER`.*
+- `ncdu` (*optional*)
+- `Nerd Font` (*optional*)
+    - Icons
 
 **Dependencies for image display**
 
@@ -361,8 +364,8 @@ export FFF_KEY_EXECUTABLE="X"
 # Toggle hidden files.
 export FFF_KEY_HIDDEN="."
 
-# Toggle file icons
-export FFF_DISPLAY_ICON="I"
+# Open ncdu
+export FFF_KEY_NCDU="u"
 ```
 
 ### Disabling keybindings.
