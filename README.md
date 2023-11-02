@@ -32,14 +32,16 @@ A simple file manager written in `bash`.
 - Git branch in stats
 - Git branch on status line
 - Recursive git signs for changed files
+- `ncdu` integration
 
 ## Thanks
 
-Most of code in there is from people how made PRs to fff:
+Most of code in there is from people who made PRs and posted issues to fff:
 
 - Roy Orbitson (help page)
 - Sidd Dino (devicons)
 - qwool (idea for human-readable size)
+- Docbroke (ncdu integration)
 
 
 ## Table of Contents
@@ -151,6 +153,7 @@ e: refresh current dir
 
 x: view file/dir attributes
 i: display image with w3m-img
+u: run ncdu
 
 down:  scroll down
 up:    scroll up
@@ -196,7 +199,7 @@ export FFF_HIDDEN=1
 # (Off by default)
 export FFF_FILE_ICON=1
 
-# Show/Hide file icons on open
+# Show/Hide git status signs on open
 # (Off by default)
 export FFF_GIT_CHANGES=1
 

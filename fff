@@ -1588,6 +1588,17 @@ key() {
             }
         ;;
 
+        # Run ncdu to get sizes.
+        ${FFF_NCDU:=u})
+            [[ -e "${list[scroll]}" ]] && {
+                clear_screen
+                reset_terminal
+                ncdu "$PWD"
+                setup_terminal
+                redraw
+            }
+        ;;
+
         # Go to '$HOME'.
         ${FFF_KEY_GO_HOME:='~'})
             open ~
