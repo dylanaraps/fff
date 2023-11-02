@@ -24,6 +24,15 @@ A simple file manager written in `bash`.
 - Supports `$CDPATH`.
 
 
+## Thanks
+
+Most of code in there is from people how made PRs to fff:
+
+- Roy Orbitson (help page)
+- Sidd Dino (devicons)
+- qwool (idea for human-readable size)
+
+
 ## Table of Contents
 
 <!-- vim-markdown-toc GFM -->

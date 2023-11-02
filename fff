@@ -1252,8 +1252,6 @@ key() {
         ${FFF_KEY_CHILD2:=$'\e[C'}|\
         ${FFF_KEY_CHILD3:=""}|\
         ${FFF_KEY_CHILD4:=$'\eOC'})
-            ((helping)) && return
-
             open "${list[scroll]}"
         ;;
 
@@ -1267,7 +1265,6 @@ key() {
         ${FFF_KEY_PARENT3:=$'\177'}|\
         ${FFF_KEY_PARENT4:=$'\b'}|\
         ${FFF_KEY_PARENT5:=$'\eOD'})
-            ((helping)) && return
 
             # If a search was done, clear the results and open the current dir.
             if ((search == 1 && search_end_early != 1)); then
@@ -1489,6 +1486,13 @@ key() {
                 clear_screen
                 status_line "${list[scroll]}"
                 "${FFF_STAT_CMD:-stat}" "${list[scroll]}"
+
+                # Show human-readable size.
+                printf "  Size (human-readable): "
+                size=$("${FFF_STAT_CMD:-stat}" -c "%s" "${list[scroll]}" | numfmt --to=iec)
+                printf "$size"
+                [[ $size =~ [0-9]$ ]] && printf "B" || printf ""    # If size is in bytes.
+
                 read -ern 1
                 redraw
             }
