@@ -23,6 +23,14 @@ A simple file manager written in `bash`.
 - **Display images with w3m-img!**
 - Supports `$CDPATH`.
 
+#### Changes to original
+
+- Devicons support
+- Help page on `?`
+- Open with commands
+- Human-readable size in stats
+- Git branch in stats
+- Git branch on status line
 
 ## Thanks
 
