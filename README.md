@@ -13,20 +13,20 @@
 - Git branch in stats
 - Git branch on status line
 - Recursive git signs for changed files
-- `ncdu` integration
-- Display file modification date, time and size
+- `ncdu` integration <img src="https://i.imgur.com/V2aCYWn.png" alt="img" height="180px" align="right"/>
+- Display file modification date, time and size (resource-heavy)
 - Sort files by modification time or alphabetically
+
 
 ### Thanks
 
 A big part of code in there is from people who made PRs and posted issues to fff:
 
-- Roy Orbitson (help page)
+- Roy Orbitson (help page) <img src="https://i.imgur.com/psnHD6l.png" alt="img" height="180px" align="right"/>
 - Sidd Dino (devicons)
 - qwool (idea for human-readable size)
 - Docbroke (ncdu integration, sorting)
 - yiselieren (file details)
-
 
 ## Table of Contents
 
@@ -189,13 +189,9 @@ export FFF_HIDDEN=1
 # (Off by default)
 export FFF_FILE_ICON=1
 
-# Show/Hide git status signs on open
+# Show/Hide git status signs (+) on open
 # (Off by default)
 export FFF_GIT_CHANGES=1
-
-# Show/Hide modification time of file on open
-# (Off by default)
-export FFF_DATE=1
 
 # Default method to sort files on open
 # 0 - alphabetically
@@ -355,6 +351,9 @@ export FFF_KEY_MKFILE="f"
 export FFF_KEY_IMAGE="i" # display image with w3m-img
 
 ### Miscellaneous
+
+# Display file details.
+export FFF_KEY_DETAILS="N"
 
 # Sort files.
 export FFF_KEY_SORT="I"
