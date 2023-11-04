@@ -16,6 +16,7 @@
 - `ncdu` integration <img src="https://i.imgur.com/V2aCYWn.png" alt="img" height="180px" align="right"/>
 - Display file modification date, time and size (resource-heavy)
 - Sort files by modification time or alphabetically
+- `ctrl + d`/`ctrl + u` scrolling
 
 
 ### Thanks
@@ -278,6 +279,11 @@ export FFF_FILE_FORMAT="%f"
 # Format ('%f' is the current file): "str%fstr"
 # Example (Add a ' >' before files): FFF_MARK_FORMAT="> %f"
 export FFF_MARK_FORMAT=" %f*"
+
+# Scroll steps.
+# (14 by default).
+export FFF_SCROLL_UP=14
+export FFF_SCROLL_DOWN=14
 ```
 
 ## Customizing the keybindings.
