@@ -978,7 +978,19 @@ list_help() {
         "Ctrl+C: exit without 'cd'"
         ''
         "${FFF_KEY_HELP:-?}: show this help"
+        ''
+        "trash directory: ${FFF_TRASH:-${XDG_DATA_HOME}/fff/trash}"
+        'Bookmarks: '
     )
+
+    # Add bookmarks to list.
+    for i in {1..9}; do
+        var="FFF_FAV$i"
+        path=${!var}
+        if [[ -n $path ]]; then
+            list+=("$i: $path")
+        fi
+    done
 
     ((list_total=${#list[@]}-1))
 

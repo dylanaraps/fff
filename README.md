@@ -8,7 +8,7 @@
 
 - [Nerd Fonts devicons](https://www.nerdfonts.com/#home) support
 - Help page on `?`
-- Open with commands
+- `Open with` commands
 - Human-readable size in stats
 - Git branch in stats
 - Git branch on status line
@@ -77,7 +77,7 @@ A big part of code in there is from people who made PRs and posted issues to fff
 ### Manual
 
 1. Download `fff`.
-    - Git: `git clone https://github.com/dylanaraps/fff`
+    - Git: `git clone https://github.com/piotr-marendowski/fff`
 2. Change working directory to `fff`.
     - `cd fff`
 3. Run `make install` inside the script directory to install the script.
@@ -85,7 +85,6 @@ A big part of code in there is from people who made PRs and posted issues to fff
     - **Haiku**: `make PREFIX="$(finddir B_USER_NONPACKAGED_DIRECTORY)" MANDIR='$(PREFIX)/documentation/man' DOCDIR='$(PREFIX)/documentation/fff' install`
     - **OpenIndiana**: `gmake install`
     - **MinGW/MSys**: `make -i install`
-    - **Others**: `make install`
     - **NOTE**: You may have to run this as root.
 
 **NOTE:** `fff` can be uninstalled easily using `make uninstall`. This removes all of files from your system.
