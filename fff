@@ -178,7 +178,6 @@ get_icon() {
                 'Public'          ) printf -- ''; return ;;
                 'Templates'       ) printf -- ''; return ;;
                 'Videos'          ) printf -- ''; return ;;
-
             # Spanish
                 'Escritorio'      ) printf -- ''; return ;; 
                 'Documentos'      ) printf -- ''; return ;; 
@@ -228,13 +227,19 @@ get_icon() {
     }
 
     # Icons for files with no extension
-    [[ "$2" == *"/$3" ]] && { 
+    [[ "$2" == "$3" ]] && { 
         case "$2" in
+            'lsb-release'   | 'arch-release' |\
+            'gshadow'       | 'group'        |\
+            'hosts'         | 'hostname'     |\
+            'shadow'        | 'sudoers'      |\
+            'passwd'        | 'os-release'   |\
             '_gvimrc'       | '_vimrc'       |\
             'bspwmrc'       |'cmakelists.txt'|\
-            'config'        | 'Makefile'     |\
-            'makefile'      | 'sxhkdrc'      |\
-            'ini'                            ) printf -- ''; return ;;
+            'config'        | 'gradlew'      |\
+            'ini'           | 'sxhkdrc'      ) printf -- ''; return ;;
+
+            'Makefile'      | 'makefile'     ) printf -- ''; return ;;
 
             'authorized_keys'                |\
             'known_hosts'                    |\
@@ -248,15 +253,17 @@ get_icon() {
             'a.out'                          |\
             'configure'                      ) printf -- ''; return ;;
 
-            'dockerfile'                     ) printf -- ''; return ;;
-            'Dockerfile'                     ) printf -- ''; return ;;
+            'dockerfile'                     |\
+            'Dockerfile'                     ) printf -- '󰡨'; return ;;
+
             'dropbox'                        ) printf -- ''; return ;;
             'exact-match-case-sensitive-2'   ) printf -- 'X2'; return ;;
             'ledger'                         ) printf -- ''; return ;;
-            'node_modules'                   ) printf -- ''; return ;;
+            'node_modules'                   ) printf -- '󰎙'; return ;;
             'playlists'                      ) printf -- ''; return ;;
             'procfile'                       ) printf -- ''; return ;;
             'README'                         ) printf -- ''; return ;;
+            'PKGBUILD'                       ) printf -- '󰏖'; return ;;
             '*'                              ) printf -- ''; return ;;
         esac
     }
@@ -265,32 +272,22 @@ get_icon() {
     # without an extension
     [[ "$2" == ".$3" ]] && {
         case "$2" in
-            '.bash_aliases'                |\
-            '.bash_history'                |\
-            '.bash_logout'                 |\
-            '.bash_profile'                |\
-            '.bashprofile'                 |\
-            '.bashrc'                      |\
-            '.dmrc'                        |\
-            '.DS_Store'                    |\
-            '.fasd'                        |\
-            '.gitattributes'               |\
-            '.gitconfig'                   |\
-            '.gitignore'                   |\
-            '.inputrc'                     |\
-            '.jack-settings'               |\
-            '.nvidia-settings-rc'          |\
-            '.pam_environment'             |\
-            '.profile'                     |\
-            '.recently-used'               |\
-            '.selected_editor'             |\
-            '.Xauthority'                  |\
-            '.Xdefaults'                   |\
-            '.xinitrc'                     |\
-            '.xinputrc'                    |\
-            '.Xresources'                  |\
-            '.zsh_history'                 |\
-            '.zshrc'                       ) printf -- ''; return ;;
+            '.bash_aliases'                        |\
+            '.bash_history'                        |\
+            '.bash_logout'                         |\
+            '.bash_profile'                        |\
+            '.bashprofile'        | '.project'     |\
+            '.gitattributes'      | '.bashrc'      |\
+            '.gitconfig'          | '.gitignore'   |\
+            '.jack-settings'      | '.DS_Store'    |\
+            '.nvidia-settings-rc' | '.inputrc'     |\
+            '.pam_environment'    | '.dmrc'        |\
+            '.recently-used'      | '.profile'     |\
+            '.selected_editor'    | '.fasd'        |\
+            '.Xdefaults'          | '.Xauthority'  |\
+            '.xinitrc'            | '.xinputrc'    |\
+            '.xprofile'           | '.Xresources'  |\
+            '.zsh_history'        | '.zshrc'       ) printf -- ''; return ;;
 
             '.vim'                         |\
             '.viminfo'                     |\
@@ -307,6 +304,8 @@ get_icon() {
     # Icon for files whose names have an extension
     [[ "$2" == *"."* ]] && {
         case "$2" in
+            'locale.gen'                       |\
+            'prefs.js'                         |\
             'cmakelists.txt'                   |\
             'Makefile.ac'                      |\
             'Makefile.in'                      |\
@@ -348,6 +347,20 @@ get_icon() {
         esac
 
         case "$3" in
+            'efi'           | 'menu'         |\
+            'cfg'           | 'EFI'          |\
+            'desktop'       | 'name'         |\
+            'package-cache' | 'prefs'        |\
+            'reg'           | 'gradle'       |\
+            'bat'           | 'conf'         |\
+            'cvs'           | 'tsv'          |\
+            'htaccess'      | 'config'       |\
+            'htpasswd'      | 'pro'          |\
+            'ini'           | 'rc'           |\
+            'toml'          | 'yaml'         |\
+            'x86_64'        | 'x86'          |\
+            'yml'           | 'properties'   ) printf -- ''; return ;;
+
             '7z'  | 'apk'   |\
             'bz2' | 'cab'   |\
             'cpio'| 'deb'   |\
@@ -357,19 +370,11 @@ get_icon() {
             'rar' | 'rpm'   |\
             'tar' | 'tgz'   |\
             'xbps'| 'xz'    |\
-            'zip'           ) printf -- ''; return ;;
-
-            'bat' | 'conf'  |\
-            'cvs'           |\
-            'htaccess'      |\
-            'htpasswd'      |\
-            'ini' | 'rc'    |\
-            'toml'| 'yaml'  |\
-            'yml'           ) printf -- ''; return ;;
+            'zip' | 'zst'   ) printf -- ''; return ;;
 
             'asp' | 'awk'   |\
             'bash'| 'csh'   |\
-            'efi' | 'elf'   |\
+            'elf'           |\
             'fish'| 'ksh'   |\
             'ps1' | 'rom'   |\
             'zsh'           ) printf -- ''; return ;;
@@ -380,13 +385,12 @@ get_icon() {
             'mpeg'| 'mpg'   |\
             'webm'          ) printf -- ''; return ;;
 
-
             'bmp' | 'gif'   |\
             'ico' | 'jpeg'  |\
             'jpg' | 'png'   |\
             'ppt' | 'pptx'  |\
             'webp'| 'GIF'   |\
-            'xcf'           ) printf -- ''; return ;;
+            'xcf' | 'xbm'   ) printf -- ''; return ;;
 
             'aup' | 'cue'   |\
             'flac'| 'm4a'   |\
@@ -414,11 +418,11 @@ get_icon() {
 
             'asm' | 'css'   |\
             'less'| 's'     |\
-            'sh'            ) printf -- ''; return ;;
+            'sh'  | 'style' ) printf -- ''; return ;;
 
             'db'  | 'dump'  |\
-            'img' | 'iso'   |\
-            'sql'           ) printf -- ''; return ;;
+            'img'           |\
+            'sql' | 'files' ) printf -- ''; return ;;
 
             'f#'  | 'fs'    |\
             'fsi' | 'fsx'   |\
@@ -432,19 +436,21 @@ get_icon() {
             'rake'| 'rb'    ) printf -- ''; return ;;
 
             'dll' | 'exe'   |\
-            'msi'           ) printf -- ''; return ;;
+            'msi' | 'bin'   ) printf -- ''; return ;;
 
             'eex' | 'ex'    |\
             'exs' | 'leex'  ) printf -- ''; return ;;
 
-            'class'         |\
-            'jar' | 'java'  ) printf -- ''; return ;;
+            'jar' | 'java'  ) printf -- ''; return ;;
+            'class'         ) printf -- '󰏗'; return ;;
 
             'mustache'      |\
             'hbs'           ) printf -- ''; return ;;
 
             'json'          |\
             'webmanifest'   ) printf -- ''; return ;;
+
+            'ttf' | 'otf'   ) printf -- ''; return ;;
 
             'py'  | 'pyc'   |\
             'pyd' | 'pyo'   ) printf -- ''; return ;;
@@ -481,7 +487,6 @@ get_icon() {
             'php'           ) printf -- ''; return ;;
             'pp'            ) printf -- ''; return ;;
             'r'             ) printf -- 'ﳒ'; return ;;
-            'rproj'         ) printf -- '鉶'; return ;;
             'rss'           ) printf -- ''; return ;;
             'scala'         ) printf -- ''; return ;;
             'styl'          ) printf -- ''; return ;;
@@ -493,6 +498,13 @@ get_icon() {
             'vue'           ) printf -- '﵂'; return ;;
             'xcplayground'  ) printf -- ''; return ;;
             'xul'           ) printf -- ''; return ;;
+
+            'lock'          ) printf -- ''; return ;;
+            'iso'           ) printf -- '󰻂'; return ;;
+            'uuid'          ) printf -- ''; return ;;
+            'rej'           ) printf -- ''; return ;;
+
+            '1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9') printf -- '󰋗'; return ;;
         esac
     }
 
