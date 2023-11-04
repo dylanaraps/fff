@@ -1539,7 +1539,7 @@ key() {
 
         # Create a directory.
         ${FFF_KEY_MKDIR:=n})
-            cmd_line "mkdir: " "dirs"
+            cmd_line "Create directory: " "dirs"
 
             [[ $cmd_reply ]] &&
                 if [[ -e $cmd_reply ]]; then
@@ -1556,7 +1556,7 @@ key() {
 
         # Create a file.
         ${FFF_KEY_MKFILE:=f})
-            cmd_line "mkfile: "
+            cmd_line "Create file: "
 
             [[ $cmd_reply ]] &&
                 if [[ -e $cmd_reply ]]; then
