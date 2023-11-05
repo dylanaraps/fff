@@ -17,6 +17,7 @@
 - Display file modification date, time and size (resource-heavy)
 - Sort files by modification time or alphabetically
 - `ctrl + d`/`ctrl + u` scrolling
+- Working history of directories and picker for them
 
 
 ### Thanks
@@ -144,6 +145,7 @@ I: sort files
 x: view file/dir attributes
 i: display image with w3m-img
 u: run ncdu
+v: show history
 
 down:  scroll down
 up:    scroll up
@@ -264,6 +266,14 @@ export FFF_FAV7=
 export FFF_FAV8=
 export FFF_FAV9=
 
+# History file length.
+# (100 lines by default)
+# Every cd-on-exit (q) program deletes every line older than
+# FFF_HISTORY_LENGTH.
+# Example: history has 150 lines, quitting trims history file
+# to 100 most recent.
+export FFF_HISTORY_LENGTH=200
+
 # w3m-img offsets.
 export FFF_W3M_XOFFSET=0
 export FFF_W3M_YOFFSET=0
@@ -374,6 +384,9 @@ export FFF_KEY_HIDDEN="."
 
 # Open ncdu
 export FFF_KEY_NCDU="u"
+
+# Show history of directories. 
+export FFF_KEY_HISTORY="v"
 ```
 
 ### Disabling keybindings.
