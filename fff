@@ -172,7 +172,9 @@ get_icon() {
                 'Desktop'         ) printf -- ''; return ;;
                 'Documents'       ) printf -- ''; return ;;
                 'Downloads'       ) printf -- ''; return ;;
-                'Dotfiles'        ) printf -- ''; return ;;
+                'Dotfiles'        |\
+                'dotfiles'        |\
+                '.dotfiles'       ) printf -- ''; return ;;
                 'Dropbox'         ) printf -- ''; return ;;
                 'Music'           ) printf -- ''; return ;;
                 'Pictures'        ) printf -- ''; return ;;
@@ -989,7 +991,7 @@ list_help() {
         "${FFF_KEY_ATTRIBUTES:-x}: view file/dir attributes"
         "${FFF_KEY_IMAGE:-i}: display image with w3m-img"
         "${FFF_KEY_NCDU:-u}: open ncdu"
-        "${FFF_KEY_HISTORY:-u}: show history"
+        "${FFF_KEY_HISTORY:-a}: show history"
         ''
         'down:  scroll down'
         'up:    scroll up'
@@ -1001,19 +1003,15 @@ list_help() {
         "${FFF_KEY_RENAME:-r}: rename"
         "${FFF_KEY_EXECUTABLE:-X}: toggle executable"
         ''
+        "${FFF_KEY_MARK:-" "}: mark"
+        "${FFF_KEY_MARK:-v}: mark all"
         "${FFF_KEY_YANK:-y}: mark copy"
         "${FFF_KEY_MOVE:-m}: mark move"
         "${FFF_KEY_TRASH:-d}: mark trash"
         "${FFF_KEY_LINK:-s}: mark symbolic link"
         "${FFF_KEY_BULK_RENAME:-b}: mark bulk rename"
         ''
-        "${FFF_KEY_YANK_ALL:-Y}: mark all for copy"
-        "${FFF_KEY_MOVE_ALL:-M}: mark all for move"
-        "${FFF_KEY_TRASH_ALL:-D}: mark all for trash"
-        "${FFF_KEY_LINK_ALL:-S}: mark all for symbolic link"
-        "${FFF_KEY_BULK_RENAME_ALL:-B}: mark all for bulk rename"
-        ''
-        "${FFF_KEY_PASTE:-p}: paste/move/delete/bulk_rename"
+        "${FFF_KEY_PASTE:-p}: execute paste/move/delete/bulk_rename"
         "${FFF_KEY_CLEAR:-c}: clear file selections"
         ''
         "q: exit with 'cd' (if enabled) or exit this help"
@@ -1979,7 +1977,7 @@ main() {
 
     # 'nocaseglob': Glob case insensitively (Used for case insensitive search).
     # 'nullglob':   Don't expand non-matching globs to themselves.
-    shopt -s nocaseglob nullglob
+    shopt -s nocaseglob nullglob nocasematch
 
     # Trap the exit signal (we need to reset the terminal to a useable state.)
     trap 'reset_terminal' EXIT
