@@ -171,7 +171,7 @@ get_icon() {
                 '.git'            ) printf -- ''; return ;;
                 'Desktop'         ) printf -- ''; return ;;
                 'Documents'       ) printf -- ''; return ;;
-                'Downloads'       ) printf -- ''; return ;;
+                'Downloads'       ) printf -- ''; return ;;
                 'Dotfiles'        ) printf -- ''; return ;;
                 'Dropbox'         ) printf -- ''; return ;;
                 'Music'           ) printf -- ''; return ;;
@@ -182,7 +182,7 @@ get_icon() {
             # Spanish
                 'Escritorio'      ) printf -- ''; return ;; 
                 'Documentos'      ) printf -- ''; return ;; 
-                'Descargas'       ) printf -- ''; return ;; 
+                'Descargas'       ) printf -- ''; return ;; 
                 'Música'          ) printf -- ''; return ;; 
                 'Imágenes'        ) printf -- ''; return ;; 
                 'Público'         ) printf -- ''; return ;; 
@@ -193,7 +193,7 @@ get_icon() {
                 'Images'          ) printf -- ''; return ;;
                 'Musique'         ) printf -- ''; return ;;
                 'Publique'        ) printf -- ''; return ;;
-                'Téléchargements' ) printf -- ''; return ;;
+                'Téléchargements' ) printf -- ''; return ;;
                 'Vidéos'          ) printf -- ''; return ;;
             # Portuguese
                 'Imagens'         ) printf -- ''; return ;;
@@ -205,7 +205,7 @@ get_icon() {
                 'Modelli'         ) printf -- ''; return ;;
                 'Musica'          ) printf -- ''; return ;;
                 'Pubblici'        ) printf -- ''; return ;;
-                'Scaricati'       ) printf -- ''; return ;;
+                'Scaricati'       ) printf -- ''; return ;;
                 'Scrivania'       ) printf -- ''; return ;;
                 'Video'           ) printf -- ''; return ;;
             # German
@@ -219,7 +219,7 @@ get_icon() {
                 'Dokumentumok'    ) printf -- ''; return ;;
                 'Képek'           ) printf -- ''; return ;;
                 'Zene'            ) printf -- ''; return ;;
-                'Letöltések'      ) printf -- ''; return ;;
+                'Letöltések'      ) printf -- ''; return ;;
                 'Videók'          ) printf -- ''; return ;;
                 'Számítógép'      ) printf -- ''; return ;;
 
@@ -523,8 +523,12 @@ git_changes() {
 
 status_line() {
     # Status_line to print when files are marked for operation.
-    local mark_ui="[${#marked_files[@]}] selected (${file_program[*]}) [p] ->"
-    mark_ui="${marked_files[*]:+"$mark_ui"}"
+    local mark_ui=
+    [ ${#marked_files[@]} -gt 0 ] && {
+        mark_ui="[${#marked_files[@]}] selected "
+        [ ! -z $file_program ] && \
+            mark_ui+="(${file_program[*]}) "
+    }
 
     # Escape the directory string.
     # Remove all non-printable characters.
@@ -1075,6 +1079,7 @@ mark() {
             mark_dir=$PWD
         else
             marked_files=()
+            file_program=()
         fi
 
         redraw
@@ -1092,21 +1097,9 @@ mark() {
         print_line "$1"
     fi
 
-    # Find the program to use.
-    case "$2" in
-        ${FFF_KEY_YANK:=y}|${FFF_KEY_YANK_ALL:=Y}) file_program=(cp -iR) ;;
-        ${FFF_KEY_MOVE:=m}|${FFF_KEY_MOVE_ALL:=M}) file_program=(mv -i)  ;;
-        ${FFF_KEY_LINK:=s}|${FFF_KEY_LINK_ALL:=S}) file_program=(ln -s)  ;;
-
-        # These are 'fff' functions.
-        ${FFF_KEY_TRASH:=d}|${FFF_KEY_TRASH_ALL:=D})
-            file_program=(trash)
-        ;;
-
-        ${FFF_KEY_BULK_RENAME:=b}|${FFF_KEY_BULK_RENAME_ALL:=B})
-            file_program=(bulk_rename)
-        ;;
-    esac
+    # If no programs are marked, clear the type of operation.
+    [[ -z ${marked_files[*]} ]] &&
+        file_program=()
 
     status_line
 }
@@ -1415,6 +1408,14 @@ key() {
 
     # Handle special key presses.
     [[ $1 == $'\e' ]] && {
+
+        # Exit marking with any special key!
+        [[ ${marked_files[*]} ]] && {
+            marked_files=()
+            file_program=()
+            redraw
+        }
+
         read "${read_flags[@]}" -rsn 2
 
         # Handle a normal escape key press.
@@ -1569,23 +1570,48 @@ key() {
         ${FFF_KEY_TRASH:=d}|\
         ${FFF_KEY_LINK:=s}|\
         ${FFF_KEY_BULK_RENAME:=b})
+            [[ -z "${marked_files[*]}" ]] && return
+
+            previous_program="${file_program[0]}"
+
+            # Find the program to use.
+            case "$1" in
+                ${FFF_KEY_YANK:=y}) file_program=(cp -iR) ;;
+                ${FFF_KEY_MOVE:=m}) file_program=(mv -i) ;;
+                ${FFF_KEY_LINK:=s}) file_program=(ln -s) ;;
+
+                # These are 'fff' functions.
+                ${FFF_KEY_TRASH:=d}) file_program=(trash) ;;
+                ${FFF_KEY_BULK_RENAME:=b}) file_program=(bulk_rename) ;;
+            esac
+
+            # Toggle the file program if the same key was pressed.
+            [[ $previous_program == "${file_program[0]}" ]] &&
+                file_program=()
+
+            status_line
+            ;;
+
+            # Mark files for operation.
+            "${FFF_KEY_MARK:=" "}")
             mark "$scroll" "$1"
         ;;
 
         # Mark all files for operation.
-        ${FFF_KEY_YANK_ALL:=Y}|\
-        ${FFF_KEY_MOVE_ALL:=M}|\
-        ${FFF_KEY_TRASH_ALL:=D}|\
-        ${FFF_KEY_LINK_ALL:=S}|\
-        ${FFF_KEY_BULK_RENAME_ALL:=B})
+        "${FFF_KEY_MARK_ALL:=v}")
             mark all "$1"
         ;;
 
         # Do the file operation.
-        ${FFF_KEY_PASTE:=p})
+        ${FFF_KEY_EXECUTE:=p})
             [[ ${marked_files[*]} ]] && {
                 [[ ! -w $PWD ]] && {
-                    cmd_line "warn: no write access to dir."
+                    cmd_line "WARNING: No write access to dir"
+                    return
+                }
+
+                [[ -z ${file_program[0]} ]] && {
+                    cmd_line "WARNING: No operation selected [y,m,d,b,s]"
                     return
                 }
 
@@ -1599,8 +1625,14 @@ key() {
                 stty -echo
 
                 marked_files=()
+                file_program=()
                 setup_terminal
                 redraw full
+            } || {
+                [[ -z ${file_program[0]} ]] && {
+                    cmd_line "WARNING: 0 marked files"
+                    return
+                }
             }
         ;;
 
@@ -1610,12 +1642,13 @@ key() {
 
             [[ ${marked_files[*]} ]] && {
                 marked_files=()
+                file_program=()
                 redraw
             }
         ;;
 
         # Rename list item.
-        ${FFF_KEY_RENAME:=r})
+        ${FFF_KEY_RENAME:=s})
             ((helping)) || ((history)) && return
 
             [[ ! -e ${list[scroll]} ]] &&
@@ -1625,14 +1658,14 @@ key() {
 
             [[ $cmd_reply ]] &&
                 if [[ -e $cmd_reply ]]; then
-                    cmd_line "warn: '$cmd_reply' already exists."
+                    cmd_line "WARNING: '$cmd_reply' already exists"
 
                 elif [[ -w ${list[scroll]} ]]; then
                     mv "${list[scroll]}" "${PWD}/${cmd_reply}"
                     redraw full
 
                 else
-                    cmd_line "warn: no write access to file."
+                    cmd_line "WARNING: No write access to file"
                 fi
         ;;
 
@@ -1644,14 +1677,14 @@ key() {
 
             [[ $cmd_reply ]] &&
                 if [[ -e $cmd_reply ]]; then
-                    cmd_line "warn: '$cmd_reply' already exists."
+                    cmd_line "WARNING: '$cmd_reply' already exists"
 
                 elif [[ -w $PWD ]]; then
                     mkdir -p "${PWD}/${cmd_reply}"
                     redraw full
 
                 else
-                    cmd_line "warn: no write access to dir."
+                    cmd_line "WARNING: No write access to dir"
                 fi
         ;;
 
@@ -1663,14 +1696,14 @@ key() {
 
             [[ $cmd_reply ]] &&
                 if [[ -e $cmd_reply ]]; then
-                    cmd_line "warn: '$cmd_reply' already exists."
+                    cmd_line "WARNING: '$cmd_reply' already exists"
 
                 elif [[ -w $PWD ]]; then
                     : > "$cmd_reply"
                     redraw full
 
                 else
-                    cmd_line "warn: no write access to dir."
+                    cmd_line "WARNING: No write access to dir"
                 fi
         ;;
 
@@ -1849,7 +1882,7 @@ key() {
         ;;
 
         # Display history.
-        "${FFF_KEY_HISTORY:=v}")
+        "${FFF_KEY_HISTORY:=a}")
             ((helping)) && return
 
             ((history)) && {
