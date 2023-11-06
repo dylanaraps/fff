@@ -986,8 +986,8 @@ list_help() {
         "${FFF_KEY_REFRESH:-e}: refresh current dir"
         "${FFF_KEY_SHELL:-!}: open shell in current dir"
         ''
-        "${FFF_KEY_DETAILS:-N} display file details"
-        "${FFF_KEY_SORT:-I} sort files"
+        "${FFF_KEY_DETAILS:-N}: display file details"
+        "${FFF_KEY_SORT:-I}: sort files"
         "${FFF_KEY_ATTRIBUTES:-x}: view file/dir attributes"
         "${FFF_KEY_IMAGE:-i}: display image with w3m-img"
         "${FFF_KEY_NCDU:-u}: open ncdu"
@@ -1104,11 +1104,6 @@ mark() {
 
 trash() {
     # Trash a file.
-    cmd_line "trash [${#marked_files[@]}] items? [y/n]: " y n
-
-    [[ $cmd_reply != y ]] &&
-        return
-
     if [[ $FFF_TRASH_CMD ]]; then
         # Pass all but the last argument to the user's
         # custom script. command is used to prevent this function
@@ -1378,32 +1373,6 @@ cmd_line() {
 }
 
 key() {
-    # Handle ctrl + u scroll up.
-    [[ $1 == $'\x15' ]] && {
-        ((scroll != 0)) && {
-            if ((scroll - ${FFF_SCROLL_UP:=14} < 0)); then
-                scroll=0
-                redraw
-            else
-                scroll=$((scroll - ${FFF_SCROLL_UP:=14}))
-                redraw
-            fi
-        }
-    }
-
-    # Handle ctrl + d for scroll down.
-    [[ $1 == $'\x04' ]] && {
-        ((scroll != list_total)) && {
-            if ((scroll + ${FFF_SCROLL_DOWN:=14} > list_total)); then
-                scroll=list_total
-                redraw
-            else
-                scroll=$((scroll + ${FFF_SCROLL_DOWN:=14}))
-                redraw
-            fi
-        }
-    }
-
     # Handle special key presses.
     [[ $1 == $'\e' ]] && {
 
@@ -1870,10 +1839,12 @@ key() {
                 # Return to previous state.
                 details=$saved_details
                 FFF_FILE_ICON="$icon_value"
+                shopt -u nocasematch
                 redraw full
                 return
             }
 
+            shopt -s nocaseglob nullglob nocasematch
             saved_details=$details
             details=0
             redraw help
@@ -1887,10 +1858,12 @@ key() {
                 # Return to previous state.
                 details=$saved_details
                 FFF_FILE_ICON="$icon_value"
+                shopt -u nocasematch
                 redraw full
                 return
             }
 
+            shopt -s nocaseglob nullglob nocasematch
             saved_details=$details
             details=0
             redraw hist
@@ -1908,12 +1881,14 @@ key() {
                 details=$saved_details
                 FFF_FILE_ICON="$icon_value"     # Set FFF_FILE_ICON to previous state.
                 redraw full
+                shopt -u nocasematch
                 return
             }
             ((history)) && {
                 details=$saved_details
                 FFF_FILE_ICON="$icon_value"     # Set FFF_FILE_ICON to previous state.
                 redraw full
+                shopt -u nocasematch
                 return
             }
 
@@ -1977,7 +1952,7 @@ main() {
 
     # 'nocaseglob': Glob case insensitively (Used for case insensitive search).
     # 'nullglob':   Don't expand non-matching globs to themselves.
-    shopt -s nocaseglob nullglob nocasematch
+    shopt -s nocaseglob nullglob
 
     # Trap the exit signal (we need to reset the terminal to a useable state.)
     trap 'reset_terminal' EXIT
