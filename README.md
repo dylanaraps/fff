@@ -18,7 +18,7 @@
 - Sort files by modification time or alphabetically
 - `ctrl + d`/`ctrl + u` scrolling
 - Working history of directories and picker for them
-- Changed marking to nnn-like (mark with space, then choose command, and execute it)
+- Changed marking behaviour to nnn-like (mark with space, then choose command, and execute it)
 
 
 ### Thanks
