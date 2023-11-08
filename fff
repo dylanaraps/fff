@@ -1374,6 +1374,32 @@ cmd_line() {
 
 key() {
     # Handle special key presses.
+    
+    # Handle ctrl + u scroll up.
+    [[ $1 == $'\x15' ]] && {
+        ((scroll != 0)) && {
+            if ((scroll - ${FFF_SCROLL_UP:=14} < 0)); then
+                scroll=0
+                redraw
+            else
+                scroll=$((scroll - ${FFF_SCROLL_UP:=14}))
+                redraw
+            fi
+        }
+    }
+
+    # Handle ctrl + d for scroll down.
+    [[ $1 == $'\x04' ]] && {
+        ((scroll != list_total)) && {
+            if ((scroll + ${FFF_SCROLL_DOWN:=14} > list_total)); then
+                scroll=list_total
+                redraw
+            else
+                scroll=$((scroll + ${FFF_SCROLL_DOWN:=14}))
+                redraw
+            fi
+        }
+    }
     [[ $1 == $'\e' ]] && {
 
         # Exit marking with any special key!
