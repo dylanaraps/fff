@@ -912,6 +912,9 @@ list_help() {
         'left:  go to parent dir'
         'right: go to child dir'
         ''
+        "ctrl+d: scroll down for ${FFF_SCROLL_DOWN:=14} lines"
+        "ctrl+u: scroll up for ${FFF_SCROLL_UP:=14} lines"
+        ''
         "${FFF_KEY_MKFILE:-f}: new file"
         "${FFF_KEY_MKDIR:-n}: new dir"
         "${FFF_KEY_RENAME:-r}: rename"
@@ -929,12 +932,12 @@ list_help() {
         "${FFF_KEY_CLEAR:-c}: clear file selections"
         ''
         "q: exit with 'cd' (if enabled) or exit this help"
-        "Ctrl+C: exit without 'cd'"
+        "ctrl+c: exit without 'cd'"
         ''
         "Trash directory: ${FFF_TRASH:-${XDG_DATA_HOME}/fff/trash}"
-        'Bookmarks [1-9]: '
-        ''
         "${FFF_KEY_HELP:-?}: show this help"
+        ''
+        'Bookmarks [1-9]: '
     )
 
     # Add bookmarks to list.
@@ -1760,12 +1763,10 @@ key() {
                 # Return to previous state.
                 details=$saved_details
                 FFF_FILE_ICON="$icon_value"
-                shopt -u nocasematch
                 redraw full
                 return
             }
 
-            shopt -s nocaseglob nullglob nocasematch
             saved_details=$details
             details=0
             redraw help
@@ -1779,12 +1780,10 @@ key() {
                 # Return to previous state.
                 details=$saved_details
                 FFF_FILE_ICON="$icon_value"
-                shopt -u nocasematch
                 redraw full
                 return
             }
 
-            shopt -s nocaseglob nullglob nocasematch
             saved_details=$details
             details=0
             redraw hist
@@ -1802,14 +1801,12 @@ key() {
                 details=$saved_details
                 FFF_FILE_ICON="$icon_value"     # Set FFF_FILE_ICON to previous state.
                 redraw full
-                shopt -u nocasematch
                 return
             }
             ((history)) && {
                 details=$saved_details
                 FFF_FILE_ICON="$icon_value"     # Set FFF_FILE_ICON to previous state.
                 redraw full
-                shopt -u nocasematch
                 return
             }
 
