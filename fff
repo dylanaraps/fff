@@ -1293,28 +1293,51 @@ key() {
     # Handle special key presses.
     
     # Handle ctrl + u scroll up.
+    #
+    # Super dumb approach, because it basically goes through
+    # every line and highlights it.
+    # Faster version = set scroll and redraw with it, but it
+    # clears the screen so I set it as is here to look better.
     [[ $1 == $'\x15' ]] && {
         ((scroll != 0)) && {
-            if ((scroll - ${FFF_SCROLL_UP:=14} < 0)); then
-                scroll=0
-                redraw
-            else
-                scroll=$((scroll - ${FFF_SCROLL_UP:=14}))
-                redraw
-            fi
+            for ((i=0; i<${FFF_SCROLL_UP:=14}; i++)); do
+                while ((scroll > 0)); do
+                    ((scroll--))
+
+                    print_line "$((scroll+1))"
+
+                    if ((y < 2)); then
+                        printf '\e[L'
+                    else
+                        printf '\e[A'
+                        ((y--))
+                    fi
+
+                    print_line "$scroll"
+
+                    [[ "${list[scroll]}" ]] && break
+                done
+            done
+            status_line
         }
     }
 
     # Handle ctrl + d for scroll down.
     [[ $1 == $'\x04' ]] && {
         ((scroll != list_total)) && {
-            if ((scroll + ${FFF_SCROLL_DOWN:=14} > list_total)); then
-                scroll=list_total
-                redraw
-            else
-                scroll=$((scroll + ${FFF_SCROLL_DOWN:=14}))
-                redraw
-            fi
+            for ((i=0; i<${FFF_SCROLL_UP:=14}; i++)); do
+                while ((scroll < list_total)); do
+                    ((scroll++))
+                    ((y < max_items)) && ((y++))
+
+                    print_line "$((scroll-1))"
+                    printf '\n'
+                    print_line "$scroll"
+
+                    [[ "${list[scroll]}" ]] && break
+                done
+            done
+            status_line
         }
     }
 
@@ -1733,13 +1756,13 @@ key() {
         ${FFF_KEY_REFRESH:=z})
             ((helping)) && {
                 list=("${cur_list[@]}")
-                redraw
+                redraw full
                 return
             }
 
             ((history)) && {
                 list=("${cur_list[@]}")
-                redraw
+                redraw full
                 return
             }
 
