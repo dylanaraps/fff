@@ -12,13 +12,14 @@
 - Human-readable size in stats
 - Git branch in stats
 - Git branch on status line
-- Recursive git signs for changed files
-- `ncdu` integration <img src="https://i.imgur.com/V2aCYWn.png" alt="img" height="180px" align="right"/>
+- Recursive git signs for changed files <img src="https://i.imgur.com/V2aCYWn.png" alt="img" height="180px" align="right"/>
 - Display file modification date, time and size (resource-heavy)
 - Sort files by modification time or alphabetically
 - `ctrl + d`/`ctrl + u` scrolling
 - Working history of directories and picker for them
 - Changed marking behaviour to nnn-like (mark with space, then choose command, and execute it)
+- Slightly changed keybindings to better suit more options
+- Removed ability to view images (because I don't use it, but can add it for request)
 
 
 ### Thanks
@@ -28,7 +29,7 @@ A big part of code in there is from people who made PRs and posted issues to fff
 - Roy Orbitson (help page) <img src="https://i.imgur.com/psnHD6l.png" alt="img" height="180px" align="right"/>
 - Sidd Dino (devicons)
 - qwool (idea for human-readable size)
-- Docbroke (ncdu integration, sorting)
+- Docbroke (sorting)
 - yiselieren (file details)
 
 ## Table of Contents
@@ -64,16 +65,8 @@ A big part of code in there is from people who made PRs and posted issues to fff
     - Program handling (*non-text*).
     - *Not needed on macos and Haiku.*
     - *Customizable (if not using `xdg-open`): `$FFF_OPENER`.*
-- `ncdu` (*optional*)
 - `Nerd Font` (*optional*)
     - Icons
-
-**Dependencies for image display**
-
-- `w3m-img`
-- `xdotool` for X.
-- `fbset` for the framebuffer.
-
 
 ## Installation
 
@@ -138,15 +131,13 @@ G: go to bottom
 /: search
 t: go to trash
 ~: go to home
-e: refresh current dir
+z: refresh current dir
 !: open shell in current dir
 
-N: display file details
-I: sort files
+i: display file details
+u: sort files
 x: view file/dir attributes
-i: display image with w3m-img
-u: run ncdu
-s: show history
+e: show history
 
 down:  scroll down
 up:    scroll up
@@ -158,7 +149,8 @@ n: new dir
 r: rename
 X: toggle executable
 
-space: mark files for operations:
+space: mark file
+a: mark all files in directory
 y: copy
 m: move
 d: trash (move to FFF_TRASH)
@@ -270,10 +262,6 @@ export FFF_FAV9=
 # to 100 most recent.
 export FFF_HISTORY_LENGTH=200
 
-# w3m-img offsets.
-export FFF_W3M_XOFFSET=0
-export FFF_W3M_YOFFSET=0
-
 # File format.
 # Customize the item string.
 # Format ('%f' is the current file): "str%fstr"
@@ -337,11 +325,11 @@ export FFF_KEY_TO_BOTTOM="G"
 export FFF_KEY_GO_DIR=":"
 export FFF_KEY_GO_HOME="~"
 export FFF_KEY_GO_TRASH="t"
-export FFF_KEY_REFRESH="e"
+export FFF_KEY_REFRESH="z"
 
 ### File operations.
 export FFF_KEY_MARK=" "
-export FFF_KEY_MARK_ALL="v"
+export FFF_KEY_MARK_ALL="a"
 export FFF_KEY_YANK="y"
 export FFF_KEY_MOVE="m"
 export FFF_KEY_TRASH="d"
@@ -354,15 +342,14 @@ export FFF_KEY_CLEAR="c"
 export FFF_KEY_RENAME="r"
 export FFF_KEY_MKDIR="n"
 export FFF_KEY_MKFILE="f"
-export FFF_KEY_IMAGE="i" # display image with w3m-img
 
 ### Miscellaneous
 
 # Display file details.
-export FFF_KEY_DETAILS="N"
+export FFF_KEY_DETAILS="i"
 
 # Sort files.
-export FFF_KEY_SORT="I"
+export FFF_KEY_SORT="u"
 
 # Show file attributes.
 export FFF_KEY_ATTRIBUTES="x"
@@ -373,11 +360,8 @@ export FFF_KEY_EXECUTABLE="X"
 # Toggle hidden files.
 export FFF_KEY_HIDDEN="."
 
-# Open ncdu
-export FFF_KEY_NCDU="u"
-
 # Show history of directories. 
-export FFF_KEY_HISTORY="a"
+export FFF_KEY_HISTORY="e"
 ```
 
 ### Disabling keybindings.
@@ -438,10 +422,3 @@ read -srn 1 && key "$REPLY"
 ## Using `fff` in vim/neovim as a file picker
 
 See: [**`fff.vim`**](https://github.com/dylanaraps/fff.vim)
-
-
-## Why?
-
-¯\\_(ツ)_/¯
-
-<sup><sub>dont touch my shrug</sub></sup>

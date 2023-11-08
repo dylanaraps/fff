@@ -148,12 +148,6 @@ get_ls_colors() {
     export "${ls_cols[@]}" &>/dev/null
 }
 
-get_w3m_path() {
-    # Find the path to the w3m-img library.
-    w3m_paths=(/usr/{pkg/,}{local/,}{bin,lib,libexec,lib64,libexec64}/w3m/w3mi*)
-    read -r w3m _ < <(type -p "$FFF_W3M_PATH" w3mimgdisplay "${w3m_paths[@]}")
-}
-
 get_mime_type() {
     # Get a file's mime_type.
     mime_type=$(file "-${file_flags:-biL}" "$1" 2>/dev/null)
@@ -727,8 +721,15 @@ print_line() {
     # Remove all non-printable characters.
     file_name=${file_name//[^[:print:]]/^[}
 
-    (( ${FFF_FILE_ICON:=0} == 1 )) && \
-        icon="$(get_icon "${list[$1]}" "$file_name" "$file_ext") "
+    # Get icon for file.
+    (( ${FFF_FILE_ICON:=0} == 1 )) && {
+        # If file is executable and is not directory.
+        if [[ -x ${list[$1]} && ! -d ${list[$1]} ]]; then 
+            icon=" "
+        else
+            icon="$(get_icon "${list[$1]}" "$file_name" "$file_ext") "
+        fi
+    }
 
     # Check if current dir is a git repo and has changes, then
     # display git signs if is.
@@ -819,91 +820,6 @@ draw_dir() {
     ((y=scroll_new_pos))
 }
 
-draw_img() {
-    # Draw an image file on the screen using w3m-img.
-    # We can use the framebuffer; set win_info_cmd as appropriate.
-    [[ $(tty) == /dev/tty[0-9]* && -w /dev/fb0 ]] &&
-        win_info_cmd=fbset
-
-    # X isn't running and we can't use the framebuffer, do nothing.
-    [[ -z $DISPLAY && $win_info_cmd != fbset ]] &&
-        return
-
-    # File isn't an image file, do nothing.
-    get_mime_type "${list[scroll]}"
-    [[ $mime_type != image/* ]] &&
-        return
-
-    # w3m-img isn't installed, do nothing.
-    type -p "$w3m" &>/dev/null || {
-        cmd_line "error: Couldn't find 'w3m-img', is it installed?"
-        return
-    }
-
-    # $win_info_cmd isn't installed, do nothing.
-    type -p "${win_info_cmd:=xdotool}" &>/dev/null || {
-        cmd_line "error: Couldn't find '$win_info_cmd', is it installed?"
-        return
-    }
-
-    # Get terminal window size in pixels and set it to WIDTH and HEIGHT.
-    if [[ $win_info_cmd == xdotool ]]; then
-        IFS=$'\n' read -d "" -ra win_info \
-            < <(xdotool getactivewindow getwindowgeometry --shell)
-
-        declare "${win_info[@]}" &>/dev/null || {
-            cmd_line "error: Failed to retrieve window size."
-            return
-        }
-    else
-        [[ $(fbset --show) =~ .*\"([0-9]+x[0-9]+)\".* ]]
-        IFS=x read -r WIDTH HEIGHT <<< "${BASH_REMATCH[1]}"
-    fi
-
-    # Get the image size in pixels.
-    read -r img_width img_height < <("$w3m" <<< "5;${list[scroll]}")
-
-    # Subtract the status_line area from the image size.
-    ((HEIGHT=HEIGHT-HEIGHT*5/LINES))
-
-    ((img_width > WIDTH)) && {
-        ((img_height=img_height*WIDTH/img_width))
-        ((img_width=WIDTH))
-    }
-
-    ((img_height > HEIGHT)) && {
-        ((img_width=img_width*HEIGHT/img_height))
-        ((img_height=HEIGHT))
-    }
-
-    clear_screen
-    status_line "${list[scroll]}"
-
-    # Add a small delay to fix issues in VTE terminals.
-    ((BASH_VERSINFO[0] > 3)) &&
-        read "${read_flags[@]}" -srn 1
-
-    # Display the image.
-    printf '0;1;%s;%s;%s;%s;;;;;%s\n3;\n4\n' \
-        "${FFF_W3M_XOFFSET:-0}" \
-        "${FFF_W3M_YOFFSET:-0}" \
-        "$img_width" \
-        "$img_height" \
-        "${list[scroll]}" | "$w3m" &>/dev/null
-
-    # Wait for user input.
-    read -ern 1
-
-    # Clear the image.
-    printf '6;%s;%s;%s;%s\n3;' \
-        "${FFF_W3M_XOFFSET:-0}" \
-        "${FFF_W3M_YOFFSET:-0}" \
-        "$WIDTH" \
-        "$HEIGHT" | "$w3m" &>/dev/null
-
-    redraw
-}
-
 redraw() {
     changed=()
     git_branch=$(git branch 2> /dev/null | sed -n -e 's/^\* \(.*\)/\1/p')
@@ -983,15 +899,13 @@ list_help() {
         "${FFF_KEY_SEARCH:-/}: search"
         "${FFF_KEY_GO_TRASH:-t}: go to trash"
         "${FFF_KEY_GO_HOME:-~}: go to home"
-        "${FFF_KEY_REFRESH:-e}: refresh current dir"
+        "${FFF_KEY_REFRESH:-z}: refresh current dir"
         "${FFF_KEY_SHELL:-!}: open shell in current dir"
         ''
-        "${FFF_KEY_DETAILS:-N}: display file details"
-        "${FFF_KEY_SORT:-I}: sort files"
+        "${FFF_KEY_DETAILS:-i}: display file details"
+        "${FFF_KEY_SORT:-u}: sort files"
         "${FFF_KEY_ATTRIBUTES:-x}: view file/dir attributes"
-        "${FFF_KEY_IMAGE:-i}: display image with w3m-img"
-        "${FFF_KEY_NCDU:-u}: open ncdu"
-        "${FFF_KEY_HISTORY:-a}: show history"
+        "${FFF_KEY_HISTORY:-e}: show history"
         ''
         'down:  scroll down'
         'up:    scroll up'
@@ -1004,7 +918,7 @@ list_help() {
         "${FFF_KEY_EXECUTABLE:-X}: toggle executable"
         ''
         "${FFF_KEY_MARK:-" "}: mark"
-        "${FFF_KEY_MARK:-v}: mark all"
+        "${FFF_KEY_MARK_ALL:-a}: mark all"
         "${FFF_KEY_YANK:-y}: mark copy"
         "${FFF_KEY_MOVE:-m}: mark move"
         "${FFF_KEY_TRASH:-d}: mark trash"
@@ -1400,6 +1314,7 @@ key() {
             fi
         }
     }
+
     [[ $1 == $'\e' ]] && {
 
         # Exit marking with any special key!
@@ -1591,7 +1506,7 @@ key() {
         ;;
 
         # Mark all files for operation.
-        "${FFF_KEY_MARK_ALL:=v}")
+        "${FFF_KEY_MARK_ALL:=a}")
             mark all "$1"
         ;;
 
@@ -1641,7 +1556,7 @@ key() {
         ;;
 
         # Rename list item.
-        ${FFF_KEY_RENAME:=s})
+        ${FFF_KEY_RENAME:=r})
             ((helping)) || ((history)) && return
 
             [[ ! -e ${list[scroll]} ]] &&
@@ -1738,13 +1653,6 @@ key() {
             }
         ;;
 
-        # Show image in terminal.
-        ${FFF_KEY_IMAGE:=i})
-            ((helping)) || ((history)) && return
-
-            draw_img
-        ;;
-
         # Go to dir.
         ${FFF_KEY_GO_DIR:=:})
             ((helping)) || ((history)) && return
@@ -1784,19 +1692,6 @@ key() {
             }
         ;;
 
-        # Run ncdu to get sizes.
-        ${FFF_KEY_NCDU:=u})
-            ((helping)) || ((history)) && return
-
-            [[ -e "${list[scroll]}" ]] && {
-                clear_screen
-                reset_terminal
-                ncdu "$PWD"
-                setup_terminal
-                redraw
-            }
-        ;;
-
         # Go to '$HOME'.
         ${FFF_KEY_GO_HOME:='~'})
             open ~
@@ -1809,7 +1704,7 @@ key() {
         ;;
 
         # Sort by name (0) time (1).
-        ${FFF_KEY_SORT:=I})
+        ${FFF_KEY_SORT:=u})
             ((helping)) || ((history)) && return
 
             [ $sort == 0 ] && sort=1 || sort=0
@@ -1818,7 +1713,7 @@ key() {
         ;;
 
         # Show file details (on/off).
-        ${FFF_KEY_DETAILS:=N})
+        ${FFF_KEY_DETAILS:=i})
             ((helping)) || ((history)) && return
 
             [ $details == 0 ] && details=1 || details=0
@@ -1832,7 +1727,7 @@ key() {
         ;;
 
         # Refresh current dir.
-        ${FFF_KEY_REFRESH:=e})
+        ${FFF_KEY_REFRESH:=z})
             ((helping)) && {
                 list=("${cur_list[@]}")
                 redraw
@@ -1877,7 +1772,7 @@ key() {
         ;;
 
         # Display history.
-        "${FFF_KEY_HISTORY:=a}")
+        "${FFF_KEY_HISTORY:=e}")
             ((helping)) && return
 
             ((history)) && {
@@ -1988,7 +1883,6 @@ main() {
 
     get_os
     get_term_size
-    get_w3m_path
     setup_options
     setup_terminal
     redraw full

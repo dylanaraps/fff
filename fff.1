@@ -32,15 +32,13 @@ G: go to bottom
 /: search
 t: go to trash
 ~: go to home
-e: refresh current dir
+z: refresh current dir
 !: open shell in current dir
 
-N: display file details
-I: sort files
+i: display file details
+u: sort files
 x: view file/dir attributes
-i: display image with w3m-img
-u: run ncdu
-s: show history
+e: show history
 
 down:  scroll down
 up:    scroll up
@@ -52,7 +50,8 @@ n: new dir
 r: rename
 X: toggle executable
 
-space: mark files for operations:
+space: mark file
+a: mark all files in directory
 y: copy
 m: move
 d: trash (move to FFF_TRASH)
@@ -166,10 +165,6 @@ export FFF_FAV9=
 # to 100 most recent.
 export FFF_HISTORY_LENGTH=200
 
-# w3m-img offsets.
-export FFF_W3M_XOFFSET=0
-export FFF_W3M_YOFFSET=0
-
 # File format.
 # Customize the item string.
 # Format ('%f' is the current file): "str%fstr"
@@ -193,7 +188,7 @@ export FFF_SCROLL_DOWN=14
 .
 .nf
 For more information see:
-    https://github.com/dylanaraps/fff#customizing-the-keybindings
+    https://github.com/piotr-marendowski/fff#customizing-the-keybindings
 
 ### Moving around.
 
@@ -246,9 +241,6 @@ export FFF_KEY_BULK_RENAME="b"
 export FFF_KEY_EXECUTE="p"
 export FFF_KEY_CLEAR="c"
 
-export FFF_KEY_PASTE="p"
-export FFF_KEY_CLEAR="c"
-
 export FFF_KEY_RENAME="r"
 export FFF_KEY_MKDIR="n"
 export FFF_KEY_MKFILE="f"
@@ -256,10 +248,10 @@ export FFF_KEY_MKFILE="f"
 ### Miscellaneous
 
 # Display file details.
-export FFF_KEY_DETAILS="N"
+export FFF_KEY_DETAILS="i"
 
 # Sort files.
-export FFF_KEY_SORT="I"
+export FFF_KEY_SORT="u"
 
 # Show file attributes.
 export FFF_KEY_ATTRIBUTES="x"
@@ -270,14 +262,8 @@ export FFF_KEY_EXECUTABLE="X"
 # Toggle hidden files.
 export FFF_KEY_HIDDEN="."
 
-# Toggle file icons
-export FFF_DISPLAY_ICON="I"
-
-# Open ncdu
-export FFF_KEY_NCDU="u"
-
 # Show history of directories. 
-export FFF_KEY_HISTORY="a"
+export FFF_KEY_HISTORY="e"
 .
 .fi
 
