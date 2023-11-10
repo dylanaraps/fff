@@ -116,6 +116,17 @@ export FFF_COL4=1
 # Status foreground color [0\-9]
 export FFF_COL5=0
 
+# Selection color
+# (inverted foreground by default)
+# ('48;2;R;G;B' values separated by ';', don't edit the '48;2;' part!).
+# In terminals that support truecolor, this will set the selection color
+# to grey, but on others selection will be only white bold text (if this
+# is set).
+export FFF_COL6="48;2;80;80;80"
+
+# Text Editor
+export EDITOR="nvim"
+
 # Text Editor
 export EDITOR="vim"
 

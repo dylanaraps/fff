@@ -20,6 +20,8 @@
 - Changed marking behaviour to nnn-like (mark with space, then choose command, and execute it)
 - Slightly changed keybindings to better suit more options
 - Removed ability to view images (because I don't use it, but can add it for request)
+- Optional config file for global configuration
+- Colored filenames
 
 
 ### Thanks
@@ -31,6 +33,7 @@ A big part of code in there is from people who made PRs and posted issues to fff
 - qwool (idea for human-readable size)
 - Docbroke (sorting)
 - yiselieren (file details)
+- Isaac Elenbaas (config file)
 
 ## Table of Contents
 
@@ -170,6 +173,8 @@ Ctrl+C: exit without 'cd'.
 
 ## Customization
 
+Can be added to your `bashrc` (or other shell's configuration files) and/or can be added to `FFF_CONFIG`. Everything put in `FFF_CONFIG` file will be sourced globally meaning that e.g. Neovim's terminal will have these settings. And I'm not sure why the only option (maybe there are others) not working in config file is `FFF_HIDDEN` which only works, when fff is run inside terminal manually.
+
 ```sh
 # Show/Hide hidden files on open.
 # (Off by default)
@@ -213,8 +218,20 @@ export FFF_COL4=1
 # Status foreground color [0-9]
 export FFF_COL5=0
 
+# Selection color
+# (inverted foreground by default)
+# ('48;2;R;G;B' values separated by ';', don't edit the '48;2;' part!).
+# In terminals that support truecolor, this will set the selection color
+# to grey, but on others selection will be only white bold text (if this
+# is set).
+export FFF_COL6="48;2;80;80;80"
+
+# Colored filenames
+# (false by default)
+export FFF_COLORED_FILENAMES=true
+
 # Text Editor
-export EDITOR="vim"
+export EDITOR="nvim"
 
 # File Opener
 export FFF_OPENER="xdg-open"
@@ -230,6 +247,11 @@ export FFF_CD_ON_EXIT=0
 # Default: '${XDG_CACHE_HOME}/fff/fff.d'
 #          If not using XDG, '${HOME}/.cache/fff/fff.d' is used.
 export FFF_CD_FILE=~/.fff_d
+
+# Config Directory
+# Default: '${XDG_CONFIG_HOME/fff}'
+#          If not using XDG, '${HOME}/.config/fff' is used.
+export FFF_CONFIG=~/.config/fff
 
 # Trash Directory
 # Default: '${XDG_DATA_HOME}/fff/trash'
