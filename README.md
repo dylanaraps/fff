@@ -22,6 +22,7 @@
 - Removed ability to view images (because I don't use it, but can add it for request)
 - Optional config file for global configuration
 - Colored filenames
+- Copy filename to clipboard
 
 
 ### Thanks
@@ -70,6 +71,8 @@ A big part of code in there is from people who made PRs and posted issues to fff
     - *Customizable (if not using `xdg-open`): `$FFF_OPENER`.*
 - `Nerd Font` (*optional*)
     - Icons
+- `xclip or any clipboard manager` (*optional*)
+    - clipboard
 
 ## Installation
 
@@ -141,6 +144,7 @@ i: display file details
 u: sort files
 x: view file/dir attributes
 e: show history
+Y: copy filename to clipboard
 
 down:  scroll down
 up:    scroll up
@@ -295,6 +299,10 @@ export FFF_FILE_FORMAT="%f"
 # Format ('%f' is the current file): "str%fstr"
 # Example (Add a ' >' before files): FFF_MARK_FORMAT="> %f"
 export FFF_MARK_FORMAT=" %f*"
+
+# Clipboard program and arguments.
+# Default: xclip -sel clip
+export FFF_KEY_CLIPBOARD="xclip -sel clip"
 
 # Scroll steps.
 # (14 by default).

@@ -72,7 +72,7 @@ setup_options() {
     # select options so the operation isn't repeated
     # multiple times in the code.
 
-    # Source config file
+    # Source config file.
     [[ -f "${FFF_CONFIG:=${XDG_CONFIG_HOME:=${HOME}/.config}/fff}" ]] &&
         . "${FFF_CONFIG:=${XDG_CONFIG_HOME:=${HOME}/.config}/fff}" 
 
@@ -1790,6 +1790,15 @@ key() {
             }
 
             open "$PWD"
+        ;;
+
+        # Copy filename to clipboard.
+        ${FFF_KEY_CLIPBOARD:=Y})
+            [[ -e "${list[scroll]}" ]] && {
+                echo "${list[scroll]}" | ${FFF_CLIPBOARD:=xclip -sel clip} 2>/dev/null
+
+                cmd_line "${list[scroll]} copied to clipboard"
+            }
         ;;
 
         # Directory favourites.
