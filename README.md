@@ -301,8 +301,8 @@ export FFF_FILE_FORMAT="%f"
 export FFF_MARK_FORMAT=" %f*"
 
 # Clipboard program and arguments.
-# Default: xclip -sel clip
-export FFF_KEY_CLIPBOARD="xclip -sel clip"
+# Default: xclip -selection c 
+export FFF_KEY_CLIPBOARD="xclip -selection c"
 
 # Scroll steps.
 # (14 by default).
@@ -392,6 +392,9 @@ export FFF_KEY_HIDDEN="."
 
 # Show history of directories. 
 export FFF_KEY_HISTORY="e"
+
+# Copy filename to clipboard.
+export FFF_KEY_CLIPBOARD="Y"
 ```
 
 ### Disabling keybindings.

@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-#
-# fff - fucking fast file-manager.
 
 get_os() {
     # Figure out the current operating system to set some specific variables.
@@ -1203,9 +1201,7 @@ cmd_line() {
 
             # Tab.
             $'\t')
-                ((helping)) && return
-
-                ((history)) && return
+                ((helping)) || ((history)) && return
 
                 comp_glob="$cmd_reply*"
 
@@ -1793,9 +1789,9 @@ key() {
         ;;
 
         # Copy filename to clipboard.
-        ${FFF_KEY_CLIPBOARD:=Y})
+        ${FFF_KEY_CLIPBOARD:-Y})
             [[ -e "${list[scroll]}" ]] && {
-                echo "${list[scroll]}" | ${FFF_CLIPBOARD:=xclip -sel clip} 2>/dev/null
+                echo ${list[scroll]} | ${FFF_CLIPBOARD:=xclip -selection c} 2>/dev/null
 
                 cmd_line "${list[scroll]} copied to clipboard"
             }
