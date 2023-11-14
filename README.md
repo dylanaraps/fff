@@ -17,12 +17,13 @@
 - Sort files by modification time or alphabetically
 - `ctrl + d`/`ctrl + u` scrolling
 - Working history of directories and picker for them
-- Changed marking behaviour to nnn-like (mark with space, then choose command, and execute it)
-- Slightly changed keybindings to better suit more options
-- Removed ability to view images (because I don't use it, but can add it for request)
+- Changed marking behaviour to nnn-like (mark with space, choose a command, and then execute it)
+- Changed keybindings to better suit more options
+- Removed ability to view images (because I don't use it, but can add it for a request)
 - Optional config file for global configuration
 - Colored filenames
 - Copy filename to clipboard
+- Changed single file renaming behaviour to allow using arrows and automatically display renamed file (and `ctrl + a` to go at the beginning of the filename).
 
 
 ### Thanks
@@ -31,10 +32,10 @@ A big part of code in there is from people who made PRs and posted issues to fff
 
 - Roy Orbitson (help page) <img src="https://i.imgur.com/psnHD6l.png" alt="img" height="180px" align="right"/>
 - Sidd Dino (devicons)
-- qwool (idea for human-readable size)
+- qwool (human-readable size)
 - Docbroke (sorting)
 - yiselieren (file details)
-- Isaac Elenbaas (config file)
+- Isaac Elenbaas (config file, changing renaming behaviour)
 
 ## Table of Contents
 

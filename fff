@@ -168,10 +168,12 @@ get_icon() {
                 'Desktop'         ) printf -- '󰇄'; return ;;
                 'Documents'       ) printf -- ''; return ;;
                 'Downloads'       ) printf -- ''; return ;;
+                '.config'         |\
                 'Dotfiles'        |\
                 'dotfiles'        |\
                 '.dotfiles'       ) printf -- ''; return ;;
-                'Dropbox'         ) printf -- ''; return ;;
+                '.cache'          ) printf -- ''; return ;;
+                'Dropbox'         ) printf -- ''; return ;;
                 'Music'           ) printf -- ''; return ;;
                 'Pictures'        ) printf -- ''; return ;;
                 'Public'          ) printf -- ''; return ;;
@@ -256,8 +258,8 @@ get_icon() {
             'dockerfile'                     |\
             'Dockerfile'                     ) printf -- '󰡨'; return ;;
 
-            'dropbox'                        ) printf -- ''; return ;;
-            'exact-match-case-sensitive-2'   ) printf -- 'X2'; return ;;
+            'dropbox'                        ) printf -- ''; return ;;
+            'exact-match-case-sensitive-2'   ) printf -- 'X'; return ;;
             'ledger'                         ) printf -- ''; return ;;
             'node_modules'                   ) printf -- '󰎙'; return ;;
             'playlists'                      ) printf -- ''; return ;;
@@ -495,7 +497,7 @@ get_icon() {
             'tex'           ) printf -- 'ﭨ'; return ;;
             'ts'            ) printf -- ''; return ;;
             'twig'          ) printf -- ''; return ;;
-            'vue'           ) printf -- '﵂'; return ;;
+            'vue'           ) printf -- ''; return ;;
             'xcplayground'  ) printf -- ''; return ;;
             'xul'           ) printf -- ''; return ;;
 
@@ -927,6 +929,7 @@ list_help() {
         "${FFF_KEY_SORT:-u}: sort files"
         "${FFF_KEY_ATTRIBUTES:-x}: view file/dir attributes"
         "${FFF_KEY_HISTORY:-e}: show history"
+        "${FFF_KEY_CLIPBOARD:-Y}: copy filename to clipboard"
         ''
         'down:  scroll down'
         'up:    scroll up'
@@ -1180,7 +1183,20 @@ open_with() {
 
 cmd_line() {
     # Write to the command_line (under status_line).
-    cmd_reply=
+    cmd_reply=${list[scroll]##*/}
+    local status="${1} "
+    # Position of the cursor relative to the beginning of the reply.
+    local curpos=${#cmd_reply}
+    # Lenght of status.
+    local status_len=${#status}
+    # Current position of the cursor.
+    local pos=0
+
+    # If search or go to or nothing was passed.
+    [[ "$2" != "rename" ]] && {
+        cmd_reply=
+        curpos=0
+    }
 
     # '\e7':     Save cursor position.
     # '\e[?25h': Unhide the cursor.
@@ -1189,11 +1205,24 @@ cmd_line() {
 
     # '\r\e[K': Redraw the read prompt on every keypress.
     #           This is mimicking what happens normally.
-    while IFS= read -rsn 1 -p $'\r\e[K'"${1}${cmd_reply}" read_reply; do
+    while true; do
+        pos=$((status_len+curpos))
+
+        # '\r\e[K':          Redraw everything.
+        # '\e[%s;'"$pos"'H': Go to $pos position at the bottom.
+        printf '\r\e[K'"${1}${cmd_reply}"
+        printf '\e[%s;'"$pos"'H' "$LINES"
+        IFS= read -rsn 1 read_reply
+
         case $read_reply in
             # Backspace.
             $'\177'|$'\b')
-                cmd_reply=${cmd_reply%?}
+                # Do not delete status.
+                [ $pos -le $status_len ] && curpos=0 || {
+                    # Delete char at curpos.
+                    cmd_reply="${cmd_reply:0:curpos-1}${cmd_reply:curpos}"
+                    curpos=$((curpos-1))
+                }
 
                 # Clear tab-completion.
                 unset comp c
@@ -1218,13 +1247,37 @@ cmd_line() {
                     cmd_reply=${comp[c]}
                     ((c=c >= ${#comp[@]}-1 ? 0 : ++c))
                 }
+
+                curpos=${#cmd_reply}
+            ;;
+
+            # Ctrl + a go to the beginning of the reply.
+            $'\001')
+                curpos=0
             ;;
 
             # Escape / Custom 'no' value (used as a replacement for '-n 1').
             $'\e'|${3:-null})
-                read "${read_flags[@]}" -rsn 2
-                cmd_reply=
-                break
+                # Read escape sequence and check for arrow keys
+                read "${read_flags[@]}" -rsn 2 escape_chars
+                case $escape_chars in
+                    # Left arrow.
+                    '[D'|'OD')
+                        curpos=$((curpos-1))
+                        # Reset curpos if going out of bounds.
+                        [ $pos -le $status_len ] && curpos=0
+                    ;;
+                    # Right arrow.
+                    '[C'|'OC')
+                        # Go to right only if previously went to the left.
+                        [ $curpos -lt ${#cmd_reply} ] && curpos=$((curpos+1))
+                    ;;
+
+                    *)
+                        cmd_reply=
+                        break
+                    ;;
+                esac
             ;;
 
             # Enter/Return.
@@ -1255,11 +1308,14 @@ cmd_line() {
             # Replace '~' with '$HOME'.
             "~")
                 cmd_reply+=$HOME
+                curpos=${#cmd_reply}
             ;;
 
             # Anything else, add it to read reply.
             *)
-                cmd_reply+=$read_reply
+                curpos=$((curpos+1))
+                # Add letter where is curpos.
+                cmd_reply="${cmd_reply:0:curpos-1}${read_reply}${cmd_reply:curpos-1}"
 
                 # Clear tab-completion.
                 unset comp c
@@ -1607,7 +1663,7 @@ key() {
             [[ ! -e ${list[scroll]} ]] &&
                 return
 
-            cmd_line "rename ${list[scroll]##*/}: "
+            cmd_line "rename ${list[scroll]##*/}: " "rename"
 
             [[ $cmd_reply ]] &&
                 if [[ -e $cmd_reply ]]; then
