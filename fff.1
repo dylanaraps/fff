@@ -49,18 +49,17 @@ f: new file
 n: new dir
 r: rename
 X: toggle executable
-Y: copy filename to clipboard
+y: copy filename to clipboard
 
 space: mark file
 a: mark all files in directory
-y: copy
+c: copy
 m: move
 d: trash (move to FFF_TRASH)
 s: symbolic link
 b: bulk rename
 
 p: execute paste/move/delete/bulk_rename
-c: clear file selections
 
 [1-9]: favourites/bookmarks (see customization)
 
@@ -248,14 +247,13 @@ export FFF_KEY_GO_TRASH="t"
 ### File operations.
 export FFF_KEY_MARK=" "
 export FFF_KEY_MARK_ALL="v"
-export FFF_KEY_YANK="y"
+export FFF_KEY_COPY="c"
 export FFF_KEY_MOVE="m"
 export FFF_KEY_TRASH="d"
 export FFF_KEY_LINK="s"
 export FFF_KEY_BULK_RENAME="b"
 
 export FFF_KEY_EXECUTE="p"
-export FFF_KEY_CLEAR="c"
 
 export FFF_KEY_RENAME="r"
 export FFF_KEY_MKDIR="n"
@@ -281,8 +279,8 @@ export FFF_KEY_HIDDEN="."
 # Show history of directories. 
 export FFF_KEY_HISTORY="e"
 
-# Copy filename to clipboard.
-export FFF_KEY_CLIPBOARD="Y"
+# Yank filename to clipboard.
+export FFF_KEY_CLIPBOARD="y"
 .
 .fi
 

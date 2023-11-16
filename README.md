@@ -17,13 +17,14 @@
 - Sort files by modification time or alphabetically
 - `ctrl + d`/`ctrl + u` scrolling
 - Working history of directories and picker for them
-- Changed marking behaviour to nnn-like (mark with space, choose a command, and then execute it)
+- Changed marking behavior to nnn-like (mark with space, choose a command, and then execute it)
 - Changed keybindings to better suit more options
 - Removed ability to view images (because I don't use it, but can add it for a request)
 - Optional config file for global configuration
 - Colored filenames
-- Copy filename to clipboard
-- Changed single file renaming behaviour to allow using arrows and automatically display renamed file (and `ctrl + a` to go at the beginning of the filename).
+- Copy filename to clipboard with `y` and copy file with `c`
+- Changed single file renaming behavior to allow using arrows and automatically display renamed file (and `ctrl + a` to go at the beginning of the filename).
+- Deleted clear option (clear marks by pressing `FFF_KEY_MARK_ALL`) 
 
 
 ### Thanks
@@ -35,7 +36,7 @@ A big part of code in there is from people who made PRs and posted issues to fff
 - qwool (human-readable size)
 - Docbroke (sorting)
 - yiselieren (file details)
-- Isaac Elenbaas (config file, changing renaming behaviour)
+- Isaac Elenbaas (config file, changing renaming behavior)
 
 ## Table of Contents
 
@@ -47,7 +48,6 @@ A big part of code in there is from people who made PRs and posted issues to fff
     * [Manual](#manual)
     * [CD on Exit](#cd-on-exit)
         * [Bash and Zsh](#bash-and-zsh)
-        * [Fish](#fish)
 * [Usage](#usage)
 * [Customization](#customization)
 * [Customizing the keybindings.](#customizing-the-keybindings)
@@ -102,16 +102,6 @@ f() {
     cd "$(cat "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/.fff_d")"
 }
 ```
-#### Fish
-```sh
-# Add this to you config.fish or equivalent.
-# Fish don't support recursive calls so use f function
-function f
-    fff $argv
-    set -q XDG_CACHE_HOME; or set XDG_CACHE_HOME $HOME/.cache
-    cd (cat $XDG_CACHE_HOME/fff/.fff_d)
-end
-```
 
 ## Usage
 
@@ -145,7 +135,7 @@ i: display file details
 u: sort files
 x: view file/dir attributes
 e: show history
-Y: copy filename to clipboard
+y: copy filename to clipboard
 
 down:  scroll down
 up:    scroll up
@@ -159,14 +149,13 @@ X: toggle executable
 
 space: mark file
 a: mark all files in directory
-y: copy
+c: copy
 m: move
 d: trash (move to FFF_TRASH)
 s: symbolic link
 b: bulk rename
 
 p: execute paste/move/delete/bulk_rename
-c: clear file selections
 
 [1-9]: favourites/bookmarks (see customization)
 
@@ -361,14 +350,13 @@ export FFF_KEY_REFRESH="z"
 ### File operations.
 export FFF_KEY_MARK=" "
 export FFF_KEY_MARK_ALL="a"
-export FFF_KEY_YANK="y"
+export FFF_KEY_COPY="c"
 export FFF_KEY_MOVE="m"
 export FFF_KEY_TRASH="d"
 export FFF_KEY_LINK="s"
 export FFF_KEY_BULK_RENAME="b"
 
 export FFF_KEY_EXECUTE="p"
-export FFF_KEY_CLEAR="c"
 
 export FFF_KEY_RENAME="r"
 export FFF_KEY_MKDIR="n"
@@ -394,8 +382,8 @@ export FFF_KEY_HIDDEN="."
 # Show history of directories. 
 export FFF_KEY_HISTORY="e"
 
-# Copy filename to clipboard.
-export FFF_KEY_CLIPBOARD="Y"
+# Yank filename to clipboard.
+export FFF_KEY_CLIPBOARD="y"
 ```
 
 ### Disabling keybindings.

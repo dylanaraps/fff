@@ -929,7 +929,7 @@ list_help() {
         "${FFF_KEY_SORT:-u}: sort files"
         "${FFF_KEY_ATTRIBUTES:-x}: view file/dir attributes"
         "${FFF_KEY_HISTORY:-e}: show history"
-        "${FFF_KEY_CLIPBOARD:-Y}: copy filename to clipboard"
+        "${FFF_KEY_CLIPBOARD:-y}: yank filename to clipboard"
         ''
         'down:  scroll down'
         'up:    scroll up'
@@ -946,14 +946,13 @@ list_help() {
         ''
         "${FFF_KEY_MARK:-" "}: mark"
         "${FFF_KEY_MARK_ALL:-a}: mark all"
-        "${FFF_KEY_YANK:-y}: mark copy"
+        "${FFF_KEY_COPY:-c}: mark copy"
         "${FFF_KEY_MOVE:-m}: mark move"
         "${FFF_KEY_TRASH:-d}: mark trash"
         "${FFF_KEY_LINK:-s}: mark symbolic link"
         "${FFF_KEY_BULK_RENAME:-b}: mark bulk rename"
         ''
         "${FFF_KEY_PASTE:-p}: execute paste/move/delete/bulk_rename"
-        "${FFF_KEY_CLEAR:-c}: clear file selections"
         ''
         "q: exit with 'cd' (if enabled) or exit this help"
         "ctrl+c: exit without 'cd'"
@@ -1574,7 +1573,7 @@ key() {
         ;;
 
         # Mark files for operation.
-        ${FFF_KEY_YANK:=y}|\
+        ${FFF_KEY_COPY:=c}|\
         ${FFF_KEY_MOVE:=m}|\
         ${FFF_KEY_TRASH:=d}|\
         ${FFF_KEY_LINK:=s}|\
@@ -1585,7 +1584,7 @@ key() {
 
             # Find the program to use.
             case "$1" in
-                ${FFF_KEY_YANK:=y}) file_program=(cp -iR) ;;
+                ${FFF_KEY_COPY:=c}) file_program=(cp -iR) ;;
                 ${FFF_KEY_MOVE:=m}) file_program=(mv -i) ;;
                 ${FFF_KEY_LINK:=s}) file_program=(ln -s) ;;
 
@@ -1642,17 +1641,6 @@ key() {
                     cmd_line "WARNING: 0 marked files"
                     return
                 }
-            }
-        ;;
-
-        # Clear all marked files.
-        ${FFF_KEY_CLEAR:=c})
-            ((helping)) || ((history)) && return
-
-            [[ ${marked_files[*]} ]] && {
-                marked_files=()
-                file_program=()
-                redraw
             }
         ;;
 
@@ -1844,8 +1832,8 @@ key() {
             open "$PWD"
         ;;
 
-        # Copy filename to clipboard.
-        ${FFF_KEY_CLIPBOARD:-Y})
+        # Yank filename to clipboard.
+        ${FFF_KEY_CLIPBOARD:-y})
             [[ -e "${list[scroll]}" ]] && {
                 echo ${list[scroll]} | ${FFF_CLIPBOARD:=xclip -selection c} 2>/dev/null
 
