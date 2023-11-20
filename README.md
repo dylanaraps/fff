@@ -221,8 +221,8 @@ export FFF_COL5=0
 export FFF_COL6="48;2;80;80;80"
 
 # Colored filenames
-# (false by default)
-export FFF_COLORED_FILENAMES=true
+# (0 by default)
+export FFF_COLORED_FILENAMES=1
 
 # Text Editor
 export EDITOR="nvim"
