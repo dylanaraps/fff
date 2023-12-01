@@ -770,7 +770,7 @@ print_line() {
         local line='        '
 
         file_size=$("${FFF_STAT_CMD:-stat}" -c "%s" "${list[$1]}" 2> /dev/null | numfmt --to=iec)
-        date="$(date -r ${list[$1]} +"%Y-%m-%d %H:%M" 2> /dev/null)"
+        date="$(date -r ${list[$1]} +"%Y-%m-%d %H:%M" 2> /dev/null) "
 
         # If there is error, then just print space to align file names.
         if [ "$?" -ne "0" ]; then
