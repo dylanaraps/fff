@@ -161,68 +161,70 @@ get_icon() {
     # Icons for directories
     [[ -d "$1" ]] && {
         case "$2" in
-            # English
-                '.git'            ) printf -- ''; return ;;
-                'Desktop'         ) printf -- '󰇄'; return ;;
-                'Documents'       ) printf -- ''; return ;;
-                'Downloads'       ) printf -- ''; return ;;
-                '.config'         |\
-                'Dotfiles'        |\
-                'dotfiles'        |\
-                '.dotfiles'       ) printf -- ''; return ;;
-                '.cache'          ) printf -- ''; return ;;
-                'Dropbox'         ) printf -- ''; return ;;
-                'Music'           ) printf -- ''; return ;;
-                'Pictures'        ) printf -- ''; return ;;
-                'Public'          ) printf -- ''; return ;;
-                'Templates'       ) printf -- ''; return ;;
-                'Videos'          ) printf -- ''; return ;;
-                'Games'           ) printf -- '󰊗'; return ;;
-            # Spanish
-                'Escritorio'      ) printf -- '󰇄'; return ;; 
-                'Documentos'      ) printf -- ''; return ;; 
-                'Descargas'       ) printf -- ''; return ;; 
-                'Música'          ) printf -- ''; return ;; 
-                'Imágenes'        ) printf -- ''; return ;; 
-                'Público'         ) printf -- ''; return ;; 
-                'Plantillas'      ) printf -- ''; return ;; 
-                'Vídeos'          ) printf -- ''; return ;; 
-            # French
-                'Bureau'          ) printf -- '󰇄'; return ;;
-                'Images'          ) printf -- ''; return ;;
-                'Musique'         ) printf -- ''; return ;;
-                'Publique'        ) printf -- ''; return ;;
-                'Téléchargements' ) printf -- ''; return ;;
-                'Vidéos'          ) printf -- ''; return ;;
-            # Portuguese
-                'Imagens'         ) printf -- ''; return ;;
-                'Modelos'         ) printf -- ''; return ;;
-                'Área de trabalho') printf -- '󰇄'; return ;;
-            # Italian
-                'Documenti'       ) printf -- ''; return ;;
-                'Immagini'        ) printf -- ''; return ;;
-                'Modelli'         ) printf -- ''; return ;;
-                'Musica'          ) printf -- ''; return ;;
-                'Pubblici'        ) printf -- ''; return ;;
-                'Scaricati'       ) printf -- ''; return ;;
-                'Scrivania'       ) printf -- '󰇄'; return ;;
-                'Video'           ) printf -- ''; return ;;
-            # German
-                'Bilder'          ) printf -- ''; return ;;
-                'Dokumente'       ) printf -- ''; return ;;
-                'Musik'           ) printf -- ''; return ;;
-                'Schreibtisch'    ) printf -- '󰇄'; return ;;
-                'Vorlagen'        ) printf -- ''; return ;;
-                'Öffentlich'      ) printf -- ''; return ;;
-            # Hungarian
-                'Dokumentumok'    ) printf -- ''; return ;;
-                'Képek'           ) printf -- ''; return ;;
-                'Zene'            ) printf -- ''; return ;;
-                'Letöltések'      ) printf -- ''; return ;;
-                'Videók'          ) printf -- ''; return ;;
-                'Számítógép'      ) printf -- '󰇄'; return ;;
+            '.git'            ) printf -- '󰊢'; return ;;
+            'Desktop'         ) printf -- '󰇄'; return ;;
+            'Documents'       ) printf -- ''; return ;;
+            'Downloads'       ) printf -- ''; return ;;
+            '.config'         |\
+            'Dotfiles'        |\
+            'dotfiles'        |\
+            '.dotfiles'       ) printf -- ''; return ;;
+            '.cache'          ) printf -- ''; return ;;
+            'Music'           ) printf -- ''; return ;;
+            'Pictures'        ) printf -- ''; return ;;
+            'Public'          ) printf -- ''; return ;;
+            'Templates'       ) printf -- ''; return ;;
+            'Videos'          ) printf -- ''; return ;;
+            'Games'           ) printf -- '󰊗'; return ;;
+            'home'            ) printf -- ''; return ;;
+            'mnt'             ) printf -- '󰊶'; return ;;
+            'Dropbox'         ) printf -- ''; return ;;
 
-                *                 ) printf -- ''; return ;;
+            # Spanish
+            'Escritorio'      ) printf -- '󰇄'; return ;; 
+            'Documentos'      ) printf -- ''; return ;; 
+            'Descargas'       ) printf -- ''; return ;; 
+            'Música'          ) printf -- ''; return ;; 
+            'Imágenes'        ) printf -- ''; return ;; 
+            'Público'         ) printf -- ''; return ;; 
+            'Plantillas'      ) printf -- ''; return ;; 
+            'Vídeos'          ) printf -- ''; return ;; 
+            # French
+            'Bureau'          ) printf -- '󰇄'; return ;;
+            'Images'          ) printf -- ''; return ;;
+            'Musique'         ) printf -- ''; return ;;
+            'Publique'        ) printf -- ''; return ;;
+            'Téléchargements' ) printf -- ''; return ;;
+            'Vidéos'          ) printf -- ''; return ;;
+            # Portuguese
+            'Imagens'         ) printf -- ''; return ;;
+            'Modelos'         ) printf -- ''; return ;;
+            'Área de trabalho') printf -- '󰇄'; return ;;
+            # Italian
+            'Documenti'       ) printf -- ''; return ;;
+            'Immagini'        ) printf -- ''; return ;;
+            'Modelli'         ) printf -- ''; return ;;
+            'Musica'          ) printf -- ''; return ;;
+            'Pubblici'        ) printf -- ''; return ;;
+            'Scaricati'       ) printf -- ''; return ;;
+            'Scrivania'       ) printf -- '󰇄'; return ;;
+            'Video'           ) printf -- ''; return ;;
+            # German
+            'Bilder'          ) printf -- ''; return ;;
+            'Dokumente'       ) printf -- ''; return ;;
+            'Musik'           ) printf -- ''; return ;;
+            'Schreibtisch'    ) printf -- '󰇄'; return ;;
+            'Vorlagen'        ) printf -- ''; return ;;
+            'Öffentlich'      ) printf -- ''; return ;;
+            # Hungarian
+            'Dokumentumok'    ) printf -- ''; return ;;
+            'Képek'           ) printf -- ''; return ;;
+            'Zene'            ) printf -- ''; return ;;
+            'Letöltések'      ) printf -- ''; return ;;
+            'Videók'          ) printf -- ''; return ;;
+            'Számítógép'      ) printf -- '󰇄'; return ;;
+
+            *                 ) printf -- ''; return ;;
         esac
     }
 
@@ -264,6 +266,7 @@ get_icon() {
             'procfile'                       ) printf -- ''; return ;;
             'README'                         ) printf -- ''; return ;;
             'PKGBUILD'                       ) printf -- '󰏖'; return ;;
+            'log'                            ) printf -- '󱀂'; return ;;
             '*'                              ) printf -- ''; return ;;
         esac
     }
@@ -340,13 +343,14 @@ get_icon() {
             '.gitlab-ci.yml'                   ) printf -- ''; return ;;
             'config.ru'                        ) printf -- ''; return ;;
             'docker-compose.yml'               ) printf -- ''; return ;;
-            'exact-match-case-sensitive-1.txt' ) printf -- 'X1'; return ;;
+            'exact-match-case-sensitive-1.txt' ) printf -- 'X'; return ;;
             'favicon.ico'                      ) printf -- ''; return ;;
             'mix.lock'                         ) printf -- ''; return ;;
             'react.jsx'                        ) printf -- ''; return ;;
         esac
 
         case "$3" in
+            'shada'         |\
             'efi'           | 'menu'         |\
             'cfg'           | 'EFI'          |\
             'desktop'       | 'name'         |\
@@ -486,13 +490,13 @@ get_icon() {
             'nix'           ) printf -- ''; return ;;
             'php'           ) printf -- ''; return ;;
             'pp'            ) printf -- ''; return ;;
-            'r'             ) printf -- 'ﳒ'; return ;;
+            'r'             ) printf -- ''; return ;;
             'rss'           ) printf -- ''; return ;;
             'scala'         ) printf -- ''; return ;;
             'styl'          ) printf -- ''; return ;;
             'swift'         ) printf -- ''; return ;;
             't'             ) printf -- ''; return ;;
-            'tex'           ) printf -- 'ﭨ'; return ;;
+            'tex'           ) printf -- ''; return ;;
             'ts'            ) printf -- ''; return ;;
             'twig'          ) printf -- ''; return ;;
             'vue'           ) printf -- ''; return ;;
@@ -660,7 +664,7 @@ print_line() {
 
     # Directory.
     elif [[ -d ${list[$1]} ]]; then
-        format+=\\e[${di:-1;3${FFF_COL1:-2}}m
+        format+=\\e[${di:-0;3${FFF_COL1:-4}}m
         suffix+=/
 
     # Block special file.
@@ -718,16 +722,16 @@ print_line() {
         case "${file_name##*.}" in
             # yellow
             "js" | "Makefile" | "png" | "jpg" | "gif" | "webp"  \
-                 | "pdf" | "json" | "yml" | "xml") format+=\\e[${di:-1;33}m ;;
+                 | "pdf" | "json" | "yml" | "xml") format+=\\e[${di:-0;33}m ;;
             # blue
             "md" | "lua" | "css" | "c" | "cpp" | "ts" | "py"    \
-                 | "go" | "mp3") format+=\\e[${di:-1;34}m ;;
+                 | "go" | "mp3") format+=\\e[${di:-0;34}m ;;
             # purple
             "csharp" | "php" | "h" | "jar" | "diff" | "iso"     \
-                 | "zip" | "tar" | "gz" | "rar" | "zst") format+=\\e[${di:-1;35}m ;;
+                 | "zip" | "tar" | "gz" | "rar" | "zst") format+=\\e[${di:-0;35}m ;;
             # orange
             "java" | "rb" | "html" | "pl" | "mp4" | "mkv"       \
-                 | "webm" | "mov") format+=\\e[${di:-1;36}m ;;
+                 | "webm" | "mov") format+=\\e[${di:-0;36}m ;;
         esac
     fi
 
@@ -746,8 +750,7 @@ print_line() {
 
     # Get icon for file.
     (( ${FFF_FILE_ICON:=0} == 1 )) && {
-        # If file is executable and is not directory.
-        if [[ -x ${list[$1]} && ! -d ${list[$1]} ]]; then 
+        if [[ -x ${list[$1]} && -f ${list[$1]} ]]; then 
             icon=" "
         else
             icon="$(get_icon "${list[$1]}" "$file_name" "$file_ext") "
@@ -756,16 +759,17 @@ print_line() {
 
     # Check if current dir is a git repo and has changes, then
     # display git signs if is.
-    if [ " $git_branch" != " " ] && [ -n "$git_output" ]; then
+    if [ -n "$git_branch" ] && [ -n "$git_output" ]; then
         (( ${FFF_GIT_CHANGES:=0} == 1 )) && \
-            git="$(git_changes "$file_name")"
+            git="$(git_changes "$file_name") "
     fi
 
     # Display details (date, time and file size).
-    if (( details == 1 )); then
+    # If directory is empty then don't show details.
+    if (( details == 1 )) && [[ ${list[0]} != empty ]]; then
         local line='        '
 
-        file_size=$("${FFF_STAT_CMD:-stat}" -c "%s" "${list[$1]}" | numfmt --to=iec)
+        file_size=$("${FFF_STAT_CMD:-stat}" -c "%s" "${list[$1]}" 2> /dev/null | numfmt --to=iec)
         date="$(date -r ${list[$1]} +"%Y-%m-%d %H:%M" 2> /dev/null)"
 
         # If there is error, then just print space to align file names.
@@ -773,7 +777,7 @@ print_line() {
                 date="                   "
                 line='       '
         else
-            date=" ${date} "
+            date="${date} "
             file_size=" ${file_size}B  "
         fi
     else
@@ -786,7 +790,7 @@ print_line() {
     # https://stackoverflow.com/a/4411098
     # This basically makes the file size and file name align.
     printf '\r%b%s\e[m\r' \
-        "${file_pre}${format}${date}${file_size}${line:${#file_size}}${git} ${icon}"\
+        "${file_pre}${format}${date}${file_size}${line:${#file_size}}${git}${icon}"\
         "${file_name}${suffix}${file_post}"
 }
 
@@ -998,8 +1002,8 @@ mark() {
     # Mark file for operation.
     # If an item is marked in a second directory,
     # clear the marked files.
-    [[ $PWD != "$mark_dir" ]] &&
-        marked_files=()
+    # [[ $PWD != "$mark_dir" ]] &&
+    #     marked_files=()
 
     # Don't allow the user to mark the empty directory list item.
     [[ ${list[0]} == empty && -z ${list[1]} ]] &&
@@ -1008,7 +1012,7 @@ mark() {
     if [[ $1 == all ]]; then
         if ((${#marked_files[@]} != ${#list[@]})); then
             marked_files=("${list[@]}")
-            mark_dir=$PWD
+            # mark_dir=$PWD
         else
             marked_files=()
             file_program=()
@@ -1018,10 +1022,9 @@ mark() {
     else
         if [[ ${marked_files[$1]} == "${list[$1]}" ]]; then
             unset 'marked_files[scroll]'
-
         else
             marked_files[$1]="${list[$1]}"
-            mark_dir=$PWD
+            # mark_dir=$PWD
         fi
 
         # Clear line before changing it.
@@ -1045,7 +1048,7 @@ trash() {
         command "$FFF_TRASH_CMD" "${@:1:$#-1}"
 
     else
-        cd "$FFF_TRASH" || cmd_line "error: Can't cd to trash directory."
+        cd "$FFF_TRASH" || cmd_line "warning: Can't cd to trash directory."
 
         if cp -alf "$@" &>/dev/null; then
             rm -r "${@:1:$#-1}"
@@ -1073,7 +1076,7 @@ bulk_rename() {
     # If the user deleted a line, stop here.
     ((${#marked_files[@]} != ${#changed_files[@]})) && {
         rm "$rename_file"
-        cmd_line "error: Line mismatch in rename file. Doing nothing."
+        cmd_line "warning: Line mismatch in rename file. Doing nothing."
         return
     }
 
@@ -1107,13 +1110,17 @@ open() {
     if [[ -d $1/ ]]; then
         search=
         search_end_early=
-        cd "${1:-/}" ||:
-
-        # Add directory to history.
-        echo -e "${PWD}\n$(cat "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/history")" > \
-            "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/history"
-
-        redraw full
+        cd "${1:-/}" && {
+            # Add directory to history.
+            redraw full
+            echo -e "${PWD}\n$(cat "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/history")" > \
+                "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/history"
+        } || {
+            # Catch the error and redraw at current position.
+            clear_screen
+            draw_dir
+            cmd_line "warning: Permission denied: ${1}"
+        }
 
     # Files
     elif [[ -f $1 ]]; then
@@ -1179,168 +1186,188 @@ cmd_line() {
     # Current position of the cursor.
     local pos=0
 
-    # If search or go to or nothing was passed.
-    [[ "$2" != "rename" ]] && {
-        cmd_reply=
-        curpos=0
-    }
-
     # '\e7':     Save cursor position.
     # '\e[?25h': Unhide the cursor.
     # '\e[%sH':  Move cursor to bottom (cmd_line).
     printf '\e7\e[%sH\e[?25h' "$LINES"
+    
+    # If nothing is passed then handle it as error,
+    # and run search/rename.
+    [ -n "$2" ] && {
 
-    # '\r\e[K': Redraw the read prompt on every keypress.
-    #           This is mimicking what happens normally.
-    while true; do
-        pos=$((status_len+curpos))
-
-        # '\r\e[K':          Redraw everything.
-        # '\e[%s;'"$pos"'H': Go to $pos position at the bottom.
-        printf '\r\e[K'"${1}${cmd_reply}"
-        printf '\e[%s;'"$pos"'H' "$LINES"
-        IFS= read -rsn 1 read_reply
-
-        case $read_reply in
-            # Backspace.
-            $'\177'|$'\b')
-                # Do not delete status.
-                [ $pos -le $status_len ] && curpos=0 || {
-                    # Delete char at curpos.
-                    cmd_reply="${cmd_reply:0:curpos-1}${cmd_reply:curpos}"
-                    curpos=$((curpos-1))
-                }
-
-                # Clear tab-completion.
-                unset comp c
-            ;;
-
-            # Tab.
-            $'\t')
-                ((helping)) || ((history)) && return
-
-                comp_glob="$cmd_reply*"
-
-                # Pass the argument dirs to limit completion to directories.
-                [[ $2 == dirs ]] &&
-                    comp_glob="$cmd_reply*/"
-
-                # Generate a completion list once.
-                [[ -z ${comp[0]} ]] &&
-                    IFS=$'\n' read -d "" -ra comp < <(compgen -G "$comp_glob")
-
-                # On each tab press, cycle through the completion list.
-                [[ -n ${comp[c]} ]] && {
-                    cmd_reply=${comp[c]}
-                    ((c=c >= ${#comp[@]}-1 ? 0 : ++c))
-                }
-
-                curpos=${#cmd_reply}
-            ;;
-
-            # Ctrl + a go to the beginning of the reply.
-            $'\001')
-                curpos=0
-            ;;
-
-            # Escape / Custom 'no' value (used as a replacement for '-n 1').
-            $'\e'|${3:-null})
-                # Read escape sequence and check for arrow keys
-                read "${read_flags[@]}" -rsn 2 escape_chars
-                case $escape_chars in
-                    # Left arrow.
-                    '[D'|'OD')
-                        curpos=$((curpos-1))
-                        # Reset curpos if going out of bounds.
-                        [ $pos -le $status_len ] && curpos=0
-                    ;;
-                    # Right arrow.
-                    '[C'|'OC')
-                        # Go to right only if previously went to the left.
-                        [ $curpos -lt ${#cmd_reply} ] && curpos=$((curpos+1))
-                    ;;
-
-                    *)
-                        cmd_reply=
-                        break
-                    ;;
-                esac
-            ;;
-
-            # Enter/Return.
-            "")
-                # If there's only one search result and its a directory,
-                # enter it on one enter keypress.
-                !((helping)) && !((history)) && [[ $2 == search && -d ${list[0]} ]] && ((list_total == 0)) && {
-                    # '\e[?25l': Hide the cursor.
-                    printf '\e[?25l'
-
-                    open "${list[0]}"
-                    search_end_early=1
-
-                    # Unset tab completion variables since we're done.
-                    unset comp c
-                    return
-                }
-
-                break
-            ;;
-
-            # Custom 'yes' value (used as a replacement for '-n 1').
-            ${2:-null})
-                cmd_reply=$read_reply
-                break
-            ;;
-
-            # Replace '~' with '$HOME'.
-            "~")
-                cmd_reply+=$HOME
-                curpos=${#cmd_reply}
-            ;;
-
-            # Anything else, add it to read reply.
-            *)
-                curpos=$((curpos+1))
-                # Add letter where is curpos.
-                cmd_reply="${cmd_reply:0:curpos-1}${read_reply}${cmd_reply:curpos-1}"
-
-                # Clear tab-completion.
-                unset comp c
-            ;;
-        esac
-
-        # Search on keypress if search passed as an argument.
-        [[ $2 == search ]] && {
-            # '\e[?25l': Hide the cursor.
-            printf '\e[?25l'
-
-            # Use a greedy glob to search.
-            if ((helping)); then
-                local item
-                list=()
-                for item in "${cur_list[@]}"; do
-                    [[ "$item" == *"$cmd_reply"* ]] && list+=("$item")
-                done
-            elif ((history)); then
-                local item
-                list=()
-                for item in "${cur_list[@]}"; do
-                    [[ "$item" == *"$cmd_reply"* ]] && list+=("$item")
-                done
-            else
-                list=("$PWD"/*"$cmd_reply"*)
-            fi
-            ((list_total=${#list[@]}-1))
-
-            # Draw the search results on screen.
-            scroll=0
-            redraw
-
-            # '\e[%sH':  Move cursor back to cmd-line.
-            # '\e[?25h': Unhide the cursor.
-            printf '\e[%sH\e[?25h' "$LINES"
+        # If search or go to or nothing was passed.
+        [[ "$2" != "rename" ]] && {
+            cmd_reply=
+            curpos=0
         }
-    done
+
+        while true; do
+            pos=$((status_len+curpos))
+            # '\r\e[K':          Redraw everything.
+            # '\e[%s;'"$pos"'H': Go to $pos position at the bottom.
+            # '\e[5 q':          Change cursor to vertical bar.
+            printf '\r\e[K'"${1}${cmd_reply}"
+            printf '\e[%s;'"$pos"'H' "$LINES"
+            printf '\e[5 q'
+            IFS= read -rsn 1 read_reply
+
+            case $read_reply in
+                # Backspace.
+                $'\177'|$'\b')
+                    # Do not delete status.
+                    [ $pos -le $status_len ] && curpos=0 || {
+                        # Delete char at curpos.
+                        cmd_reply="${cmd_reply:0:curpos-1}${cmd_reply:curpos}"
+                        curpos=$((curpos-1))
+                    }
+
+                    # Clear tab-completion.
+                    unset comp c
+                ;;
+
+                # Tab.
+                $'\t')
+                    ((helping)) || ((history)) && return
+
+                    comp_glob="$cmd_reply*"
+
+                    # Pass the argument dirs to limit completion to directories.
+                    [[ $2 == dirs ]] &&
+                        comp_glob="$cmd_reply*/"
+
+                    # Generate a completion list once.
+                    [[ -z ${comp[0]} ]] &&
+                        IFS=$'\n' read -d "" -ra comp < <(compgen -G "$comp_glob")
+
+                    # On each tab press, cycle through the completion list.
+                    [[ -n ${comp[c]} ]] && {
+                        cmd_reply=${comp[c]}
+                        ((c=c >= ${#comp[@]}-1 ? 0 : ++c))
+                    }
+
+                    curpos=${#cmd_reply}
+                ;;
+
+                # Ctrl + a go to the beginning of the reply.
+                $'\001')
+                    curpos=0
+                ;;
+
+                # Escape / Custom 'no' value (used as a replacement for '-n 1').
+                $'\e'|${3:-null})
+                    # Read escape sequence and check for arrow keys
+                    read "${read_flags[@]}" -rsn 2 escape_chars
+                    case $escape_chars in
+                        # Left arrow.
+                        '[D'|'OD')
+                            curpos=$((curpos-1))
+                            # Reset curpos if going out of bounds.
+                            [ $pos -le $status_len ] && curpos=0
+                        ;;
+                        # Right arrow.
+                        '[C'|'OC')
+                            # Go to right only if previously went to the left.
+                            [ $curpos -lt ${#cmd_reply} ] && curpos=$((curpos+1))
+                        ;;
+
+                        *)
+                            cmd_reply=
+                            break
+                        ;;
+                    esac
+                ;;
+
+                # Enter/Return.
+                "")
+                    # If there's only one search result and its a directory,
+                    # enter it on one enter keypress.
+                    !((helping)) && !((history)) && [[ $2 == search && -d ${list[0]} ]] && ((list_total == 0)) && {
+                        # '\e[?25l': Hide the cursor.
+                        printf '\e[?25l'
+
+                        open "${list[0]}"
+                        search_end_early=1
+
+                        # Unset tab completion variables since we're done.
+                        unset comp c
+                        return
+                    }
+
+                    break
+                ;;
+
+                # Custom 'yes' value (used as a replacement for '-n 1').
+                ${2:-null})
+                    cmd_reply=$read_reply
+                    break
+                ;;
+
+                # Replace '~' with '$HOME'.
+                "~")
+                    cmd_reply+=$HOME
+                    curpos=${#cmd_reply}
+                ;;
+
+                # Anything else, add it to read reply.
+                *)
+                    curpos=$((curpos+1))
+                    # Add letter where is curpos.
+                    cmd_reply="${cmd_reply:0:curpos-1}${read_reply}${cmd_reply:curpos-1}"
+
+                    # Clear tab-completion.
+                    unset comp c
+                ;;
+            esac
+
+            # Search on keypress if search passed as an argument.
+            [[ $2 == search ]] && {
+                # '\e[?25l': Hide the cursor.
+                printf '\e[?25l'
+
+                # Use a greedy glob to search.
+                if ((helping)); then
+                    local item
+                    list=()
+                    for item in "${cur_list[@]}"; do
+                        [[ "$item" == *"$cmd_reply"* ]] && list+=("$item")
+                    done
+                elif ((history)); then
+                    local item
+                    list=()
+                    for item in "${cur_list[@]}"; do
+                        [[ "$item" == *"$cmd_reply"* ]] && list+=("$item")
+                    done
+                else
+                    list=("$PWD"/*"$cmd_reply"*)
+                fi
+                ((list_total=${#list[@]}-1))
+
+                # Draw the search results on screen.
+                scroll=0
+                redraw
+
+                # '\e[%sH':  Move cursor back to cmd_line.
+                # '\e[?25h': Unhide the cursor.
+                printf '\e[%sH\e[?25h' "$LINES"
+            }
+        done
+    } || {
+        while true; do
+            pos=$((status_len+curpos))
+            # '\r\e[K'"${1}":   Redraw everything.
+            # '\e[%s' "$LINES": Go to the last position at the bottom.
+            printf '\r\e[K'"${1}"
+            printf '\e[%s' "$LINES"
+            IFS= read -rsn 1 read_reply
+            case $read_reply in
+                *)
+                    # Clear tab-completion.
+                    unset comp c
+                    break
+                ;;
+            esac
+        done
+    }
 
     # Unset tab completion variables since we're done.
     unset comp c
@@ -1602,12 +1629,12 @@ key() {
         ${FFF_KEY_EXECUTE:=p})
             [[ ${marked_files[*]} ]] && {
                 [[ ! -w $PWD ]] && {
-                    cmd_line "WARNING: No write access to dir"
+                    cmd_line "warning: No write access to dir"
                     return
                 }
 
                 [[ -z ${file_program[0]} ]] && {
-                    cmd_line "WARNING: No operation selected [y,m,d,b,s]"
+                    cmd_line "warning: No operation selected [y,m,d,b,s]"
                     return
                 }
 
@@ -1626,7 +1653,7 @@ key() {
                 redraw full
             } || {
                 [[ -z ${file_program[0]} ]] && {
-                    cmd_line "WARNING: 0 marked files"
+                    cmd_line "warning: 0 marked files"
                     return
                 }
             }
@@ -1643,14 +1670,14 @@ key() {
 
             [[ $cmd_reply ]] &&
                 if [[ -e $cmd_reply ]]; then
-                    cmd_line "WARNING: '$cmd_reply' already exists"
+                    cmd_line "warning: '$cmd_reply' already exists"
 
                 elif [[ -w ${list[scroll]} ]]; then
                     mv "${list[scroll]}" "${PWD}/${cmd_reply}"
                     redraw full
 
                 else
-                    cmd_line "WARNING: No write access to file"
+                    cmd_line "warning: No write access to file"
                 fi
         ;;
 
@@ -1662,14 +1689,14 @@ key() {
 
             [[ $cmd_reply ]] &&
                 if [[ -e $cmd_reply ]]; then
-                    cmd_line "WARNING: '$cmd_reply' already exists"
+                    cmd_line "warning: '$cmd_reply' already exists"
 
                 elif [[ -w $PWD ]]; then
                     mkdir -p "${PWD}/${cmd_reply}"
                     redraw full
 
                 else
-                    cmd_line "WARNING: No write access to dir"
+                    cmd_line "warning: No write access to dir"
                 fi
         ;;
 
@@ -1681,14 +1708,14 @@ key() {
 
             [[ $cmd_reply ]] &&
                 if [[ -e $cmd_reply ]]; then
-                    cmd_line "WARNING: '$cmd_reply' already exists"
+                    cmd_line "warning: '$cmd_reply' already exists"
 
                 elif [[ -w $PWD ]]; then
                     : > "$cmd_reply"
                     redraw full
 
                 else
-                    cmd_line "WARNING: No write access to dir"
+                    cmd_line "warning: No write access to dir"
                 fi
         ;;
 
