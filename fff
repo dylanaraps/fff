@@ -180,51 +180,7 @@ get_icon() {
             'mnt'             ) printf -- '󰊶'; return ;;
             'Dropbox'         ) printf -- ''; return ;;
 
-            # Spanish
-            'Escritorio'      ) printf -- '󰇄'; return ;; 
-            'Documentos'      ) printf -- ''; return ;; 
-            'Descargas'       ) printf -- ''; return ;; 
-            'Música'          ) printf -- ''; return ;; 
-            'Imágenes'        ) printf -- ''; return ;; 
-            'Público'         ) printf -- ''; return ;; 
-            'Plantillas'      ) printf -- ''; return ;; 
-            'Vídeos'          ) printf -- ''; return ;; 
-            # French
-            'Bureau'          ) printf -- '󰇄'; return ;;
-            'Images'          ) printf -- ''; return ;;
-            'Musique'         ) printf -- ''; return ;;
-            'Publique'        ) printf -- ''; return ;;
-            'Téléchargements' ) printf -- ''; return ;;
-            'Vidéos'          ) printf -- ''; return ;;
-            # Portuguese
-            'Imagens'         ) printf -- ''; return ;;
-            'Modelos'         ) printf -- ''; return ;;
-            'Área de trabalho') printf -- '󰇄'; return ;;
-            # Italian
-            'Documenti'       ) printf -- ''; return ;;
-            'Immagini'        ) printf -- ''; return ;;
-            'Modelli'         ) printf -- ''; return ;;
-            'Musica'          ) printf -- ''; return ;;
-            'Pubblici'        ) printf -- ''; return ;;
-            'Scaricati'       ) printf -- ''; return ;;
-            'Scrivania'       ) printf -- '󰇄'; return ;;
-            'Video'           ) printf -- ''; return ;;
-            # German
-            'Bilder'          ) printf -- ''; return ;;
-            'Dokumente'       ) printf -- ''; return ;;
-            'Musik'           ) printf -- ''; return ;;
-            'Schreibtisch'    ) printf -- '󰇄'; return ;;
-            'Vorlagen'        ) printf -- ''; return ;;
-            'Öffentlich'      ) printf -- ''; return ;;
-            # Hungarian
-            'Dokumentumok'    ) printf -- ''; return ;;
-            'Képek'           ) printf -- ''; return ;;
-            'Zene'            ) printf -- ''; return ;;
-            'Letöltések'      ) printf -- ''; return ;;
-            'Videók'          ) printf -- ''; return ;;
-            'Számítógép'      ) printf -- '󰇄'; return ;;
-
-            *                 ) printf -- ''; return ;;
+            *                 ) printf -- ''; return ;;
         esac
     }
 
