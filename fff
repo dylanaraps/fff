@@ -1087,22 +1087,19 @@ open() {
 }
 
 open_with() {
-    # Open directories and files.
-    if [[ -f $1 ]]; then
-        # If 'fff' was opened as a file picker, save the opened
-        # file in a file called 'opened_file'.
-        ((file_picker == 1)) && {
-            printf '%s\n' "$1" > \
-                "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/opened_file"
-            exit
-        }
+    # If 'fff' was opened as a file picker, save the opened
+    # file in a file called 'opened_file'.
+    ((file_picker == 1)) && {
+        printf '%s\n' $2 > \
+            "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/opened_file"
+        exit
+    }
 
-        clear_screen
-        reset_terminal
-        "$2" "$1"
-        setup_terminal
-        redraw
-    fi
+    clear_screen
+    reset_terminal
+    $1 $2
+    setup_terminal
+    redraw
 }
 
 cmd_line() {
@@ -1705,11 +1702,20 @@ key() {
         ${FFF_KEY_OPEN_WITH:=o})
             ((helping)) || ((history)) && return
 
-            [[ -e "${list[scroll]}" ]] && {
-                cmd_line "open with: " "cmd"
+            cmd_line "open with: " "cmd"
+            [[ $cmd_reply ]] && {
+                if ! command -v $cmd_reply > /dev/null; then
+                    redraw full
+                    cmd_line "warning: command ${cmd_reply} not found"
+                    return
+                fi
 
-                [[ $cmd_reply ]] &&
-                    open_with "${list[scroll]}" "${cmd_reply}"
+                if [[ ${#marked_files[@]} -ne 0 ]]; then
+                    open_with "${cmd_reply}" "${marked_files[*]}" 
+
+                elif [[ -e "${list[scroll]}" ]]; then
+                    open_with "${cmd_reply}" "${list[scroll]}"
+                fi
             }
         ;;
 
@@ -1717,12 +1723,22 @@ key() {
         ${FFF_KEY_OPEN_WITH_DETACHED:=O})
             ((helping)) || ((history)) && return
 
-            [[ -e "${list[scroll]}" ]] && {
-                cmd_line "open with (detached): " "cmd"
+            cmd_line "open with (detached): " "cmd"
+            [[ $cmd_reply ]] && {
+                if ! type $cmd_reply > /dev/null; then
+                    redraw full
+                    cmd_line "warning: command ${cmd_reply} not found"
+                    return
+                fi
 
-                [[ $cmd_reply ]] &&
+                if [[ ${#marked_files[@]} -ne 0 ]]; then
+                    nohup "${cmd_reply}"  "${marked_files[*]}" &>/dev/null &
+
+                elif [[ -e "${list[scroll]}" ]]; then
                     nohup "${cmd_reply}" "${list[scroll]}" &>/dev/null &
-                    disown
+                fi
+
+                disown
             }
         ;;
 
