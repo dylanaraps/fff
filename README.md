@@ -22,9 +22,10 @@
 - Removed ability to view images (because I don't use it, but can add it for a request)
 - Optional config file for global configuration
 - Colored filenames
-- Copy filename to clipboard with `y` and copy file with `c`
+- Copy filename to clipboard with `y` and copy file with `c` (when marking)
 - Changed single file renaming behavior to allow using arrows and automatically display renamed file (and `ctrl + a` to go at the beginning of the filename).
 - Deleted clear option (clear marks by pressing `FFF_KEY_MARK_ALL`) 
+- Mark and open with multiple files at time
 
 
 ### Thanks

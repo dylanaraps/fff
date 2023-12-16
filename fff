@@ -499,14 +499,9 @@ status_line() {
 
     # Escape the directory string.
     # Remove all non-printable characters.
-    if ((helping)); then
+    if ((helping)) || ((history)); then
         mark_ui=
-        PWD_escaped=help
-        sort_help=
-        git_branch=" "
-    elif ((history)); then
-        mark_ui=
-        PWD_escaped=history
+        PWD_escaped=" "
         sort_help=
         git_branch=" "
     else
@@ -529,14 +524,14 @@ status_line() {
     #              This is more widely supported than '\e[u'.
     
     printf '\e7\e[%sH\e[3%s;4%sm%*s\r%s %s%s\e[m\e[%sH\e[K\e8' \
-           "$((LINES-1))" \
+           "$LINES" \
            "${FFF_COL5:-0}" \
            "${FFF_COL2:-1}" \
            "$COLUMNS" "" \
            "($((scroll+1))/$((list_total+1)))" \
            "$mark_ui" \
            "${1:-${PWD_escaped:-/} $git_branch $sort_help}" \
-           "$LINES"
+           "$((LINES-1))"
 }
 
 read_dir() {
@@ -591,7 +586,7 @@ print_line() {
     local git=''
 
     # Help line
-    if ((helping)); then
+    if ((helping)) || ((history)); then
         file_name=${list[$1]}
         if [[ "$file_name" ]]; then
             # Highlight the key(s), escaping any specials in overrides to a human-readable form
@@ -600,19 +595,6 @@ print_line() {
             format+="$(cat -A <<<"$action" | head -c -2)\\e[${fi:-37}m: "
             file_name="${file_name##*: }"
         fi
-        format+=\\e[${fi:-37}m
-
-    # History line.
-    elif ((history)); then
-        file_name=${list[$1]}
-        if [[ "$file_name" ]]; then
-            # Highlight the numbers, escaping any specials in overrides to a human-readable form
-            format+=\\e[${di:-1;3${FFF_COL1:-2}}m
-            local action="${file_name%: *}"
-            format+="$(cat -A <<<"$action" | head -c -2)\\e[${fi:-37}m: "
-            file_name="${file_name##*: }"
-        fi
-        format+=\\e[${fi:-37}m
 
     # If the dir item doesn't exist, end here.
     elif [[ -z ${list[$1]} ]]; then
@@ -628,8 +610,8 @@ print_line() {
         format+=\\e[${bd:-40;33;01}m
 
     # Character special file.
-    elif [[ -c ${list[$1]} ]]; then
-        format+=\\e[${cd:-40;33;01}m
+    # elif [[ -c ${list[$1]} ]]; then
+    #     format+=\\e[${cd:-40;33;01}m
 
     # Executable file.
     elif [[ -x ${list[$1]} ]]; then
@@ -644,12 +626,12 @@ print_line() {
         format+=\\e[${ln:-01;36}m
 
     # Fifo file.
-    elif [[ -p ${list[$1]} ]]; then
-        format+=\\e[${pi:-40;33}m
+    # elif [[ -p ${list[$1]} ]]; then
+    #     format+=\\e[${pi:-40;33}m
 
     # Socket file.
-    elif [[ -S ${list[$1]} ]]; then
-        format+=\\e[${so:-01;35}m
+    # elif [[ -S ${list[$1]} ]]; then
+    #     format+=\\e[${so:-01;35}m
 
     # Color files that end in a pattern as defined in LS_COLORS.
     # 'BASH_REMATCH' is an array that stores each REGEX match.
@@ -850,7 +832,7 @@ list_help() {
     printf '\e]2;fff: help\e'\\
 
     # Turn off icons.
-    icon_value="$(printf '%s\n' "$FFF_FILE_ICON")"
+    icon_value=${FFF_FILE_ICON:-0}
     FFF_FILE_ICON=0
 
     list=(
@@ -937,7 +919,7 @@ get_history() {
     printf '\e]2;fff: history\e'\\
 
     # Turn off icons.
-    icon_value="$(printf '%s\n' "$FFF_FILE_ICON")"
+    icon_value=${FFF_FILE_ICON:-0}
     FFF_FILE_ICON=0
 
     # Add history to lines.
@@ -955,12 +937,6 @@ get_history() {
 }
 
 mark() {
-    # Mark file for operation.
-    # If an item is marked in a second directory,
-    # clear the marked files.
-    # [[ $PWD != "$mark_dir" ]] &&
-    #     marked_files=()
-
     # Don't allow the user to mark the empty directory list item.
     [[ ${list[0]} == empty && -z ${list[1]} ]] &&
         return
@@ -968,7 +944,6 @@ mark() {
     if [[ $1 == all ]]; then
         if ((${#marked_files[@]} != ${#list[@]})); then
             marked_files=("${list[@]}")
-            # mark_dir=$PWD
         else
             marked_files=()
             file_program=()
@@ -980,7 +955,6 @@ mark() {
             unset 'marked_files[scroll]'
         else
             marked_files[$1]="${list[$1]}"
-            # mark_dir=$PWD
         fi
 
         # Clear line before changing it.
@@ -1281,13 +1255,7 @@ cmd_line() {
                 printf '\e[?25l'
 
                 # Use a greedy glob to search.
-                if ((helping)); then
-                    local item
-                    list=()
-                    for item in "${cur_list[@]}"; do
-                        [[ "$item" == *"$cmd_reply"* ]] && list+=("$item")
-                    done
-                elif ((history)); then
+                if ((helping)) || ((history)); then
                     local item
                     list=()
                     for item in "${cur_list[@]}"; do
@@ -1311,9 +1279,10 @@ cmd_line() {
         while true; do
             pos=$((status_len+curpos))
             # '\r\e[K'"${1}":   Redraw everything.
-            # '\e[%s' "$LINES": Go to the last position at the bottom.
+            # '\e[%s\e[?25l' "$LINES": Go to the last position at the bottom
+            #                          and hide the cursor.
             printf '\r\e[K'"${1}"
-            printf '\e[%s' "$LINES"
+            printf '\e[%s\e[?25l' "$LINES"
             IFS= read -rsn 1 read_reply
             case $read_reply in
                 *)
@@ -1332,6 +1301,7 @@ cmd_line() {
     # '\e[?25l': Hide the cursor.
     # '\e8':     Restore cursor position.
     printf '\e[2K\e[?25l\e8'
+    status_line
 }
 
 key() {
@@ -1416,6 +1386,8 @@ key() {
             open "${list[scroll]}"
 
             ((history)) && {
+                details=$saved_details
+                FFF_FILE_ICON="$icon_value"
                 list[scroll]=${list[scroll]#* }
                 open "${list[scroll]}"
             }
@@ -1528,6 +1500,8 @@ key() {
             else
                 search=1
             fi
+
+            status_line
         ;;
 
         # Spawn a shell.
@@ -1571,8 +1545,8 @@ key() {
             status_line
             ;;
 
-            # Mark files for operation.
-            "${FFF_KEY_MARK:=" "}")
+        # Mark files for operation.
+        "${FFF_KEY_MARK:=" "}")
             mark "$scroll" "$1"
         ;;
 
@@ -1788,13 +1762,7 @@ key() {
 
         # Refresh current dir.
         ${FFF_KEY_REFRESH:=z})
-            ((helping)) && {
-                list=("${cur_list[@]}")
-                redraw full
-                return
-            }
-
-            ((history)) && {
+            ((helping)) || ((history)) && {
                 list=("${cur_list[@]}")
                 redraw full
                 return
@@ -1863,13 +1831,7 @@ key() {
             lines_num=${FFF_HISTORY_LENGTH:-100}
             sed -i "${lines_num}q" "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/history"
 
-            ((helping)) && {
-                details=$saved_details
-                FFF_FILE_ICON="$icon_value"     # Set FFF_FILE_ICON to previous state.
-                redraw full
-                return
-            }
-            ((history)) && {
+            ((helping)) || ((history)) && {
                 details=$saved_details
                 FFF_FILE_ICON="$icon_value"     # Set FFF_FILE_ICON to previous state.
                 redraw full
