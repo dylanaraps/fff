@@ -9,23 +9,22 @@
 - [Nerd Fonts devicons](https://www.nerdfonts.com/#home) support
 - Help page on `?`
 - `Open with` commands
-- Human-readable size in stats
-- Git branch in stats
+- `ctrl + d`/`ctrl + u` scrolling
+- view images using [sixel](https://github.com/saitoha/libsixel)
 - Git branch on status line
 - Recursive git signs for changed files <img src="https://i.imgur.com/V2aCYWn.png" alt="img" height="180px" align="right"/>
 - Display file modification date, time and size (resource-heavy)
 - Sort files by modification time or alphabetically
-- `ctrl + d`/`ctrl + u` scrolling
 - Working history of directories and picker for them
 - Changed marking behavior to nnn-like (mark with space, choose a command, and then execute it)
 - Changed keybindings to better suit more options
-- Removed ability to view images (because I don't use it, but can add it for a request)
 - Optional config file for global configuration
-- Colored filenames
+- Git branch in stats
 - Copy filename to clipboard with `y` and copy file with `c` (when marking)
 - Changed single file renaming behavior to allow using arrows and automatically display renamed file (and `ctrl + a` to go at the beginning of the filename).
 - Deleted clear option (clear marks by pressing `FFF_KEY_MARK_ALL`) 
 - Mark and open with multiple files at time
+- Human-readable size in stats
 
 
 ### Thanks
@@ -221,10 +220,6 @@ export FFF_COL5=0
 # is set).
 export FFF_COL6="48;2;80;80;80"
 
-# Colored filenames
-# (0 by default)
-export FFF_COLORED_FILENAMES=1
-
 # Text Editor
 export EDITOR="nvim"
 
@@ -299,6 +294,10 @@ export FFF_KEY_CLIPBOARD="xclip -selection c"
 # (14 by default).
 export FFF_SCROLL_UP=14
 export FFF_SCROLL_DOWN=14
+
+# Sixel image program.
+# Default: img2sixel
+export FFF_SIXEL_CMD="img2sixel"
 ```
 
 ## Customizing the keybindings.
@@ -367,6 +366,9 @@ export FFF_KEY_MKFILE="f"
 
 # Display file details.
 export FFF_KEY_DETAILS="i"
+
+# Display an image using sixel.
+export FFF_KEY_SIXEL="I"
 
 # Sort files.
 export FFF_KEY_SORT="u"

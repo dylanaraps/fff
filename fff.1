@@ -36,6 +36,7 @@ z: refresh current dir
 !: open shell in current dir
 
 i: display file details
+I: display an image using sixel
 u: sort files
 x: view file/dir attributes
 e: show history
@@ -200,6 +201,10 @@ export FFF_KEY_CLIPBOARD="xclip -selection c"
 # (14 by default).
 export FFF_SCROLL_UP=14
 export FFF_SCROLL_DOWN=14
+
+# Sixel image program.
+# Default: img2sixel
+export FFF_SIXEL_CMD="img2sixel"
 .
 .fi
 .
@@ -267,6 +272,9 @@ export FFF_KEY_MKFILE="f"
 
 # Display file details.
 export FFF_KEY_DETAILS="i"
+
+# Display an image using sixel.
+export FFF_KEY_SIXEL="I"
 
 # Sort files.
 export FFF_KEY_SORT="u"
