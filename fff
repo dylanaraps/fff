@@ -549,7 +549,7 @@ read_dir() {
     done
 
     [ "$sort" == 1 ] && \
-        dirs=("$(stat -c '%Y=%n' "${dirs[@]}" | sort -nr | cut -d '=' -f2)") \
+        dirs=($(stat -c '%Y=%n' "${dirs[@]}" | sort -nr | cut -d '=' -f2)) \
 		files=($(stat -c '%Y=%n' "${files[@]}" | sort -nr | cut -d '=' -f2))
 
     list=("${dirs[@]}" "${files[@]}")
