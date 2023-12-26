@@ -13,8 +13,7 @@ get_os() {
         haiku)
             opener=open
 
-            [[ -z $FFF_TRASH_CMD ]] &&
-                FFF_TRASH_CMD=trash
+            [[ -z $FFF_TRASH_CMD ]] && FFF_TRASH_CMD=trash
 
             [[ $FFF_TRASH_CMD == trash ]] && {
                 FFF_TRASH=$(finddir -v "$PWD" B_TRASH_DIRECTORY)
@@ -473,7 +472,7 @@ status_line() {
     local mark_ui=
     [ ${#marked_files[@]} -gt 0 ] && {
         mark_ui="[${#marked_files[@]}] selected "
-        [[ -n $file_program ]] && \
+        [[ -n $file_program ]] &&
             mark_ui+="(${file_program[*]}) "
     }
 
@@ -510,7 +509,6 @@ status_line() {
     # '\e[H\e[K':  Clear line below status_line.
     # '\e8':       Restore cursor position.
     #              This is more widely supported than '\e[u'.
-    
     printf '\e7\e[%sH\e[3%s;4%sm%*s\r%s %s%s\e[m\e[%sH\e[K\e8' \
            "$LINES" \
            "${FFF_COL5:-0}" \
@@ -537,20 +535,21 @@ read_dir() {
     for item in "$PWD"/*; do
         if [[ -d $item ]]; then
             dirs+=("$item")
-
             # Find the position of the child directory in the
             # parent directory list.
             [[ $item == "$OLDPWD" ]] &&
                 ((previous_index=item_index))
+
             ((item_index++))
         else
             files+=("$item")
         fi
     done
 
-    [ "$sort" == 1 ] && \
-        dirs=($(stat -c '%Y=%n' "${dirs[@]}" | sort -nr | cut -d '=' -f2)) \
+    [ "$sort" == 1 ] && {
+        dirs=($(stat -c '%Y=%n' "${dirs[@]}" | sort -nr | cut -d '=' -f2))
 		files=($(stat -c '%Y=%n' "${files[@]}" | sort -nr | cut -d '=' -f2))
+    }
 
     list=("${dirs[@]}" "${files[@]}")
 
@@ -644,14 +643,9 @@ print_line() {
     # Remove all non-printable characters.
     file_name=${file_name//[^[:print:]]/^[}
 
-    # Get icon for file.
-    (( ${FFF_FILE_ICON:=0} == 1 )) && {
-        if [[ -x ${list[$1]} && -f ${list[$1]} ]]; then 
-            icon=" "
-        else
-            icon="$(get_icon "${list[$1]}" "$file_name" "$file_ext") "
-        fi
-    }
+    # Get icon.
+    (( ${FFF_FILE_ICON:=0} == 1 )) &&
+        icon="$(get_icon "${list[$1]}" "$file_name" "$file_ext") "
 
     # Check if current dir is a git repo and has changes,
     # then display git signs if it is.
@@ -747,7 +741,7 @@ redraw() {
     changed=()
     git_branch=$(git branch 2> /dev/null | sed -n -e 's/^\* \(.*\)/\1/p')
     # Check if git branch name is not empty, then get changed files.
-    if [ " $git_branch" != " " ]; then
+    [ -n "$git_branch" ] && {
         git_output=$(git status -s -unormal)
         while read -r line; do
             # Get elements.
@@ -755,7 +749,7 @@ redraw() {
             element="${line%%/*}"
             changed+=("$element")
         done <<< "$git_output"
-    fi
+    }
 
     # Redraw the current window.
     # If 'full' is passed, re-fetch the directory list.
@@ -772,7 +766,6 @@ redraw() {
         helping=1
         list_help
         scroll=0
-
     # If 'help' is passed, list help text.
     elif [[ $1 == hist ]]; then
         history=1
@@ -911,7 +904,7 @@ mark() {
         redraw
     else
         if [[ ${marked_files[$1]} == "${list[$1]}" ]]; then
-            unset 'marked_files[scroll]'
+            unset 'marked_files[$1]'
         else
             marked_files[$1]="${list[$1]}"
         fi
@@ -1056,6 +1049,8 @@ open_with() {
 
     clear_screen
     reset_terminal
+    # Warning: when opening file(s) with spaces in it it will
+    # recognize it as separate files!!!
     $1 $2
     setup_terminal
     redraw
@@ -1080,7 +1075,6 @@ cmd_line() {
     # If nothing is passed then handle it as error,
     # and run search/rename.
     [ -n "$2" ] && {
-
         # If search or go to or nothing was passed.
         [[ "$2" != "rename" ]] && {
             cmd_reply=
@@ -1267,39 +1261,130 @@ key() {
     # Handle special key presses.
     
     # Handle ctrl + u scroll up.
-    #
-    # Super dumb approach, because it basically goes through
-    # every line and highlights it.
-    # Faster version = set scroll and redraw with it, but it
-    # clears the screen so I set it as is here to look better.
     [[ $1 == $'\x15' ]] && {
-        ((scroll != 0)) && {
-            for ((i=0; i<${FFF_SCROLL_UP:=14}; i++)); do
-                while ((scroll > 0)); do
-                    ((scroll--))
+        # Get the length to the first element and check if
+        # there is space for this jump.
+        #
+        # space_for_jump = length to the first element in the
+        #                  whole list
+        # scroll = current cursor position number in the list
+        # jump_len = if there is space = n jump, if not
+        #            then is length to the first element 
+        space_for_jump=${scroll}
 
-                    print_line "$((scroll+1))"
+        if [[ ${space_for_jump} -gt ${FFF_SCROLL_UP:=14} ]]; then
+            jump_len=${FFF_SCROLL_UP:=14}
+        else
+            jump_len=${space_for_jump}
+        fi
 
-                    if ((y < 2)); then
-                        printf '\e[L'
-                    else
-                        printf '\e[A'
-                        ((y--))
-                    fi
+        # Check if the new position after jump is on the screen,
+        # then simply jump to it, otherwise go to the first
+        # visible/printed line and then go line-by-line printing it.
+        #
+        # new_pos_after_jump = scroll + jump number 
+        # y = position of the scroll in the visible area
+        # visible_jump = how many already visible lines to jump
+        # invisible_jump = how many invisible lines to jump after it
+        ((new_pos_after_jump=$y-$jump_len))
 
-                    print_line "$scroll"
+        if [[ $new_pos_after_jump -ge 0 ]]; then
+            ((visible_jump=$jump_len))
+            invisible_jump=0
+        else
+            ((visible_jump=$y)) 
+            ((invisible_jump=$jump_len-$y)) 
+        fi
 
-                    [[ "${list[scroll]}" ]] && break
-                done
+        ((scroll=scroll-$visible_jump))
+
+        print_line "$((scroll+visible_jump))"
+
+        # Scroll n places up = print n * line/form feed.
+        for ((i=0; i<$visible_jump; i++)); do
+            if ((y < 2)); then
+                printf '\e[L'
+            else
+                printf '\e[A'
+                ((y--))
+            fi
+        done
+
+        # Scroll up and print new elements.
+        for ((i=0; i<$invisible_jump; i++)); do
+            while ((scroll > 0)); do
+                ((scroll--))
+
+                print_line "$((scroll+1))"
+
+                if ((y < 2)); then
+                    printf '\e[L'
+                else
+                    printf '\e[A'
+                    ((y--))
+                fi
+
+                print_line "$scroll"
+
+                [[ "${list[scroll]}" ]] && break
             done
-            status_line
-        }
+        done
+
+        print_line "$scroll"
+        status_line
+        
     }
 
     # Handle ctrl + d for scroll down.
     [[ $1 == $'\x04' ]] && {
         ((scroll != list_total)) && {
-            for ((i=0; i<${FFF_SCROLL_UP:=14}; i++)); do
+            # Get the length to the last element and check if
+            # there is space for this jump.
+            #
+            # space_for_jump = length to the end of the whole list
+            # ${#list[@]} = number of all elements in the list
+            # scroll = current cursor position number
+            # jump_len = if there is space = n jump, if not
+            #            then is length to the last element 
+            ((space_for_jump=${#list[@]} - $scroll))
+
+            if [[ ${space_for_jump} -gt ${FFF_SCROLL_DOWN:=14} ]]; then
+                jump_len=${FFF_SCROLL_DOWN:=14}
+            else
+                ((jump_len=${space_for_jump}-1))
+            fi
+
+            # Check if the new position after jump is on the screen,
+            # then simply jump to it, otherwise go to the last
+            # visible/printed line and then go line-by-line printing it.
+            #
+            # new_pos_after_jump = scroll + jump number 
+            # max_items = length of the items that can fit in the screen
+            # y = position of the scroll in the visible area
+            # visible_jump = how many already visible lines to jump
+            # invisible_jump = how many invisible lines to jump after it
+            ((new_pos_after_jump=$y+$jump_len))
+
+            if [[ $new_pos_after_jump -le $max_items ]]; then
+                visible_jump=$jump_len 
+                invisible_jump=0
+            else
+                ((visible_jump=${max_items}-$y)) 
+                ((invisible_jump=${new_pos_after_jump}-${max_items})) 
+            fi
+
+            ((scroll=scroll+$visible_jump))
+            ((y < max_items)) && ((y=y+$visible_jump))
+
+            print_line "$((scroll-$visible_jump))"
+
+            # Scroll n places down = print n * '\n'.
+            for ((i=0; i<$visible_jump; i++)); do
+                printf '\n'
+            done
+
+            # Scroll down and print new elements.
+            for ((i=0; i<$invisible_jump; i++)); do
                 while ((scroll < list_total)); do
                     ((scroll++))
                     ((y < max_items)) && ((y++))
@@ -1311,12 +1396,13 @@ key() {
                     [[ "${list[scroll]}" ]] && break
                 done
             done
+
+            print_line "$scroll"
             status_line
         }
     }
 
     [[ $1 == $'\e' ]] && {
-
         # Exit marking with any special key.
         [[ ${marked_files[*]} ]] && {
             marked_files=()
@@ -1509,7 +1595,7 @@ key() {
                 file_program=()
 
             status_line
-            ;;
+        ;;
 
         # Mark files for operation.
         "${FFF_KEY_MARK:=" "}")
