@@ -74,6 +74,8 @@ A big part of code in there is from people who made PRs and posted issues to fff
     - Icons
 - `xclip or any clipboard manager` (*optional*)
     - clipboard
+- `libsixel` (*optional*)
+    - sixel support
 
 ## Installation
 
@@ -84,10 +86,6 @@ A big part of code in there is from people who made PRs and posted issues to fff
 2. Change working directory to `fff`.
     - `cd fff`
 3. Run `make install` inside the script directory to install the script.
-    - **El Capitan**: `make PREFIX=/usr/local install`
-    - **Haiku**: `make PREFIX="$(finddir B_USER_NONPACKAGED_DIRECTORY)" MANDIR='$(PREFIX)/documentation/man' DOCDIR='$(PREFIX)/documentation/fff' install`
-    - **OpenIndiana**: `gmake install`
-    - **MinGW/MSys**: `make -i install`
     - **NOTE**: You may have to run this as root.
 
 **NOTE:** `fff` can be uninstalled easily using `make uninstall`. This removes all of files from your system.
@@ -115,7 +113,7 @@ enter: go to child dir/open file
 backspace: go to parent dir
 
 o: open file with
-O: open file with GUI program detached from file manager
+O: open file with a GUI program detached from file manager
 
 -: Go to previous dir.
 
@@ -446,4 +444,4 @@ read -srn 1 && key "$REPLY"
 
 ## Using `fff` in vim/neovim as a file picker
 
-See: [**`fff.vim`**](https://github.com/dylanaraps/fff.vim)
+See: [**`fff.vim`**](https://github.com/dylanaraps/fff.vim) or [**`fm-nvim`**](https://github.com/is0n/fm-nvim)

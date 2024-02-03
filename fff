@@ -933,7 +933,7 @@ trash() {
         cd "$FFF_TRASH" || cmd_line "\e[0;31mWarning!\e[0m Can't cd to trash directory."
 
         if cp -alf "$@" &>/dev/null; then
-            rm -r "${@:1:$#-1}"
+            rm -rf "${@:1:$#-1}"
         else
             mv -f "$@"
         fi
