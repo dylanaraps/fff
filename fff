@@ -592,6 +592,12 @@ open() {
         redraw full
 
     elif [[ -f $1 ]]; then
+        ((file_picker == 1)) && {
+            printf '%s\n' "$1" > \
+                "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/opened_file"
+            exit
+        }
+
         # Figure out what kind of file we're working with.
         get_mime_type "$1"
 
@@ -601,12 +607,6 @@ open() {
             text/*|*x-empty*|*json*)
                 # If 'fff' was opened as a file picker, save the opened
                 # file in a file called 'opened_file'.
-                ((file_picker == 1)) && {
-                    printf '%s\n' "$1" > \
-                        "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/opened_file"
-                    exit
-                }
-
                 clear_screen
                 reset_terminal
                 "${VISUAL:-${EDITOR:-vi}}" "$1"
