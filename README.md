@@ -165,7 +165,9 @@ Ctrl+C: exit without 'cd'.
 
 ## Customization
 
-Can be added to your `bashrc` (or other shell's configuration files) and/or can be added to `FFF_CONFIG`. Everything put in `FFF_CONFIG` file will be sourced globally meaning that e.g. Neovim's terminal will have these settings. And I'm not sure why the only option (maybe there are others) not working in config file is `FFF_HIDDEN` which only works, when fff is run inside terminal manually.
+`FFF_CONFIG` can be added to your `bashrc` (or other shell's configuration files). Everything put in `FFF_CONFIG` file will be sourced globally meaning that e.g. Neovim's terminal will have these settings.
+
+Personal note (can be unreproducible for your): I'm not sure why the only option (maybe there are others) not working in config file is `FFF_HIDDEN` which only works, when fff is run inside terminal manually.
 
 ```sh
 # Show/Hide hidden files on open.
@@ -236,7 +238,7 @@ export FFF_CD_ON_EXIT=0
 #          If not using XDG, '${HOME}/.cache/fff/fff.d' is used.
 export FFF_CD_FILE=~/.fff_d
 
-# Config Directory
+# Config File
 # Default: '${XDG_CONFIG_HOME/fff}'
 #          If not using XDG, '${HOME}/.config/fff' is used.
 export FFF_CONFIG=~/.config/fff
