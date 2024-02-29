@@ -16,8 +16,10 @@ k: scroll up
 h: go to parent dir
 l: go to child dir
 
-enter: go to child dir
+enter: go to child dir/open file
 backspace: go to parent dir
+o: open file with
+O: open file with GUI program detached from file manager
 
 \-: Go to previous dir\.
 
@@ -30,11 +32,14 @@ G: go to bottom
 /: search
 t: go to trash
 ~: go to home
-e: refresh current dir
+z: refresh current dir
 !: open shell in current dir
 
+i: display file details
+I: display an image using sixel
+u: sort files
 x: view file/dir attributes
-i: display image with w3m-img
+e: show history
 
 down:  scroll down
 up:    scroll up
@@ -45,26 +50,24 @@ f: new file
 n: new dir
 r: rename
 X: toggle executable
+y: copy filename to clipboard
 
-y: mark copy
-m: mark move
-d: mark trash (~/.local/share/fff/trash/)
-s: mark symbolic link
-b: mark bulk rename
+space: mark file
+a: mark all files in directory
+c: copy
+m: move
+d: trash (move to FFF_TRASH)
+s: symbolic link
+b: bulk rename
 
-Y: mark all for copy
-M: mark all for move
-D: mark all for trash (~/.local/share/fff/trash/)
-S: mark all for symbolic link
-B: mark all for bulk rename
-
-p: paste/move/delete/bulk_rename
-c: clear file selections
+p: execute paste/move/delete/bulk_rename
 
 [1-9]: favourites/bookmarks (see customization)
 
 q: exit with 'cd' (if enabled).
 Ctrl+C: exit without 'cd'.
+
+?: show help
 .
 .fi
 .
@@ -81,6 +84,24 @@ export FFF_LS_COLORS=1
 # (On by default)
 export FFF_HIDDEN=0
 
+# Show/Hide file icons on open
+# (Off by default)
+export FFF_FILE_ICON=1
+
+# Show/Hide git status signs (+) on open
+# (Off by default)
+export FFF_GIT_CHANGES=1
+
+# Default method to sort files on open
+# 0 - alphabetically
+# 1 - modification time
+# (0 by default)
+export FFF_SORT_METHOD=1
+
+# Show/Hide file details on open
+# (Off by default)
+export FFF_FILE_DETAILS=1
+
 # Directory color [0\-9]
 export FFF_COL1=2
 
@@ -95,6 +116,21 @@ export FFF_COL4=1
 
 # Status foreground color [0\-9]
 export FFF_COL5=0
+
+# Selection color
+# (inverted foreground by default)
+# ('48;2;R;G;B' values separated by ';', don't edit the '48;2;' part!).
+# In terminals that support truecolor, this will set the selection color
+# to grey, but on others selection will be only white bold text (if this
+# is set).
+export FFF_COL6="48;2;80;80;80"
+
+# Colored filenames
+# (0 by default)
+export FFF_COLORED_FILENAMES=1
+
+# Text Editor
+export EDITOR="nvim"
 
 # Text Editor
 export EDITOR="vim"
@@ -113,6 +149,11 @@ export FFF_CD_ON_EXIT=1
 # Default: '${XDG_CACHE_HOME}/fff/fff.d'
 #          If not using XDG, '${HOME}/.cache/fff/fff.d' is used.
 export FFF_CD_FILE=~/.fff_d
+
+# Config File
+# Default: '${XDG_CONFIG_HOME/fff}'
+#          If not using XDG, '${HOME}/.config/fff' is used.
+export FFF_CONFIG=~/.config/fff
 
 # Trash Directory
 # Default: '${XDG_DATA_HOME}/fff/trash'
@@ -137,9 +178,13 @@ export FFF_FAV7=
 export FFF_FAV8=
 export FFF_FAV9=
 
-# w3m-img offsets.
-export FFF_W3M_XOFFSET=0
-export FFF_W3M_YOFFSET=0
+# History file length.
+# (100 lines by default)
+# Every cd-on-exit (q) program deletes every line older than
+# FFF_HISTORY_LENGTH.
+# Example: history has 150 lines, quitting trims history file
+# to 100 most recent.
+export FFF_HISTORY_LENGTH=200
 
 # File format.
 # Customize the item string.
@@ -152,6 +197,19 @@ export FFF_FILE_FORMAT="%f"
 # Format ('%f' is the current file): "str%fstr"
 # Example (Add a ' >' before files): FFF_MARK_FORMAT="> %f"
 export FFF_MARK_FORMAT=" %f*"
+
+# Clipboard program and arguments.
+# Default: xclip -selection c 
+export FFF_KEY_CLIPBOARD="xclip -selection c"
+
+# Scroll steps.
+# (14 by default).
+export FFF_SCROLL_UP=14
+export FFF_SCROLL_DOWN=14
+
+# Sixel image program.
+# Default: img2sixel
+export FFF_SIXEL_CMD="img2sixel"
 .
 .fi
 .
@@ -159,7 +217,7 @@ export FFF_MARK_FORMAT=" %f*"
 .
 .nf
 For more information see:
-    https://github.com/dylanaraps/fff#customizing-the-keybindings
+    https://github.com/piotr-marendowski/fff#customizing-the-keybindings
 
 ### Moving around.
 
@@ -201,27 +259,30 @@ export FFF_KEY_GO_HOME="~"
 export FFF_KEY_GO_TRASH="t"
 
 ### File operations.
-
-export FFF_KEY_YANK="y"
+export FFF_KEY_MARK=" "
+export FFF_KEY_MARK_ALL="v"
+export FFF_KEY_COPY="c"
 export FFF_KEY_MOVE="m"
 export FFF_KEY_TRASH="d"
 export FFF_KEY_LINK="s"
 export FFF_KEY_BULK_RENAME="b"
 
-export FFF_KEY_YANK_ALL="Y"
-export FFF_KEY_MOVE_ALL="M"
-export FFF_KEY_TRASH_ALL="D"
-export FFF_KEY_LINK_ALL="S"
-export FFF_KEY_BULK_RENAME_ALL="B"
-
-export FFF_KEY_PASTE="p"
-export FFF_KEY_CLEAR="c"
+export FFF_KEY_EXECUTE="p"
 
 export FFF_KEY_RENAME="r"
 export FFF_KEY_MKDIR="n"
 export FFF_KEY_MKFILE="f"
 
 ### Miscellaneous
+
+# Display file details.
+export FFF_KEY_DETAILS="i"
+
+# Display an image using sixel.
+export FFF_KEY_SIXEL="I"
+
+# Sort files.
+export FFF_KEY_SORT="u"
 
 # Show file attributes.
 export FFF_KEY_ATTRIBUTES="x"
@@ -232,6 +293,11 @@ export FFF_KEY_EXECUTABLE="X"
 # Toggle hidden files.
 export FFF_KEY_HIDDEN="."
 
+# Show history of directories. 
+export FFF_KEY_HISTORY="e"
+
+# Yank filename to clipboard.
+export FFF_KEY_CLIPBOARD="y"
 .
 .fi
 

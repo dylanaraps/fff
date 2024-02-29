@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-#
-# fff - fucking fast file-manager.
 
 get_os() {
     # Figure out the current operating system to set some specific variables.
@@ -15,8 +13,7 @@ get_os() {
         haiku)
             opener=open
 
-            [[ -z $FFF_TRASH_CMD ]] &&
-                FFF_TRASH_CMD=trash
+            [[ -z $FFF_TRASH_CMD ]] && FFF_TRASH_CMD=trash
 
             [[ $FFF_TRASH_CMD == trash ]] && {
                 FFF_TRASH=$(finddir -v "$PWD" B_TRASH_DIRECTORY)
@@ -72,6 +69,10 @@ setup_options() {
     # select options so the operation isn't repeated
     # multiple times in the code.
 
+    # Source config file.
+    [[ -f "${FFF_CONFIG:=${XDG_CONFIG_HOME:=${HOME}/.config}/fff}" ]] &&
+        . "${FFF_CONFIG:=${XDG_CONFIG_HOME:=${HOME}/.config}/fff}" 
+
     # Format for normal files.
     [[ $FFF_FILE_FORMAT == *%f* ]] && {
         file_pre=${FFF_FILE_FORMAT/'%f'*}
@@ -82,14 +83,17 @@ setup_options() {
     # Use affixes provided by the user or use defaults, if necessary.
     if [[ $FFF_MARK_FORMAT == *%f* ]]; then
         mark_pre=${FFF_MARK_FORMAT/'%f'*}
-        mark_post=${FFF_MARK_FORMAT/*'%f'}
     else
         mark_pre=" "
-        mark_post="*"
     fi
 
     # Find supported 'file' arguments.
     file -I &>/dev/null || : "${file_flags:=biL}"
+
+    helping=0
+    sort=${FFF_SORT_METHOD:=0}
+    details=${FFF_FILE_DETAILS:=0}
+    history=0
 }
 
 get_term_size() {
@@ -98,7 +102,7 @@ get_term_size() {
     read -r LINES COLUMNS < <(stty size)
 
     # Max list items that fit in the scroll area.
-    ((max_items=LINES-3))
+    ((max_items=LINES-2))
 }
 
 get_ls_colors() {
@@ -143,24 +147,355 @@ get_ls_colors() {
     export "${ls_cols[@]}" &>/dev/null
 }
 
-get_w3m_path() {
-    # Find the path to the w3m-img library.
-    w3m_paths=(/usr/{pkg/,}{local/,}{bin,lib,libexec,lib64,libexec64}/w3m/w3mi*)
-    read -r w3m _ < <(type -p "$FFF_W3M_PATH" w3mimgdisplay "${w3m_paths[@]}")
-}
-
 get_mime_type() {
     # Get a file's mime_type.
     mime_type=$(file "-${file_flags:-biL}" "$1" 2>/dev/null)
 }
 
+get_icon() {
+    # $1 Absolute path to the file
+    # $2 name of the file/directory
+    # $3 the extracted extension from the file name
+
+    # Icons for directories
+    [[ -d "$1" ]] && {
+        case "$2" in
+            '.git'            ) printf -- '󰊢'; return ;;
+            'Desktop'         ) printf -- '󰇄'; return ;;
+            'Documents'       ) printf -- ''; return ;;
+            'Downloads'       ) printf -- ''; return ;;
+            '.config'         |\
+            'Dotfiles'        |\
+            'dotfiles'        |\
+            '.dotfiles'       ) printf -- ''; return ;;
+            '.cache'          ) printf -- ''; return ;;
+            'Music'           ) printf -- ''; return ;;
+            'Pictures'        ) printf -- ''; return ;;
+            'Public'          ) printf -- ''; return ;;
+            'Templates'       ) printf -- ''; return ;;
+            'Videos'          ) printf -- ''; return ;;
+            'Games'           ) printf -- '󰊗'; return ;;
+            'home'            ) printf -- ''; return ;;
+            'mnt'             ) printf -- '󰊶'; return ;;
+            'Dropbox'         ) printf -- ''; return ;;
+
+            *                 ) printf -- ''; return ;;
+        esac
+    }
+    # Icons for files with no extension
+    [[ "$2" == "$3" ]] && { 
+        case "$2" in
+            'lsb-release'   | 'arch-release' |\
+            'gshadow'       | 'group'        |\
+            'hosts'         | 'hostname'     |\
+            'shadow'        | 'sudoers'      |\
+            'passwd'        | 'os-release'   |\
+            '_gvimrc'       | '_vimrc'       |\
+            'bspwmrc'       |'cmakelists.txt'|\
+            'config'        | 'gradlew'      |\
+            'ini'           | 'sxhkdrc'      ) printf -- ''; return ;;
+
+            'Makefile'      | 'makefile'     ) printf -- ''; return ;;
+
+            'authorized_keys'                |\
+            'known_hosts'                    |\
+            'license'                        |\
+            'LICENSE'                        ) printf -- ''; return ;;
+
+            'gemfile'                        |\
+            'Rakefile'                       |\
+            'rakefile'                       ) printf -- ''; return ;;
+
+            'a.out'                          |\
+            'configure'                      ) printf -- ''; return ;;
+
+            'dockerfile'                     |\
+            'Dockerfile'                     ) printf -- '󰡨'; return ;;
+
+            'dropbox'                        ) printf -- ''; return ;;
+            'exact-match-case-sensitive-2'   ) printf -- 'X'; return ;;
+            'ledger'                         ) printf -- ''; return ;;
+            'node_modules'                   ) printf -- '󰎙'; return ;;
+            'playlists'                      ) printf -- ''; return ;;
+            'procfile'                       ) printf -- ''; return ;;
+            'README'                         ) printf -- ''; return ;;
+            'PKGBUILD'                       ) printf -- '󰏖'; return ;;
+            'log'                            ) printf -- '󱀂'; return ;;
+            '*'                              ) printf -- ''; return ;;
+        esac
+    }
+    # Icon for files with the name starting with '.' 
+    # without an extension
+    [[ "$2" == ".$3" ]] && {
+        case "$2" in
+            '.bash_aliases'                        |\
+            '.bash_history'                        |\
+            '.bash_logout'                         |\
+            '.bash_profile'                        |\
+            '.bashprofile'        | '.project'     |\
+            '.gitattributes'      | '.bashrc'      |\
+            '.gitconfig'          | '.gitignore'   |\
+            '.jack-settings'      | '.DS_Store'    |\
+            '.nvidia-settings-rc' | '.inputrc'     |\
+            '.pam_environment'    | '.dmrc'        |\
+            '.recently-used'      | '.profile'     |\
+            '.selected_editor'    | '.fasd'        |\
+            '.Xdefaults'          | '.Xauthority'  |\
+            '.xinitrc'            | '.xinputrc'    |\
+            '.xprofile'           | '.Xresources'  |\
+            '.zsh_history'        | '.zshrc'       ) printf -- ''; return ;;
+
+            '.vim'                         |\
+            '.viminfo'                     |\
+            '.vimrc'                       ) printf -- ''; return ;;
+
+            '.fehbg'                       ) printf -- ''; return ;;
+            '.gvimrc'                      ) printf -- ''; return ;;
+            '.ncmpcpp'                     ) printf -- ''; return ;;
+
+            '*'                            ) printf -- ''; return ;;
+        esac
+    }
+    # Icon for files whose names have an extension
+    [[ "$2" == *"."* ]] && {
+        case "$2" in
+            'locale.gen'                       |\
+            'prefs.js'                         |\
+            'cmakelists.txt'                   |\
+            'Makefile.ac'                      |\
+            'Makefile.in'                      |\
+            'mimeapps.list'                    |\
+            'user-dirs.dirs'                   ) printf -- ''; return ;;
+
+            'README.markdown'                  |\
+            'README.md'                        |\
+            'README.rst'                       |\
+            'README.txt'                       ) printf -- ''; return ;;
+
+            'config.ac'                        |\
+            'config.m4'                        |\
+            'config.mk'                        ) printf -- ''; return ;;
+
+            'gruntfile.coffee'                 |\
+            'gruntfile.js'                     |\
+            'gruntfile.ls'                     ) printf -- ''; return ;;
+
+            'package-lock.json'                |\
+            'package.json'                     |\
+            'webpack.config.js'                ) printf -- ''; return ;;
+
+            'gulpfile.coffee'                  |\
+            'gulpfile.js'                      |\
+            'gulpfile.ls'                      ) printf -- ''; return ;;
+
+            'LICENSE.txt'                      |\
+            'LICENSE.md'                       ) printf -- ''; return ;;
+
+
+            '.gitlab-ci.yml'                   ) printf -- ''; return ;;
+            'config.ru'                        ) printf -- ''; return ;;
+            'docker-compose.yml'               ) printf -- ''; return ;;
+            'exact-match-case-sensitive-1.txt' ) printf -- 'X'; return ;;
+            'favicon.ico'                      ) printf -- ''; return ;;
+            'mix.lock'                         ) printf -- ''; return ;;
+            'react.jsx'                        ) printf -- ''; return ;;
+        esac
+
+        case "$3" in
+            'shada'         |\
+            'efi'           | 'menu'         |\
+            'cfg'           | 'EFI'          |\
+            'desktop'       | 'name'         |\
+            'package-cache' | 'prefs'        |\
+            'reg'           | 'gradle'       |\
+            'bat'           | 'conf'         |\
+            'cvs'           | 'tsv'          |\
+            'htaccess'      | 'config'       |\
+            'htpasswd'      | 'pro'          |\
+            'ini'           | 'rc'           |\
+            'toml'          | 'yaml'         |\
+            'x86_64'        | 'x86'          |\
+            'yml'           | 'properties'   ) printf -- ''; return ;;
+
+            '7z'  | 'apk'   |\
+            'bz2' | 'cab'   |\
+            'cpio'| 'deb'   |\
+            'gem' | 'gz'    |\
+            'gzip'| 'lha'   |\
+            'lzh' | 'lzma'  |\
+            'rar' | 'rpm'   |\
+            'tar' | 'tgz'   |\
+            'xbps'| 'xz'    |\
+            'zip' | 'zst'   ) printf -- ''; return ;;
+
+            'asp' | 'awk'   |\
+            'bash'| 'csh'   |\
+            'elf'           |\
+            'fish'| 'ksh'   |\
+            'ps1' | 'rom'   |\
+            'zsh'           ) printf -- ''; return ;;
+
+            'avi' | 'flv'   |\
+            'm4v' | 'mkv'   |\
+            'mov' | 'mp4'   |\
+            'mpeg'| 'mpg'   |\
+            'webm'          ) printf -- ''; return ;;
+
+            'bmp' | 'gif'   |\
+            'ico' | 'jpeg'  |\
+            'jpg' | 'png'   |\
+            'ppt' | 'pptx'  |\
+            'webp'| 'GIF'   |\
+            'xcf' | 'xbm'   ) printf -- ''; return ;;
+
+            'aup' | 'cue'   |\
+            'flac'| 'm4a'   |\
+            'mp3' | 'ogg'   |\
+            'wav'           ) printf -- ''; return ;;
+
+            'c'   | 'c++'   |\
+            'cc'  | 'cp'    |\
+            'cpp' | 'cxx'   |\
+            'h'   | 'hpp'   ) printf -- ''; return ;;
+
+            'docx'| 'doc'   |\
+            'epub'| 'pdf'   |\
+            'rtf' | 'xls'   |\
+            'xlsx'          ) printf -- ''; return ;;
+
+            'ejs' | 'haml'  |\
+            'htm' | 'html'  |\
+            'slim'|  'xhtml'|\
+            'xml'           ) printf -- ''; return ;;
+
+            'a'   | 'cmake' |\
+            'jl'  | 'o'     |\
+            'so'            ) printf -- ''; return ;;
+
+            'asm' | 'css'   |\
+            'less'| 's'     |\
+            'sh'  | 'style' ) printf -- ''; return ;;
+
+            'db'  | 'dump'  |\
+            'img'           |\
+            'sql' | 'files' ) printf -- ''; return ;;
+
+            'f#'  | 'fs'    |\
+            'fsi' | 'fsx'   |\
+            'fsscript'      ) printf -- ''; return ;;
+
+            'markdown'      |\
+            'md'  | 'mdx'   |\
+            'rmd'           ) printf -- ''; return ;;
+
+            'gemspec'       |\
+            'rake'| 'rb'    ) printf -- ''; return ;;
+
+            'dll' | 'exe'   |\
+            'msi' | 'bin'   ) printf -- ''; return ;;
+
+            'eex' | 'ex'    |\
+            'exs' | 'leex'  ) printf -- ''; return ;;
+
+            'jar' | 'java'  ) printf -- ''; return ;;
+            'class'         ) printf -- '󰏗'; return ;;
+
+            'mustache'      |\
+            'hbs'           ) printf -- ''; return ;;
+
+            'json'          |\
+            'webmanifest'   ) printf -- ''; return ;;
+
+            'ttf' | 'otf'   ) printf -- ''; return ;;
+
+            'py'  | 'pyc'   |\
+            'pyd' | 'pyo'   ) printf -- ''; return ;;
+
+            'cbr' | 'cbz'   ) printf -- ''; return ;;
+            'clj' | 'cljc'  ) printf -- ''; return ;;
+            'cljs'| 'edn'   ) printf -- ''; return ;;
+            'hrl' | 'erl'   ) printf -- ''; return ;;
+            'hh'  | 'hxx'   ) printf -- ''; return ;;
+            'hs'  | 'lhs'   ) printf -- ''; return ;;
+            'js'  | 'mjs'   ) printf -- ''; return ;;
+            'jsx' | 'tsx'   ) printf -- ''; return ;;
+            'key' | 'pub'   ) printf -- ''; return ;;
+            'ml'  | 'mli'   ) printf -- 'λ'; return ;;
+            'pl'  | 'pm'    ) printf -- ''; return ;;
+            'vim' | 'vimrc' ) printf -- ''; return ;;
+            'psb' | 'psd'   ) printf -- ''; return ;;
+            'rlib'| 'rs'    ) printf -- ''; return ;;
+            'sass'| 'scss'  ) printf -- ''; return ;;
+            'sln' | 'suo'   ) printf -- ''; return ;;
+
+            'coffee'        ) printf -- ''; return ;;
+            'ai'            ) printf -- ''; return ;;
+            'cs'            ) printf -- ''; return ;;
+            'd'             ) printf -- ''; return ;;
+            'dart'          ) printf -- ''; return ;;
+            'diff'          ) printf -- ''; return ;;
+            'elm'           ) printf -- ''; return ;;
+            'fi'            ) printf -- '|'; return ;;
+            'go'            ) printf -- ''; return ;;
+            'log'           ) printf -- '󱀂'; return ;;
+            'lua'           ) printf -- ''; return ;;
+            'nix'           ) printf -- ''; return ;;
+            'php'           ) printf -- ''; return ;;
+            'pp'            ) printf -- ''; return ;;
+            'r'             ) printf -- ''; return ;;
+            'rss'           ) printf -- ''; return ;;
+            'scala'         ) printf -- ''; return ;;
+            'styl'          ) printf -- ''; return ;;
+            'swift'         ) printf -- ''; return ;;
+            't'             ) printf -- ''; return ;;
+            'tex'           ) printf -- ''; return ;;
+            'ts'            ) printf -- ''; return ;;
+            'twig'          ) printf -- ''; return ;;
+            'vue'           ) printf -- ''; return ;;
+            'xcplayground'  ) printf -- ''; return ;;
+            'xul'           ) printf -- ''; return ;;
+
+            'lock'          ) printf -- ''; return ;;
+            'iso'           ) printf -- '󰻂'; return ;;
+            'uuid'          ) printf -- ''; return ;;
+            'rej'           ) printf -- ''; return ;;
+
+            '1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9') printf -- '󰋗'; return ;;
+        esac
+    }
+
+    printf -- ''; return
+}
+
 status_line() {
     # Status_line to print when files are marked for operation.
-    local mark_ui="[${#marked_files[@]}] selected (${file_program[*]}) [p] ->"
+    local mark_ui=
+    [ ${#marked_files[@]} -gt 0 ] && {
+        mark_ui="[${#marked_files[@]}] selected "
+        [[ -n $file_program ]] &&
+            mark_ui+="(${file_program[*]}) "
+    }
+
+    # Display git branch and sorting.
+    git_branch=$(git branch 2> /dev/null | sed -n -e 's/^\* \(.*\)/[\1]/p')
+    
+    # Display current sorting
+    [ "$sort" -eq 0 ] && \
+        sort_help="Sort: alpha" || \
+        sort_help="Sort: date"
 
     # Escape the directory string.
     # Remove all non-printable characters.
-    PWD_escaped=${PWD//[^[:print:]]/^[}
+    if ((helping)) || ((history)); then
+        mark_ui=
+        PWD_escaped=" "
+        sort_help=
+        git_branch=
+    else
+        # Escape the directory string.
+        # Remove all non-printable characters.
+        PWD_escaped=${PWD//[^[:print:]]/^[}
+    fi
 
     # '\e7':       Save cursor position.
     #              This is more widely supported than '\e[s'.
@@ -175,14 +510,14 @@ status_line() {
     # '\e8':       Restore cursor position.
     #              This is more widely supported than '\e[u'.
     printf '\e7\e[%sH\e[3%s;4%sm%*s\r%s %s%s\e[m\e[%sH\e[K\e8' \
-           "$((LINES-1))" \
+           "$LINES" \
            "${FFF_COL5:-0}" \
            "${FFF_COL2:-1}" \
            "$COLUMNS" "" \
            "($((scroll+1))/$((list_total+1)))" \
-           "${marked_files[*]:+${mark_ui}}" \
-           "${1:-${PWD_escaped:-/}}" \
-           "$LINES"
+           "$mark_ui" \
+           "${1:-${PWD_escaped:-/} $git_branch $sort_help}" \
+           "$((LINES-1))"
 }
 
 read_dir() {
@@ -200,22 +535,26 @@ read_dir() {
     for item in "$PWD"/*; do
         if [[ -d $item ]]; then
             dirs+=("$item")
-
             # Find the position of the child directory in the
             # parent directory list.
             [[ $item == "$OLDPWD" ]] &&
                 ((previous_index=item_index))
+
             ((item_index++))
         else
             files+=("$item")
         fi
     done
 
+    [ "$sort" == 1 ] && {
+        dirs=($(stat -c '%Y=%n' "${dirs[@]}" | sort -nr | cut -d '=' -f2))
+		files=($(stat -c '%Y=%n' "${files[@]}" | sort -nr | cut -d '=' -f2))
+    }
+
     list=("${dirs[@]}" "${files[@]}")
 
     # Indicate that the directory is empty.
-    [[ -z ${list[0]} ]] &&
-        list[0]=empty
+    [[ -z ${list[0]} ]] && list[0]=empty
 
     ((list_total=${#list[@]}-1))
 
@@ -229,23 +568,34 @@ print_line() {
     local file_ext=${file_name##*.}
     local format
     local suffix
+    local icon
+    local git
+
+    # History and help pages.
+    if ((helping)) || ((history)); then
+        file_name=${list[$1]}
+        [[ "$file_name" ]] && {
+            # Highlight the key(s)/numbers.
+            format+="\\e[${di:-1;3${FFF_COL1:-2}}m"
+            ((helping)) && local action="${file_name%: *}"
+            format+="$(cat -A <<<"$action" | head -c -2)\\e[${fi:-37}m "
+            file_name="${file_name##*: }"
+
+            # Check if item is selected.
+            (($1 == scroll)) && format+="\\e[1;${FFF_COL4:-1};${FFF_COL6:-7}m"
+            printf '\r%b\e[m\r' "${format}${file_name}"
+
+            return
+        }
 
     # If the dir item doesn't exist, end here.
-    if [[ -z ${list[$1]} ]]; then
+    elif [[ -z ${list[$1]} ]]; then
         return
 
     # Directory.
     elif [[ -d ${list[$1]} ]]; then
-        format+=\\e[${di:-1;3${FFF_COL1:-2}}m
+        format+=\\e[${di:-0;3${FFF_COL1:-4}}m
         suffix+=/
-
-    # Block special file.
-    elif [[ -b ${list[$1]} ]]; then
-        format+=\\e[${bd:-40;33;01}m
-
-    # Character special file.
-    elif [[ -c ${list[$1]} ]]; then
-        format+=\\e[${cd:-40;33;01}m
 
     # Executable file.
     elif [[ -x ${list[$1]} ]]; then
@@ -258,14 +608,6 @@ print_line() {
     # Symbolic Link.
     elif [[ -h ${list[$1]} ]]; then
         format+=\\e[${ln:-01;36}m
-
-    # Fifo file.
-    elif [[ -p ${list[$1]} ]]; then
-        format+=\\e[${pi:-40;33}m
-
-    # Socket file.
-    elif [[ -S ${list[$1]} ]]; then
-        format+=\\e[${so:-01;35}m
 
     # Color files that end in a pattern as defined in LS_COLORS.
     # 'BASH_REMATCH' is an array that stores each REGEX match.
@@ -291,21 +633,55 @@ print_line() {
 
     # If the list item is under the cursor.
     (($1 == scroll)) &&
-        format+="\\e[1;3${FFF_COL4:-6};7m"
+        format+="\\e[1;${FFF_COL4:-1};${FFF_COL6:-7}m"
 
     # If the list item is marked for operation.
-    [[ ${marked_files[$1]} == "${list[$1]:-null}" ]] && {
+    [[ ${marked_files[$1]} == "${list[$1]:-null}" ]] &&
         format+=\\e[3${FFF_COL3:-1}m${mark_pre}
-        suffix+=${mark_post}
-    }
 
     # Escape the directory string.
     # Remove all non-printable characters.
     file_name=${file_name//[^[:print:]]/^[}
 
+    # Get icon.
+    (( ${FFF_FILE_ICON:=0} == 1 )) &&
+        icon="$(get_icon "${list[$1]}" "$file_name" "$file_ext") "
+
+    # Check if current dir is a git repo and has changes,
+    # then display git signs if it is.
+    if [ -n "$git_branch" ] && [ -n "$git_output" ]; then
+        (( ${FFF_GIT_CHANGES:=0} == 1 )) &&
+            [[ " ${changed[@]} " =~ " $file_name " ]] && git="+ " || git="  " 
+    fi
+
+    # Display details (date, time and file size).
+    # If directory is empty then don't show details.
+    if (( details == 1 )) && [[ ${list[0]} != empty ]]; then
+        local line='        '
+
+        file_size=$("${FFF_STAT_CMD:-stat}" -c "%s" "${list[$1]}" 2> /dev/null | numfmt --to=iec)
+        date="$(date -r ${list[$1]} +"%Y-%m-%d %H:%M" 2> /dev/null)"
+
+        # If there is error, then just print space to align file names.
+        if [ "$?" -ne "0" ]; then
+                date="                   "
+                line='       '
+        else
+            date=" ${date} "
+            file_size=" ${file_size}B  "
+        fi
+    else
+        file_size=
+        date=
+        line=
+    fi
+
+    # ${file_size}${line:${#file_size}}
+    # https://stackoverflow.com/a/4411098
+    # This basically makes the file size and file name align.
     printf '\r%b%s\e[m\r' \
-        "${file_pre}${format}" \
-        "${file_name}${suffix}${file_post}"
+        "${file_pre}${format}${date}${file_size}${line:${#file_size}} ${git}${icon}"\
+        "${file_name}${suffix}${file_post} "
 }
 
 draw_dir() {
@@ -361,111 +737,158 @@ draw_dir() {
     ((y=scroll_new_pos))
 }
 
-draw_img() {
-    # Draw an image file on the screen using w3m-img.
-    # We can use the framebuffer; set win_info_cmd as appropriate.
-    [[ $(tty) == /dev/tty[0-9]* && -w /dev/fb0 ]] &&
-        win_info_cmd=fbset
-
-    # X isn't running and we can't use the framebuffer, do nothing.
-    [[ -z $DISPLAY && $win_info_cmd != fbset ]] &&
-        return
-
-    # File isn't an image file, do nothing.
-    get_mime_type "${list[scroll]}"
-    [[ $mime_type != image/* ]] &&
-        return
-
-    # w3m-img isn't installed, do nothing.
-    type -p "$w3m" &>/dev/null || {
-        cmd_line "error: Couldn't find 'w3m-img', is it installed?"
-        return
-    }
-
-    # $win_info_cmd isn't installed, do nothing.
-    type -p "${win_info_cmd:=xdotool}" &>/dev/null || {
-        cmd_line "error: Couldn't find '$win_info_cmd', is it installed?"
-        return
-    }
-
-    # Get terminal window size in pixels and set it to WIDTH and HEIGHT.
-    if [[ $win_info_cmd == xdotool ]]; then
-        IFS=$'\n' read -d "" -ra win_info \
-            < <(xdotool getactivewindow getwindowgeometry --shell)
-
-        declare "${win_info[@]}" &>/dev/null || {
-            cmd_line "error: Failed to retrieve window size."
-            return
-        }
-    else
-        [[ $(fbset --show) =~ .*\"([0-9]+x[0-9]+)\".* ]]
-        IFS=x read -r WIDTH HEIGHT <<< "${BASH_REMATCH[1]}"
-    fi
-
-    # Get the image size in pixels.
-    read -r img_width img_height < <("$w3m" <<< "5;${list[scroll]}")
-
-    # Subtract the status_line area from the image size.
-    ((HEIGHT=HEIGHT-HEIGHT*5/LINES))
-
-    ((img_width > WIDTH)) && {
-        ((img_height=img_height*WIDTH/img_width))
-        ((img_width=WIDTH))
-    }
-
-    ((img_height > HEIGHT)) && {
-        ((img_width=img_width*HEIGHT/img_height))
-        ((img_height=HEIGHT))
-    }
-
-    clear_screen
-    status_line "${list[scroll]}"
-
-    # Add a small delay to fix issues in VTE terminals.
-    ((BASH_VERSINFO[0] > 3)) &&
-        read "${read_flags[@]}" -srn 1
-
-    # Display the image.
-    printf '0;1;%s;%s;%s;%s;;;;;%s\n3;\n4\n' \
-        "${FFF_W3M_XOFFSET:-0}" \
-        "${FFF_W3M_YOFFSET:-0}" \
-        "$img_width" \
-        "$img_height" \
-        "${list[scroll]}" | "$w3m" &>/dev/null
-
-    # Wait for user input.
-    read -ern 1
-
-    # Clear the image.
-    printf '6;%s;%s;%s;%s\n3;' \
-        "${FFF_W3M_XOFFSET:-0}" \
-        "${FFF_W3M_YOFFSET:-0}" \
-        "$WIDTH" \
-        "$HEIGHT" | "$w3m" &>/dev/null
-
-    redraw
-}
-
 redraw() {
+    changed=()
+    git_branch=$(git branch 2> /dev/null | sed -n -e 's/^\* \(.*\)/\1/p')
+    # Check if git branch name is not empty, then get changed files.
+    [ -n "$git_branch" ] && {
+        git_output=$(git status -s -unormal)
+        while read -r line; do
+            # Get elements.
+            element="${line#* }"
+            element="${line%%/*}"
+            changed+=("$element")
+        done <<< "$git_output"
+    }
+
     # Redraw the current window.
     # If 'full' is passed, re-fetch the directory list.
-    [[ $1 == full ]] && {
+    if [[ $1 == full ]]; then
+        ((helping)) || ((history)) && {
+            helping=0
+            history=0
+            find_previous=1
+        }
         read_dir
         scroll=0
-    }
+    # If 'help' is passed, list help text.
+    elif [[ $1 == help ]]; then
+        helping=1
+        list_help
+        scroll=0
+    # If 'help' is passed, list help text.
+    elif [[ $1 == hist ]]; then
+        history=1
+        get_history
+        scroll=0
+    fi
 
     clear_screen
     draw_dir
     status_line
 }
 
-mark() {
-    # Mark file for operation.
-    # If an item is marked in a second directory,
-    # clear the marked files.
-    [[ $PWD != "$mark_dir" ]] &&
-        marked_files=()
+list_help() {
+    # Set window name.
+    printf '\e]2;fff: help\e'\\
 
+    # Turn off icons.
+    icon_value=${FFF_FILE_ICON:-0}
+    FFF_FILE_ICON=0
+
+    list=(
+        "${FFF_KEY_SCROLL_DOWN1:-j}: scroll down"
+        "${FFF_KEY_SCROLL_UP1:-k}: scroll up"
+        "${FFF_KEY_PARENT1:-h}: go to parent dir"
+        "${FFF_KEY_CHILD1:-l}: go to child dir"
+        ''
+        'enter: go to child dir/open file'
+        'backspace: go to parent dir'
+        ''
+        "${FFF_KEY_OPEN_WITH:=o}: open file with"
+        "${FFF_KEY_OPEN_WITH_DETACHED:=O}: open file with GUI program detached from file manager"
+        ''
+        "${FFF_KEY_PREVIOUS:--}: go to previous dir"
+        ''
+        "${FFF_KEY_TO_TOP:-g}: go to top"
+        "${FFF_KEY_TO_BOTTOM:-G}: go to bottom"
+        ''
+        "${FFF_KEY_GO_DIR:-:}: go to a directory by typing"
+        ''
+        "${FFF_KEY_HIDDEN:-.}: toggle hidden files"
+        "${FFF_KEY_SEARCH:-/}: search"
+        "${FFF_KEY_GO_TRASH:-t}: go to trash"
+        "${FFF_KEY_GO_HOME:-~}: go to home"
+        "${FFF_KEY_REFRESH:-z}: refresh current dir"
+        "${FFF_KEY_SHELL:-!}: open shell in current dir"
+        ''
+        "${FFF_KEY_DETAILS:-i}: display file details"
+        "${FFF_KEY_SIXEL:-I}: display an image using sixel"
+        "${FFF_KEY_SORT:-u}: sort files"
+        "${FFF_KEY_ATTRIBUTES:-x}: view file/dir attributes"
+        "${FFF_KEY_HISTORY:-e}: show history"
+        "${FFF_KEY_CLIPBOARD:-y}: yank filename to clipboard"
+        ''
+        'down:  scroll down'
+        'up:    scroll up'
+        'left:  go to parent dir'
+        'right: go to child dir'
+        ''
+        "ctrl+d: scroll down for ${FFF_SCROLL_DOWN:=14} lines"
+        "ctrl+u: scroll up for ${FFF_SCROLL_UP:=14} lines"
+        ''
+        "${FFF_KEY_MKFILE:-f}: new file"
+        "${FFF_KEY_MKDIR:-n}: new dir"
+        "${FFF_KEY_RENAME:-r}: rename"
+        "${FFF_KEY_EXECUTABLE:-X}: toggle executable"
+        ''
+        "${FFF_KEY_MARK:-" "}: mark"
+        "${FFF_KEY_MARK_ALL:-a}: mark all"
+        "${FFF_KEY_COPY:-c}: mark copy"
+        "${FFF_KEY_MOVE:-m}: mark move"
+        "${FFF_KEY_TRASH:-d}: mark trash"
+        "${FFF_KEY_LINK:-s}: mark symbolic link"
+        "${FFF_KEY_BULK_RENAME:-b}: mark bulk rename"
+        ''
+        "${FFF_KEY_PASTE:-p}: execute paste/move/delete/bulk_rename"
+        ''
+        "q: exit with 'cd' (if enabled) or exit this help"
+        "ctrl+c: exit without 'cd'"
+        ''
+        "Trash directory: ${FFF_TRASH:-${XDG_DATA_HOME}/fff/trash}"
+        "${FFF_KEY_HELP:-?}: show this help"
+        ''
+        'Bookmarks [1-9]: '
+    )
+
+    # Add bookmarks to list.
+    for i in {1..9}; do
+        var="FFF_FAV$i"
+        path=${!var}
+        if [[ -n $path ]]; then
+            list+=("$i: $path")
+        fi
+    done
+
+    ((list_total=${#list[@]}-1))
+
+    # Save the original list in a second list as a backup.
+    cur_list=("${list[@]}")
+}
+
+get_history() {
+    # Set window name.
+    printf '\e]2;fff: history\e'\\
+
+    # Turn off icons.
+    icon_value=${FFF_FILE_ICON:-0}
+    FFF_FILE_ICON=0
+
+    # Add history to lines.
+    list=()
+    i=1
+    while read -r line; do
+        list+=("$i: $line")
+        i=$((i+1))
+    done < "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/history"
+
+    ((list_total=${#list[@]}-1))
+
+    # Save the original list in a second list as a backup.
+    cur_list=("${list[@]}")
+}
+
+mark() {
     # Don't allow the user to mark the empty directory list item.
     [[ ${list[0]} == empty && -z ${list[1]} ]] &&
         return
@@ -473,19 +896,17 @@ mark() {
     if [[ $1 == all ]]; then
         if ((${#marked_files[@]} != ${#list[@]})); then
             marked_files=("${list[@]}")
-            mark_dir=$PWD
         else
             marked_files=()
+            file_program=()
         fi
 
         redraw
     else
         if [[ ${marked_files[$1]} == "${list[$1]}" ]]; then
-            unset 'marked_files[scroll]'
-
+            unset 'marked_files[$1]'
         else
             marked_files[$1]="${list[$1]}"
-            mark_dir=$PWD
         fi
 
         # Clear line before changing it.
@@ -493,32 +914,15 @@ mark() {
         print_line "$1"
     fi
 
-    # Find the program to use.
-    case "$2" in
-        ${FFF_KEY_YANK:=y}|${FFF_KEY_YANK_ALL:=Y}) file_program=(cp -iR) ;;
-        ${FFF_KEY_MOVE:=m}|${FFF_KEY_MOVE_ALL:=M}) file_program=(mv -i)  ;;
-        ${FFF_KEY_LINK:=s}|${FFF_KEY_LINK_ALL:=S}) file_program=(ln -s)  ;;
-
-        # These are 'fff' functions.
-        ${FFF_KEY_TRASH:=d}|${FFF_KEY_TRASH_ALL:=D})
-            file_program=(trash)
-        ;;
-
-        ${FFF_KEY_BULK_RENAME:=b}|${FFF_KEY_BULK_RENAME_ALL:=B})
-            file_program=(bulk_rename)
-        ;;
-    esac
+    # If no programs are marked, clear the type of operation.
+    [[ -z ${marked_files[*]} ]] &&
+        file_program=()
 
     status_line
 }
 
 trash() {
     # Trash a file.
-    cmd_line "trash [${#marked_files[@]}] items? [y/n]: " y n
-
-    [[ $cmd_reply != y ]] &&
-        return
-
     if [[ $FFF_TRASH_CMD ]]; then
         # Pass all but the last argument to the user's
         # custom script. command is used to prevent this function
@@ -526,10 +930,10 @@ trash() {
         command "$FFF_TRASH_CMD" "${@:1:$#-1}"
 
     else
-        cd "$FFF_TRASH" || cmd_line "error: Can't cd to trash directory."
+        cd "$FFF_TRASH" || cmd_line "\e[0;31mWarning!\e[0m Can't cd to trash directory."
 
         if cp -alf "$@" &>/dev/null; then
-            rm -r "${@:1:$#-1}"
+            rm -rf "${@:1:$#-1}"
         else
             mv -f "$@"
         fi
@@ -554,7 +958,7 @@ bulk_rename() {
     # If the user deleted a line, stop here.
     ((${#marked_files[@]} != ${#changed_files[@]})) && {
         rm "$rename_file"
-        cmd_line "error: Line mismatch in rename file. Doing nothing."
+        cmd_line "\e[0;31mWarning!\e[0m Line mismatch in rename file. Doing nothing."
         return
     }
 
@@ -584,14 +988,31 @@ bulk_rename() {
 }
 
 open() {
-    # Open directories and files.
+    # Directories
     if [[ -d $1/ ]]; then
         search=
         search_end_early=
-        cd "${1:-/}" ||:
-        redraw full
+        cd "${1:-/}" && {
+            # Add directory to history.
+            redraw full
+            echo -e "${PWD}\n$(cat "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/history")" > \
+                "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/history"
+        } || {
+            # Catch the error and redraw at current position.
+            clear_screen
+            draw_dir
+            cmd_line "\e[0;31mWarning!\e[0m Permission denied: ${1}"
+        }
 
+    # Files
     elif [[ -f $1 ]]; then
+        # If 'fff' was opened as a file picker, save the opened
+        # file in a file called 'opened_file'.
+        ((file_picker == 1)) && {
+            printf '%s\n' "$1" > \
+                "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/opened_file"
+            exit
+        }
         # Figure out what kind of file we're working with.
         get_mime_type "$1"
 
@@ -599,14 +1020,6 @@ open() {
         # Everything else goes through 'xdg-open'/'open'.
         case "$mime_type" in
             text/*|*x-empty*|*json*)
-                # If 'fff' was opened as a file picker, save the opened
-                # file in a file called 'opened_file'.
-                ((file_picker == 1)) && {
-                    printf '%s\n' "$1" > \
-                        "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/opened_file"
-                    exit
-                }
-
                 clear_screen
                 reset_terminal
                 "${VISUAL:-${EDITOR:-vi}}" "$1"
@@ -625,110 +1038,214 @@ open() {
     fi
 }
 
+open_with() {
+    # If 'fff' was opened as a file picker, save the opened
+    # file in a file called 'opened_file'.
+    ((file_picker == 1)) && {
+        printf '%s\n' $2 > \
+            "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/opened_file"
+        exit
+    }
+
+    clear_screen
+    reset_terminal
+    # Warning: when opening file(s) with spaces in it it will
+    # recognize it as separate files!!!
+    $1 $2
+    setup_terminal
+    redraw
+}
+
 cmd_line() {
     # Write to the command_line (under status_line).
-    cmd_reply=
+    cmd_reply=${list[scroll]##*/}
+    local status="${1} "
+    # Position of the cursor relative to the beginning of the reply.
+    local curpos=${#cmd_reply}
+    # Lenght of status.
+    local status_len=${#status}
+    # Current position of the cursor.
+    local pos=0
 
     # '\e7':     Save cursor position.
     # '\e[?25h': Unhide the cursor.
     # '\e[%sH':  Move cursor to bottom (cmd_line).
     printf '\e7\e[%sH\e[?25h' "$LINES"
-
-    # '\r\e[K': Redraw the read prompt on every keypress.
-    #           This is mimicking what happens normally.
-    while IFS= read -rsn 1 -p $'\r\e[K'"${1}${cmd_reply}" read_reply; do
-        case $read_reply in
-            # Backspace.
-            $'\177'|$'\b')
-                cmd_reply=${cmd_reply%?}
-
-                # Clear tab-completion.
-                unset comp c
-            ;;
-
-            # Tab.
-            $'\t')
-                comp_glob="$cmd_reply*"
-
-                # Pass the argument dirs to limit completion to directories.
-                [[ $2 == dirs ]] &&
-                    comp_glob="$cmd_reply*/"
-
-                # Generate a completion list once.
-                [[ -z ${comp[0]} ]] &&
-                    IFS=$'\n' read -d "" -ra comp < <(compgen -G "$comp_glob")
-
-                # On each tab press, cycle through the completion list.
-                [[ -n ${comp[c]} ]] && {
-                    cmd_reply=${comp[c]}
-                    ((c=c >= ${#comp[@]}-1 ? 0 : ++c))
-                }
-            ;;
-
-            # Escape / Custom 'no' value (used as a replacement for '-n 1').
-            $'\e'|${3:-null})
-                read "${read_flags[@]}" -rsn 2
-                cmd_reply=
-                break
-            ;;
-
-            # Enter/Return.
-            "")
-                # If there's only one search result and its a directory,
-                # enter it on one enter keypress.
-                [[ $2 == search && -d ${list[0]} ]] && ((list_total == 0)) && {
-                    # '\e[?25l': Hide the cursor.
-                    printf '\e[?25l'
-
-                    open "${list[0]}"
-                    search_end_early=1
-
-                    # Unset tab completion variables since we're done.
-                    unset comp c
-                    return
-                }
-
-                break
-            ;;
-
-            # Custom 'yes' value (used as a replacement for '-n 1').
-            ${2:-null})
-                cmd_reply=$read_reply
-                break
-            ;;
-
-            # Replace '~' with '$HOME'.
-            "~")
-                cmd_reply+=$HOME
-            ;;
-
-            # Anything else, add it to read reply.
-            *)
-                cmd_reply+=$read_reply
-
-                # Clear tab-completion.
-                unset comp c
-            ;;
-        esac
-
-        # Search on keypress if search passed as an argument.
-        [[ $2 == search ]] && {
-            # '\e[?25l': Hide the cursor.
-            printf '\e[?25l'
-
-            # Use a greedy glob to search.
-            list=("$PWD"/*"$cmd_reply"*)
-            ((list_total=${#list[@]}-1))
-
-            # Draw the search results on screen.
-            scroll=0
-            redraw
-
-            # '\e[%sH':  Move cursor back to cmd-line.
-            # '\e[?25h': Unhide the cursor.
-            printf '\e[%sH\e[?25h' "$LINES"
+    
+    # If nothing is passed then handle it as error,
+    # and run search/rename.
+    [ -n "$2" ] && {
+        # If search or go to or nothing was passed.
+        [[ "$2" != "rename" ]] && {
+            cmd_reply=
+            curpos=0
         }
-    done
+
+        while true; do
+            pos=$((status_len+curpos))
+            # '\r\e[K':          Redraw everything.
+            # '\e[%s;'"$pos"'H': Go to $pos position at the bottom.
+            # '\e[5 q':          Change cursor to vertical bar.
+            printf '\r\e[K'"${1}${cmd_reply}"
+            printf '\e[%s;'"$pos"'H' "$LINES"
+            printf '\e[5 q'
+            IFS= read -rsn 1 read_reply
+
+            case $read_reply in
+                # Backspace.
+                $'\177'|$'\b')
+                    # Do not delete status.
+                    [ $pos -le $status_len ] && curpos=0 || {
+                        # Delete char at curpos.
+                        cmd_reply="${cmd_reply:0:curpos-1}${cmd_reply:curpos}"
+                        curpos=$((curpos-1))
+                    }
+
+                    # Clear tab-completion.
+                    unset comp c
+                ;;
+
+                # Tab.
+                $'\t')
+                    ((helping)) || ((history)) && return
+
+                    comp_glob="$cmd_reply*"
+
+                    # Pass the argument dirs to limit completion to directories.
+                    [[ $2 == dirs ]] &&
+                        comp_glob="$cmd_reply*/"
+
+                    # Generate a completion list once.
+                    [[ -z ${comp[0]} ]] &&
+                        IFS=$'\n' read -d "" -ra comp < <(compgen -G "$comp_glob")
+
+                    # On each tab press, cycle through the completion list.
+                    [[ -n ${comp[c]} ]] && {
+                        cmd_reply=${comp[c]}
+                        ((c=c >= ${#comp[@]}-1 ? 0 : ++c))
+                    }
+
+                    curpos=${#cmd_reply}
+                ;;
+
+                # Ctrl + a go to the beginning of the reply.
+                $'\001')
+                    curpos=0
+                ;;
+
+                # Escape / Custom 'no' value (used as a replacement for '-n 1').
+                $'\e'|${3:-null})
+                    # Read escape sequence and check for arrow keys
+                    read "${read_flags[@]}" -rsn 2 escape_chars
+                    case $escape_chars in
+                        # Left arrow.
+                        '[D'|'OD')
+                            curpos=$((curpos-1))
+                            # Reset curpos if going out of bounds.
+                            [ $pos -le $status_len ] && curpos=0
+                        ;;
+                        # Right arrow.
+                        '[C'|'OC')
+                            # Go to right only if previously went to the left.
+                            [ $curpos -lt ${#cmd_reply} ] && curpos=$((curpos+1))
+                        ;;
+
+                        *)
+                            cmd_reply=
+                            break
+                        ;;
+                    esac
+                ;;
+
+                # Enter/Return.
+                "")
+                    # If there's only one search result and its a directory,
+                    # enter it on one enter keypress.
+                    ! ((helping)) && ! ((history)) && \
+                            [[ $2 == search && -d ${list[0]} ]] && \
+                            ((list_total == 0)) && {
+                        # '\e[?25l': Hide the cursor.
+                        printf '\e[?25l'
+
+                        open "${list[0]}"
+                        search_end_early=1
+
+                        # Unset tab completion variables since we're done.
+                        unset comp c
+                        return
+                    }
+
+                    break
+                ;;
+
+                # Custom 'yes' value (used as a replacement for '-n 1').
+                "${2:-null}")
+                    cmd_reply=$read_reply
+                    break
+                ;;
+
+                # Replace '~' with '$HOME'.
+                "~")
+                    cmd_reply+=$HOME
+                    curpos=${#cmd_reply}
+                ;;
+
+                # Anything else, add it to read reply.
+                *)
+                    curpos=$((curpos+1))
+                    # Add letter where is curpos.
+                    cmd_reply="${cmd_reply:0:curpos-1}${read_reply}${cmd_reply:curpos-1}"
+
+                    # Clear tab-completion.
+                    unset comp c
+                ;;
+            esac
+
+            # Search on keypress if search passed as an argument.
+            [[ $2 == search ]] && {
+                # '\e[?25l': Hide the cursor.
+                printf '\e[?25l'
+
+                # Use a greedy glob to search.
+                if ((helping)) || ((history)); then
+                    local item
+                    list=()
+                    for item in "${cur_list[@]}"; do
+                        [[ "$item" == *"$cmd_reply"* ]] && list+=("$item")
+                    done
+                else
+                    list=("$PWD"/*"$cmd_reply"*)
+                fi
+                ((list_total=${#list[@]}-1))
+
+                # Draw the search results on screen.
+                scroll=0
+                redraw
+
+                # '\e[%sH':  Move cursor back to cmd_line.
+                # '\e[?25h': Unhide the cursor.
+                printf '\e[%sH\e[?25h' "$LINES"
+            }
+        done
+    } || {
+        while true; do
+            pos=$((status_len+curpos))
+            # '\r\e[K'"$1":            Redraw everything.
+            # '\e[%s\e[?25l' "$LINES": Go to the last position at the bottom
+            #                          and hide the cursor.
+            # Cannot write ..%s.." "$1", because of no color in warning.
+            printf '\r\e[K'"$1"
+            printf '\e[%s\e[?25l' "$LINES"
+            IFS= read -rsn 1 read_reply
+            case $read_reply in
+                *)
+                    # Clear tab-completion.
+                    unset comp c
+                    break
+                ;;
+            esac
+        done
+    }
 
     # Unset tab completion variables since we're done.
     unset comp c
@@ -737,11 +1254,162 @@ cmd_line() {
     # '\e[?25l': Hide the cursor.
     # '\e8':     Restore cursor position.
     printf '\e[2K\e[?25l\e8'
+    status_line
 }
 
 key() {
     # Handle special key presses.
+    
+    # Handle ctrl + u scroll up.
+    [[ $1 == $'\x15' ]] && {
+        # Get the length to the first element and check if
+        # there is space for this jump.
+        #
+        # space_for_jump = length to the first element in the
+        #                  whole list
+        # scroll = current cursor position number in the list
+        # jump_len = if there is space = n jump, if not
+        #            then is length to the first element 
+        space_for_jump=${scroll}
+
+        if [[ ${space_for_jump} -gt ${FFF_SCROLL_UP:=14} ]]; then
+            jump_len=${FFF_SCROLL_UP:=14}
+        else
+            jump_len=${space_for_jump}
+        fi
+
+        # Check if the new position after jump is on the screen,
+        # then simply jump to it, otherwise go to the first
+        # visible/printed line and then go line-by-line printing it.
+        #
+        # new_pos_after_jump = scroll + jump number 
+        # y = position of the scroll in the visible area
+        # visible_jump = how many already visible lines to jump
+        # invisible_jump = how many invisible lines to jump after it
+        ((new_pos_after_jump=$y-$jump_len))
+
+        if [[ $new_pos_after_jump -ge 0 ]]; then
+            ((visible_jump=$jump_len))
+            invisible_jump=0
+        else
+            ((visible_jump=$y)) 
+            ((invisible_jump=$jump_len-$y)) 
+        fi
+
+        ((scroll=scroll-$visible_jump))
+
+        print_line "$((scroll+visible_jump))"
+
+        # Scroll n places up = print n * line/form feed.
+        for ((i=0; i<$visible_jump; i++)); do
+            if ((y < 2)); then
+                printf '\e[L'
+            else
+                printf '\e[A'
+                ((y--))
+            fi
+        done
+
+        # Scroll up and print new elements.
+        for ((i=0; i<$invisible_jump; i++)); do
+            while ((scroll > 0)); do
+                ((scroll--))
+
+                print_line "$((scroll+1))"
+
+                if ((y < 2)); then
+                    printf '\e[L'
+                else
+                    printf '\e[A'
+                    ((y--))
+                fi
+
+                print_line "$scroll"
+
+                [[ "${list[scroll]}" ]] && break
+            done
+        done
+
+        print_line "$scroll"
+        status_line
+        
+    }
+
+    # Handle ctrl + d for scroll down.
+    [[ $1 == $'\x04' ]] && {
+        ((scroll != list_total)) && {
+            # Get the length to the last element and check if
+            # there is space for this jump.
+            #
+            # space_for_jump = length to the end of the whole list
+            # ${#list[@]} = number of all elements in the list
+            # scroll = current cursor position number
+            # jump_len = if there is space = n jump, if not
+            #            then is length to the last element 
+            ((space_for_jump=${#list[@]} - $scroll))
+
+            if [[ ${space_for_jump} -gt ${FFF_SCROLL_DOWN:=14} ]]; then
+                jump_len=${FFF_SCROLL_DOWN:=14}
+            else
+                ((jump_len=${space_for_jump}-1))
+            fi
+
+            # Check if the new position after jump is on the screen,
+            # then simply jump to it, otherwise go to the last
+            # visible/printed line and then go line-by-line printing it.
+            #
+            # new_pos_after_jump = scroll + jump number 
+            # max_items = length of the items that can fit in the screen
+            # y = position of the scroll in the visible area
+            # visible_jump = how many already visible lines to jump
+            # invisible_jump = how many invisible lines to jump after it
+            ((new_pos_after_jump=$y+$jump_len))
+
+            if [[ $new_pos_after_jump -le $max_items ]]; then
+                visible_jump=$jump_len 
+                invisible_jump=0
+            else
+                ((visible_jump=${max_items}-$y)) 
+                ((invisible_jump=${new_pos_after_jump}-${max_items})) 
+            fi
+
+            ((scroll=scroll+$visible_jump))
+            ((y < max_items)) && ((y=y+$visible_jump))
+
+            print_line "$((scroll-$visible_jump))"
+
+            # Scroll n places down = print n * '\n'.
+            for ((i=0; i<$visible_jump; i++)); do
+                printf '\n'
+            done
+
+            # Scroll down and print new elements.
+            for ((i=0; i<$invisible_jump; i++)); do
+                while ((scroll < list_total)); do
+                    ((scroll++))
+                    ((y < max_items)) && ((y++))
+
+                    print_line "$((scroll-1))"
+                    printf '\n'
+                    print_line "$scroll"
+
+                    [[ "${list[scroll]}" ]] && break
+                done
+            done
+
+            print_line "$scroll"
+            status_line
+        }
+    }
+
     [[ $1 == $'\e' ]] && {
+        # Exit marking with any special key.
+        [[ ${marked_files[*]} ]] && {
+            marked_files=()
+            file_program=()
+            redraw
+        }
+
         read "${read_flags[@]}" -rsn 2
 
         # Handle a normal escape key press.
@@ -756,10 +1424,17 @@ key() {
         # 'C' is what bash sees when the right arrow is pressed
         # ('\e[C' or '\eOC').
         # '' is what bash sees when the enter/return key is pressed.
-        ${FFF_KEY_CHILD1:=l}|\
-        ${FFF_KEY_CHILD2:=$'\e[C'}|\
-        ${FFF_KEY_CHILD3:=""}|\
-        ${FFF_KEY_CHILD4:=$'\eOC'})
+        "${FFF_KEY_CHILD1:=l}"      |\
+        "${FFF_KEY_CHILD2:=$'\e[C'}"|\
+        "${FFF_KEY_CHILD3:=""}"     |\
+        "${FFF_KEY_CHILD4:=$'\eOC'}")
+            # If history then return to the previous state.
+            ((history)) && {
+                details=$saved_details
+                FFF_FILE_ICON="$icon_value"
+                list[scroll]=${list[scroll]#* }
+            }
+
             open "${list[scroll]}"
         ;;
 
@@ -768,17 +1443,23 @@ key() {
         # ('\e[D' or '\eOD').
         # '\177' and '\b' are what bash sometimes sees when the backspace
         # key is pressed.
-        ${FFF_KEY_PARENT1:=h}|\
-        ${FFF_KEY_PARENT2:=$'\e[D'}|\
-        ${FFF_KEY_PARENT3:=$'\177'}|\
-        ${FFF_KEY_PARENT4:=$'\b'}|\
-        ${FFF_KEY_PARENT5:=$'\eOD'})
+        "${FFF_KEY_PARENT1:=h}"      |\
+        "${FFF_KEY_PARENT2:=$'\e[D'}"|\
+        "${FFF_KEY_PARENT3:=$'\177'}"|\
+        "${FFF_KEY_PARENT4:=$'\b'}"  |\
+        "${FFF_KEY_PARENT5:=$'\eOD'}")
+            # If history/help then return to the previous state.
+            if ((history)) || ((helping)); then
+                details=$saved_details
+                FFF_FILE_ICON="$icon_value"
+                open "$PWD"
+
             # If a search was done, clear the results and open the current dir.
-            if ((search == 1 && search_end_early != 1)); then
+            elif ((search == 1 && search_end_early != 1)); then
                 open "$PWD"
 
             # If '$PWD' is '/', do nothing.
-            elif [[ $PWD && $PWD != / ]]; then
+            elif [[ $PWD ]]; then
                 find_previous=1
                 open "${PWD%/*}"
             fi
@@ -787,10 +1468,10 @@ key() {
         # Scroll down.
         # 'B' is what bash sees when the down arrow is pressed
         # ('\e[B' or '\eOB').
-        ${FFF_KEY_SCROLL_DOWN1:=j}|\
-        ${FFF_KEY_SCROLL_DOWN2:=$'\e[B'}|\
-        ${FFF_KEY_SCROLL_DOWN3:=$'\eOB'})
-            ((scroll < list_total)) && {
+        "${FFF_KEY_SCROLL_DOWN1:=j}"      |\
+        "${FFF_KEY_SCROLL_DOWN2:=$'\e[B'}"|\
+        "${FFF_KEY_SCROLL_DOWN3:=$'\eOB'}")
+            while ((scroll < list_total)); do
                 ((scroll++))
                 ((y < max_items)) && ((y++))
 
@@ -798,18 +1479,20 @@ key() {
                 printf '\n'
                 print_line "$scroll"
                 status_line
-            }
+
+                [[ "${list[scroll]}" ]] && break
+            done
         ;;
 
         # Scroll up.
         # 'A' is what bash sees when the up arrow is pressed
         # ('\e[A' or '\eOA').
-        ${FFF_KEY_SCROLL_UP1:=k}|\
-        ${FFF_KEY_SCROLL_UP2:=$'\e[A'}|\
-        ${FFF_KEY_SCROLL_UP3:=$'\eOA'})
+        "${FFF_KEY_SCROLL_UP1:=k}"      |\
+        "${FFF_KEY_SCROLL_UP2:=$'\e[A'}"|\
+        "${FFF_KEY_SCROLL_UP3:=$'\eOA'}")
             # '\e[1L': Insert a line above the cursor.
             # '\e[A':  Move cursor up a line.
-            ((scroll > 0)) && {
+            while ((scroll > 0)); do
                 ((scroll--))
 
                 print_line "$((scroll+1))"
@@ -823,11 +1506,13 @@ key() {
 
                 print_line "$scroll"
                 status_line
-            }
+
+                [[ "${list[scroll]}" ]] && break
+            done
         ;;
 
         # Go to top.
-        ${FFF_KEY_TO_TOP:=g})
+        "${FFF_KEY_TO_TOP:=g}")
             ((scroll != 0)) && {
                 scroll=0
                 redraw
@@ -835,7 +1520,7 @@ key() {
         ;;
 
         # Go to bottom.
-        ${FFF_KEY_TO_BOTTOM:=G})
+        "${FFF_KEY_TO_BOTTOM:=G}")
             ((scroll != list_total)) && {
                 ((scroll=list_total))
                 redraw
@@ -843,7 +1528,9 @@ key() {
         ;;
 
         # Show hidden files.
-        ${FFF_KEY_HIDDEN:=.})
+        "${FFF_KEY_HIDDEN:=.}")
+            ((helping)) || ((history)) && return
+
             # 'a=a>0?0:++a': Toggle between both values of 'shopt_flags'.
             #                This also works for '3' or more values with
             #                some modification.
@@ -853,22 +1540,22 @@ key() {
         ;;
 
         # Search.
-        ${FFF_KEY_SEARCH:=/})
+        "${FFF_KEY_SEARCH:=/}")
             cmd_line "/" "search"
 
             # If the search came up empty, redraw the current dir.
-            if [[ -z ${list[*]} ]]; then
+            [[ -z ${list[*]} ]] && {
                 list=("${cur_list[@]}")
                 ((list_total=${#list[@]}-1))
                 redraw
                 search=
-            else
-                search=1
-            fi
+            } || search=1
+
+            status_line
         ;;
 
         # Spawn a shell.
-        ${FFF_KEY_SHELL:=!})
+        "${FFF_KEY_SHELL:=!}")
             reset_terminal
 
             # Make fff aware of how many times it is nested.
@@ -881,28 +1568,61 @@ key() {
         ;;
 
         # Mark files for operation.
-        ${FFF_KEY_YANK:=y}|\
-        ${FFF_KEY_MOVE:=m}|\
-        ${FFF_KEY_TRASH:=d}|\
-        ${FFF_KEY_LINK:=s}|\
-        ${FFF_KEY_BULK_RENAME:=b})
+        "${FFF_KEY_COPY:=c}"      |\
+        "${FFF_KEY_MOVE:=m}"      |\
+        "${FFF_KEY_TRASH:=d}"     |\
+        "${FFF_KEY_LINK:=s}"      |\
+        "${FFF_KEY_BULK_RENAME:=b}")
+            ((helping)) || ((history)) && return
+
+            [[ -z "${marked_files[*]}" ]] && return
+
+            previous_program="${file_program[0]}"
+
+            # Find the program to use.
+            case "$1" in
+                "${FFF_KEY_COPY:=c}") file_program=(cp -iR) ;;
+                "${FFF_KEY_MOVE:=m}") file_program=(mv -i) ;;
+                "${FFF_KEY_LINK:=s}") file_program=(ln -s) ;;
+
+                # These are 'fff' functions.
+                "${FFF_KEY_TRASH:=d}") file_program=(trash) ;;
+                "${FFF_KEY_BULK_RENAME:=b}") file_program=(bulk_rename) ;;
+            esac
+
+            # Toggle the file program if the same key was pressed.
+            [[ $previous_program == "${file_program[0]}" ]] &&
+                file_program=()
+
+            status_line
+        ;;
+
+        # Mark files for operation.
+        "${FFF_KEY_MARK:=" "}")
+            ((helping)) || ((history)) && return
+
             mark "$scroll" "$1"
         ;;
 
         # Mark all files for operation.
-        ${FFF_KEY_YANK_ALL:=Y}|\
-        ${FFF_KEY_MOVE_ALL:=M}|\
-        ${FFF_KEY_TRASH_ALL:=D}|\
-        ${FFF_KEY_LINK_ALL:=S}|\
-        ${FFF_KEY_BULK_RENAME_ALL:=B})
+        "${FFF_KEY_MARK_ALL:=a}")
+            ((helping)) || ((history)) && return
+
             mark all "$1"
         ;;
 
         # Do the file operation.
-        ${FFF_KEY_PASTE:=p})
+        "${FFF_KEY_EXECUTE:=p}")
+            ((helping)) || ((history)) && return
+
             [[ ${marked_files[*]} ]] && {
                 [[ ! -w $PWD ]] && {
-                    cmd_line "warn: no write access to dir."
+                    cmd_line "\e[0;31mWarning!\e[0m No write access to dir"
+                    return
+                }
+
+                [[ -z ${file_program[0]} ]] && {
+                    cmd_line "\e[0;31mWarning!\e[0m No operation selected [y,m,d,b,s]"
                     return
                 }
 
@@ -916,86 +1636,104 @@ key() {
                 stty -echo
 
                 marked_files=()
+                file_program=()
                 setup_terminal
                 redraw full
-            }
-        ;;
-
-        # Clear all marked files.
-        ${FFF_KEY_CLEAR:=c})
-            [[ ${marked_files[*]} ]] && {
-                marked_files=()
-                redraw
+            } || {
+                [[ -z ${file_program[0]} ]] && {
+                    cmd_line "\e[0;31mWarning!\e[0m 0 marked files"
+                    return
+                }
             }
         ;;
 
         # Rename list item.
-        ${FFF_KEY_RENAME:=r})
-            [[ ! -e ${list[scroll]} ]] &&
-                return
+        "${FFF_KEY_RENAME:=r}")
+            ((helping)) || ((history)) && return
 
-            cmd_line "rename ${list[scroll]##*/}: "
+            [[ ! -e ${list[scroll]} ]] && return
+
+            cmd_line "Rename: " "rename"
 
             [[ $cmd_reply ]] &&
                 if [[ -e $cmd_reply ]]; then
-                    cmd_line "warn: '$cmd_reply' already exists."
+                    cmd_line "\e[0;31mWarning!\e[0m '$cmd_reply' already exists"
 
                 elif [[ -w ${list[scroll]} ]]; then
                     mv "${list[scroll]}" "${PWD}/${cmd_reply}"
                     redraw full
 
                 else
-                    cmd_line "warn: no write access to file."
+                    cmd_line "\e[0;31mWarning!\e[0m No write access to file"
                 fi
         ;;
 
         # Create a directory.
-        ${FFF_KEY_MKDIR:=n})
-            cmd_line "mkdir: " "dirs"
+        "${FFF_KEY_MKDIR:=n}")
+            ((helping)) || ((history)) && return
+
+            cmd_line "Create directory: " "dirs"
 
             [[ $cmd_reply ]] &&
                 if [[ -e $cmd_reply ]]; then
-                    cmd_line "warn: '$cmd_reply' already exists."
+                    cmd_line "\e[0;31mWarning!\e[0m '$cmd_reply' already exists"
 
                 elif [[ -w $PWD ]]; then
                     mkdir -p "${PWD}/${cmd_reply}"
                     redraw full
 
                 else
-                    cmd_line "warn: no write access to dir."
+                    cmd_line "\e[0;31mWarning!\e[0m No write access to dir"
                 fi
         ;;
 
         # Create a file.
-        ${FFF_KEY_MKFILE:=f})
-            cmd_line "mkfile: "
+        "${FFF_KEY_MKFILE:=f}")
+            ((helping)) || ((history)) && return
 
-            [[ $cmd_reply ]] &&
+            cmd_line "Create file: " "file"
+
+            [[ $cmd_reply ]] && {
                 if [[ -e $cmd_reply ]]; then
-                    cmd_line "warn: '$cmd_reply' already exists."
+                    cmd_line "\e[0;31mWarning!\e[0m '$cmd_reply' already exists"
 
                 elif [[ -w $PWD ]]; then
                     : > "$cmd_reply"
                     redraw full
 
                 else
-                    cmd_line "warn: no write access to dir."
+                    cmd_line "\e[0;31mWarning!\e[0m No write access to dir"
                 fi
+            }
         ;;
 
         # Show file attributes.
-        ${FFF_KEY_ATTRIBUTES:=x})
+        "${FFF_KEY_ATTRIBUTES:=x}")
+            ((helping)) || ((history)) && return
+
             [[ -e "${list[scroll]}" ]] && {
                 clear_screen
                 status_line "${list[scroll]}"
                 "${FFF_STAT_CMD:-stat}" "${list[scroll]}"
+
+                # Show human-readable size.
+                printf "  Size (human-readable): "
+                size=$("${FFF_STAT_CMD:-stat}" -c "%s" "${list[scroll]}" | numfmt --to=iec)
+                printf "$size"
+                [[ $size =~ [0-9]$ ]] && printf "B\n" || printf "\n"    # If size is in bytes.
+
+                # Display git branch.
+                [ -n "$git_branch" ] && printf "  Git branch: $git_branch"
+
                 read -ern 1
                 redraw
             }
         ;;
 
         # Toggle executable flag.
-        ${FFF_KEY_EXECUTABLE:=X})
+        "${FFF_KEY_EXECUTABLE:=X}")
+            ((helping)) || ((history)) && return
+
             [[ -f ${list[scroll]} && -w ${list[scroll]} ]] && {
                 if [[ -x ${list[scroll]} ]]; then
                     chmod -x "${list[scroll]}"
@@ -1007,13 +1745,10 @@ key() {
             }
         ;;
 
-        # Show image in terminal.
-        ${FFF_KEY_IMAGE:=i})
-            draw_img
-        ;;
-
         # Go to dir.
-        ${FFF_KEY_GO_DIR:=:})
+        "${FFF_KEY_GO_DIR:=:}")
+            ((helping)) || ((history)) && return
+
             cmd_line "go to dir: " "dirs"
 
             # Let 'cd' know about the current directory.
@@ -1024,25 +1759,108 @@ key() {
                     open "$PWD"
         ;;
 
+        # Open file with.
+        "${FFF_KEY_OPEN_WITH:=o}")
+            ((helping)) || ((history)) && return
+
+            cmd_line "open with: " "cmd"
+            [[ $cmd_reply ]] && {
+                if ! command -v $cmd_reply > /dev/null; then
+                    redraw full
+                    cmd_line "\e[0;31mWarning!\e[0m Command ${cmd_reply} not found"
+                    return
+                fi
+
+                if [[ ${#marked_files[@]} -ne 0 ]]; then
+                    open_with "${cmd_reply}" "${marked_files[*]}" 
+
+                elif [[ -e "${list[scroll]}" ]]; then
+                    open_with "${cmd_reply}" "${list[scroll]}"
+                fi
+            }
+        ;;
+
+        # Open file with to run background.
+        "${FFF_KEY_OPEN_WITH_DETACHED:=O}")
+            ((helping)) || ((history)) && return
+
+            cmd_line "open with (detached): " "cmd"
+            [[ $cmd_reply ]] && {
+                if ! type $cmd_reply > /dev/null; then
+                    redraw full
+                    cmd_line "\e[0;31mWarning!\e[0m Command ${cmd_reply} not found"
+                    return
+                fi
+
+                if [[ ${#marked_files[@]} -ne 0 ]]; then
+                    nohup "${cmd_reply}"  "${marked_files[*]}" &>/dev/null &
+
+                elif [[ -e "${list[scroll]}" ]]; then
+                    nohup "${cmd_reply}" "${list[scroll]}" &>/dev/null &
+                fi
+
+                disown
+            }
+        ;;
+
         # Go to '$HOME'.
         ${FFF_KEY_GO_HOME:='~'})
             open ~
         ;;
 
         # Go to trash.
-        ${FFF_KEY_GO_TRASH:=t})
+        "${FFF_KEY_GO_TRASH:=t}")
             get_os
             open "$FFF_TRASH"
         ;;
 
+        # Sort by name (0) time (1).
+        "${FFF_KEY_SORT:=u}")
+            ((helping)) || ((history)) && return
+
+            [ "$sort" == 0 ] && sort=1 || sort=0
+
+            open "$PWD"
+        ;;
+
+        # Show file details (on/off).
+        "${FFF_KEY_DETAILS:=i}")
+            ((helping)) || ((history)) && return
+
+            [ "$details" == 0 ] && details=1 || details=0
+
+            open "$PWD"
+        ;;
+
         # Go to previous dir.
-        ${FFF_KEY_PREVIOUS:=-})
+        "${FFF_KEY_PREVIOUS:=-}")
             open "$OLDPWD"
         ;;
 
         # Refresh current dir.
-        ${FFF_KEY_REFRESH:=e})
+        "${FFF_KEY_REFRESH:=z}")
+            ((helping)) || ((history)) && {
+                list=("${cur_list[@]}")
+                redraw full
+                return
+            }
+
             open "$PWD"
+        ;;
+
+        # Yank filename to clipboard.
+        "${FFF_KEY_CLIPBOARD:-y}")
+            if ! command -v ${FFF_CLIPBOARD:=xclip -selection c} > /dev/null; then
+                redraw full
+                cmd_line "\e[0;31mWarning!\e[0m Cannot run '${FFF_CLIPBOARD:=xclip -selection c}'"
+                return
+            fi
+
+            [[ -e "${list[scroll]}" ]] && {
+                echo "${list[scroll]}" | ${FFF_CLIPBOARD:=xclip -selection c} 2>/dev/null
+
+                cmd_line "${list[scroll]} copied to clipboard"
+            }
         ;;
 
         # Directory favourites.
@@ -1050,18 +1868,80 @@ key() {
             favourite="FFF_FAV${1}"
             favourite="${!favourite}"
 
-            [[ $favourite ]] &&
-                open "$favourite"
+            [[ $favourite ]] && open "$favourite"
+        ;;
+
+        # Display help.
+        "${FFF_KEY_HELP:=?}")
+            ((history)) && return
+
+            ((helping)) && {
+                # Return to the previous state.
+                details=$saved_details
+                FFF_FILE_ICON="$icon_value"
+                redraw full
+                return
+            }
+
+            saved_details=$details
+            details=0
+            redraw help
+        ;;
+
+        # Display history.
+        "${FFF_KEY_HISTORY:=e}")
+            ((helping)) && return
+
+            ((history)) && {
+                # Return to the previous state.
+                details=$saved_details
+                FFF_FILE_ICON="$icon_value"
+                redraw full
+                return
+            }
+
+            saved_details=$details
+            details=0
+            redraw hist
+        ;;
+
+        # Display image using img2sixel.
+        "${FFF_KEY_SIXEL:=I}")
+            ((helping)) || ((history)) && return
+
+            if ! command -v img2sixel > /dev/null; then
+                redraw full
+                cmd_line "\e[0;31mWarning!\e[0m Command img2sixel not found"
+                return
+            fi
+
+            # https://stackoverflow.com/questions/25941394/how-does-bash-deal-with-nested-quotes
+            [[ -e "${list[scroll]}" ]] && {
+                clear_screen
+                "${FFF_SIXEL_CMD:-img2sixel}" "${list[scroll]}" && read -rsn1
+                setup_terminal
+                redraw
+            }
         ;;
 
         # Quit and store current directory in a file for CD on exit.
         # Don't allow user to redefine 'q' so a bad keybinding doesn't
         # remove the option to quit.
-        q)
+        "q")
+            ((helping)) || ((history)) && {
+                details=$saved_details
+                FFF_FILE_ICON="$icon_value"     # Set FFF_FILE_ICON to previous state.
+                redraw full
+                return
+            }
+
+            # Delete everything in history after FFF_HISTORY_LENGTH line.
+            lines_num=${FFF_HISTORY_LENGTH:-100}
+            sed -i "${lines_num}q" "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/history"
+
             : "${FFF_CD_FILE:=${XDG_CACHE_HOME:=${HOME}/.cache}/fff/.fff_d}"
 
-            [[ -w $FFF_CD_FILE ]] &&
-                rm "$FFF_CD_FILE"
+            [[ -w $FFF_CD_FILE ]] && rm "$FFF_CD_FILE"
 
             [[ ${FFF_CD_ON_EXIT:=1} == 1 ]] &&
                 printf '%s\n' "$PWD" > "$FFF_CD_FILE"
@@ -1128,7 +2008,6 @@ main() {
 
     get_os
     get_term_size
-    get_w3m_path
     setup_options
     setup_terminal
     redraw full

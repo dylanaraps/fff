@@ -1,26 +1,42 @@
-# fff (*Fucking Fast File-Manager*)
+# fff (*Fucking Fine File-Manager*)
+
+### This fork is meant to make fff a more feature-rich file manager, but at cost of raw speed.
 
 <a href="https://asciinema.org/a/qvNlrFrGB3xKZXb6GkremjZNp" target="_blank"><img src="https://asciinema.org/a/qvNlrFrGB3xKZXb6GkremjZNp.svg" alt="img" height="210px" align="right"/></a>
 
-A simple file manager written in `bash`.
+### Changes to original
 
-<a href="https://travis-ci.org/dylanaraps/fff"><img src="https://travis-ci.org/dylanaraps/fff.svg?branch=master"></a>
-<a href="https://github.com/dylanaraps/fff/releases"><img src="https://img.shields.io/github/release/dylanaraps/fff.svg"></a>
-<a href="https://repology.org/metapackage/fff"><img src="https://repology.org/badge/tiny-repos/fff.svg" alt="Packaging status"></a>
+- [Nerd Fonts devicons](https://www.nerdfonts.com/#home) support
+- Help page on `?`
+- `Open with` commands
+- `ctrl + d`/`ctrl + u` scrolling
+- view images using [sixel](https://github.com/saitoha/libsixel)
+- Git branch on status line
+- Recursive git signs for changed files <img src="https://i.imgur.com/V2aCYWn.png" alt="img" height="180px" align="right"/>
+- Display file modification date, time and size (resource-heavy)
+- Sort files by modification time or alphabetically
+- Working history of directories and picker for them
+- Changed marking behavior to nnn-like (mark with space, choose a command, and then execute it)
+- Changed keybindings to better suit more options
+- Optional config file for global configuration
+- Git branch in stats
+- Copy filename to clipboard with `y` and copy file with `c` (when marking)
+- Changed single file renaming behavior to allow using arrows and automatically display renamed file (and `ctrl + a` to go at the beginning of the filename).
+- Deleted clear option (clear marks by pressing `FFF_KEY_MARK_ALL`) 
+- Mark and open with multiple files at time
+- Human-readable size in stats
 
-- It's Fucking Fast 🚀
-- Minimal (*only requires **bash** and coreutils*)
-- Smooth Scrolling (*using **vim** keybindings*)
-- Works on **Linux**, **BSD**, **macOS**, **Haiku** etc.
-- Supports `LS_COLORS`!
-- File Operations (*copy, paste, cut, **ranger style bulk rename**, etc*) <img src="https://i.imgur.com/tjIWUjf.jpg" alt="img" height="213px" align="right"/>
-- Instant as you type search
-- Tab completion for all commands!
-- Automatic CD on exit (*see [setup](#cd-on-exit)*)
-- Works as a **file picker** in `vim`/`neovim` ([**link**](https://github.com/dylanaraps/fff.vim))!
-- **Display images with w3m-img!**
-- Supports `$CDPATH`.
 
+### Thanks
+
+A big part of code in there is from people who made PRs and posted issues to fff:
+
+- Roy Orbitson (help page) <img src="https://i.imgur.com/psnHD6l.png" alt="img" height="180px" align="right"/>
+- Sidd Dino (devicons)
+- qwool (human-readable size)
+- Docbroke (sorting)
+- yiselieren (file details)
+- Isaac Elenbaas (config file, changing renaming behavior)
 
 ## Table of Contents
 
@@ -32,7 +48,6 @@ A simple file manager written in `bash`.
     * [Manual](#manual)
     * [CD on Exit](#cd-on-exit)
         * [Bash and Zsh](#bash-and-zsh)
-        * [Fish](#fish)
 * [Usage](#usage)
 * [Customization](#customization)
 * [Customizing the keybindings.](#customizing-the-keybindings)
@@ -55,38 +70,22 @@ A simple file manager written in `bash`.
     - Program handling (*non-text*).
     - *Not needed on macos and Haiku.*
     - *Customizable (if not using `xdg-open`): `$FFF_OPENER`.*
-
-**Dependencies for image display**
-
-- `w3m-img`
-- `xdotool` for X.
-- `fbset` for the framebuffer.
-
+- `Nerd Font` (*optional*)
+    - Icons
+- `xclip or any clipboard manager` (*optional*)
+    - clipboard
+- `libsixel` (*optional*)
+    - sixel support
 
 ## Installation
-
-### Distros
-
-- KISS Linux (based): `kiss b fff`
-- FreeBSD: `pkg install fff`
-- Haiku: `pkgman install fff`
-- macOS: `brew install fff`
-- Nix: `nix-env -iA fff`
-- Void Linux: `xbps-install -S fff`
-- Arch Linux: `pacman -S fff`
 
 ### Manual
 
 1. Download `fff`.
-    - Release: https://github.com/dylanaraps/fff/releases/latest
-    - Git: `git clone https://github.com/dylanaraps/fff`
+    - Git: `git clone https://github.com/piotr-marendowski/fff`
 2. Change working directory to `fff`.
     - `cd fff`
 3. Run `make install` inside the script directory to install the script.
-    - **El Capitan**: `make PREFIX=/usr/local install`
-    - **Haiku**: `make PREFIX="$(finddir B_USER_NONPACKAGED_DIRECTORY)" MANDIR='$(PREFIX)/documentation/man' DOCDIR='$(PREFIX)/documentation/fff' install`
-    - **OpenIndiana**: `gmake install`
-    - **MinGW/MSys**: `make -i install`
     - **NOTE**: You may have to run this as root.
 
 **NOTE:** `fff` can be uninstalled easily using `make uninstall`. This removes all of files from your system.
@@ -101,16 +100,6 @@ f() {
     cd "$(cat "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/.fff_d")"
 }
 ```
-#### Fish
-```sh
-# Add this to you config.fish or equivalent.
-# Fish don't support recursive calls so use f function
-function f
-    fff $argv
-    set -q XDG_CACHE_HOME; or set XDG_CACHE_HOME $HOME/.cache
-    cd (cat $XDG_CACHE_HOME/fff/.fff_d)
-end
-```
 
 ## Usage
 
@@ -120,8 +109,11 @@ k: scroll up
 h: go to parent dir
 l: go to child dir
 
-enter: go to child dir
+enter: go to child dir/open file
 backspace: go to parent dir
+
+o: open file with
+O: open file with a GUI program detached from file manager
 
 -: Go to previous dir.
 
@@ -134,11 +126,14 @@ G: go to bottom
 /: search
 t: go to trash
 ~: go to home
-e: refresh current dir
+z: refresh current dir
 !: open shell in current dir
 
+i: display file details
+u: sort files
 x: view file/dir attributes
-i: display image with w3m-img
+e: show history
+y: copy filename to clipboard
 
 down:  scroll down
 up:    scroll up
@@ -150,33 +145,52 @@ n: new dir
 r: rename
 X: toggle executable
 
-y: mark copy
-m: mark move
-d: mark trash (~/.local/share/fff/trash/)
-s: mark symbolic link
-b: mark bulk rename
-
-Y: mark all for copy
-M: mark all for move
-D: mark all for trash (~/.local/share/fff/trash/)
-S: mark all for symbolic link
-B: mark all for bulk rename
+space: mark file
+a: mark all files in directory
+c: copy
+m: move
+d: trash (move to FFF_TRASH)
+s: symbolic link
+b: bulk rename
 
 p: execute paste/move/delete/bulk_rename
-c: clear file selections
 
 [1-9]: favourites/bookmarks (see customization)
 
 q: exit with 'cd' (if enabled).
 Ctrl+C: exit without 'cd'.
+
+?: show help
 ```
 
 ## Customization
+
+`FFF_CONFIG` can be added to your `bashrc` (or other shell's configuration files). Everything put in `FFF_CONFIG` file will be sourced globally meaning that e.g. Neovim's terminal will have these settings.
+
+Personal note (can be unreproducible for your): I'm not sure why the only option (maybe there are others) not working in config file is `FFF_HIDDEN` which only works, when fff is run inside terminal manually.
 
 ```sh
 # Show/Hide hidden files on open.
 # (Off by default)
 export FFF_HIDDEN=1
+
+# Show/Hide file icons on open
+# (Off by default)
+export FFF_FILE_ICON=1
+
+# Show/Hide git status signs (+) on open
+# (Off by default)
+export FFF_GIT_CHANGES=1
+
+# Default method to sort files on open
+# 0 - alphabetically
+# 1 - modification time
+# (0 by default)
+export FFF_SORT_METHOD=1
+
+# Show/Hide file details on open
+# (Off by default)
+export FFF_FILE_DETAILS=1
 
 # Use LS_COLORS to color fff.
 # (On by default if available)
@@ -198,8 +212,16 @@ export FFF_COL4=1
 # Status foreground color [0-9]
 export FFF_COL5=0
 
+# Selection color
+# (inverted foreground by default)
+# ('48;2;R;G;B' values separated by ';', don't edit the '48;2;' part!).
+# In terminals that support truecolor, this will set the selection color
+# to grey, but on others selection will be only white bold text (if this
+# is set).
+export FFF_COL6="48;2;80;80;80"
+
 # Text Editor
-export EDITOR="vim"
+export EDITOR="nvim"
 
 # File Opener
 export FFF_OPENER="xdg-open"
@@ -215,6 +237,11 @@ export FFF_CD_ON_EXIT=0
 # Default: '${XDG_CACHE_HOME}/fff/fff.d'
 #          If not using XDG, '${HOME}/.cache/fff/fff.d' is used.
 export FFF_CD_FILE=~/.fff_d
+
+# Config File
+# Default: '${XDG_CONFIG_HOME/fff}'
+#          If not using XDG, '${HOME}/.config/fff' is used.
+export FFF_CONFIG=~/.config/fff
 
 # Trash Directory
 # Default: '${XDG_DATA_HOME}/fff/trash'
@@ -239,9 +266,13 @@ export FFF_FAV7=
 export FFF_FAV8=
 export FFF_FAV9=
 
-# w3m-img offsets.
-export FFF_W3M_XOFFSET=0
-export FFF_W3M_YOFFSET=0
+# History file length.
+# (100 lines by default)
+# Every cd-on-exit (q) program deletes every line older than
+# FFF_HISTORY_LENGTH.
+# Example: history has 150 lines, quitting trims history file
+# to 100 most recent.
+export FFF_HISTORY_LENGTH=200
 
 # File format.
 # Customize the item string.
@@ -254,6 +285,19 @@ export FFF_FILE_FORMAT="%f"
 # Format ('%f' is the current file): "str%fstr"
 # Example (Add a ' >' before files): FFF_MARK_FORMAT="> %f"
 export FFF_MARK_FORMAT=" %f*"
+
+# Clipboard program and arguments.
+# Default: xclip -selection c 
+export FFF_KEY_CLIPBOARD="xclip -selection c"
+
+# Scroll steps.
+# (14 by default).
+export FFF_SCROLL_UP=14
+export FFF_SCROLL_DOWN=14
+
+# Sixel image program.
+# Default: img2sixel
+export FFF_SIXEL_CMD="img2sixel"
 ```
 
 ## Customizing the keybindings.
@@ -301,31 +345,33 @@ export FFF_KEY_TO_BOTTOM="G"
 export FFF_KEY_GO_DIR=":"
 export FFF_KEY_GO_HOME="~"
 export FFF_KEY_GO_TRASH="t"
-export FFF_KEY_REFRESH="e"
+export FFF_KEY_REFRESH="z"
 
 ### File operations.
-
-export FFF_KEY_YANK="y"
+export FFF_KEY_MARK=" "
+export FFF_KEY_MARK_ALL="a"
+export FFF_KEY_COPY="c"
 export FFF_KEY_MOVE="m"
 export FFF_KEY_TRASH="d"
 export FFF_KEY_LINK="s"
 export FFF_KEY_BULK_RENAME="b"
 
-export FFF_KEY_YANK_ALL="Y"
-export FFF_KEY_MOVE_ALL="M"
-export FFF_KEY_TRASH_ALL="D"
-export FFF_KEY_LINK_ALL="S"
-export FFF_KEY_BULK_RENAME_ALL="B"
-
-export FFF_KEY_PASTE="p"
-export FFF_KEY_CLEAR="c"
+export FFF_KEY_EXECUTE="p"
 
 export FFF_KEY_RENAME="r"
 export FFF_KEY_MKDIR="n"
 export FFF_KEY_MKFILE="f"
-export FFF_KEY_IMAGE="i" # display image with w3m-img
 
 ### Miscellaneous
+
+# Display file details.
+export FFF_KEY_DETAILS="i"
+
+# Display an image using sixel.
+export FFF_KEY_SIXEL="I"
+
+# Sort files.
+export FFF_KEY_SORT="u"
 
 # Show file attributes.
 export FFF_KEY_ATTRIBUTES="x"
@@ -335,6 +381,12 @@ export FFF_KEY_EXECUTABLE="X"
 
 # Toggle hidden files.
 export FFF_KEY_HIDDEN="."
+
+# Show history of directories. 
+export FFF_KEY_HISTORY="e"
+
+# Yank filename to clipboard.
+export FFF_KEY_CLIPBOARD="y"
 ```
 
 ### Disabling keybindings.
@@ -394,11 +446,4 @@ read -srn 1 && key "$REPLY"
 
 ## Using `fff` in vim/neovim as a file picker
 
-See: [**`fff.vim`**](https://github.com/dylanaraps/fff.vim)
-
-
-## Why?
-
-¯\\_(ツ)_/¯
-
-<sup><sub>dont touch my shrug</sub></sup>
+See: [**`fff.vim`**](https://github.com/dylanaraps/fff.vim) or [**`fm-nvim`**](https://github.com/is0n/fm-nvim)
